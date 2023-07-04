@@ -11,6 +11,12 @@ export PATH="$HOME/.local/bin:$PATH"
 # Source environment files
 . "$HOME/.cargo/env"
 
+
+mkdir -p "$HOME/.local/bin"
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
 # ---------------------------------------------------------------------------------
 # Oh My Zsh Configuration ---------------------------------------------------------
 # ---------------------------------------------------------------------------------
