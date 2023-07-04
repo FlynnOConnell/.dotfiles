@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# - Kitty ----
+if ! command -v kitty &> /dev/null; then
+    echo "kitty terminal emulator is not installed. Installing..."
+    curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+else
+    echo "kitty terminal emulator is already installed. Skipping installation."
+fi
+
+
+
+# - Node ----
+if ! command -v npm &> /dev/null; then
+    echo "npm is not installed. Installing..."
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+else
+    echo "npm is already installed. Skipping installation."
+fi
+
+
+# - TPM ----
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+    # If not, clone the tpm repository
+    echo "Cloning tmux plugin manager (tpm)..."
+    git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+else
+    echo "tmux plugin manager (tpm) already exists. Skipping clone."
+fi
+
+

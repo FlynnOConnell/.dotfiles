@@ -11,8 +11,6 @@
       recursive: true
 
 - link:
-
-    # General configs ----
     ~/.gitconfig:
       path: .gitconfig
     ~/.bashrc:
@@ -23,12 +21,17 @@
       path: .zshrc
     ~/.zsh_profile:
       path: .zsh_profile
+
     ~/.config/tmux:
       path: .config/tmux
     ~/.config/vim:
       path: .config/vim
     ~/.config/nvim:
       path: .config/nvim
+
+    ~/.local/bin/:
+      path: .local/bin/*
+      glob: true
 
     # Linux configs ----
     ~/.Xmodmap:
@@ -69,4 +72,6 @@
       if: '[ `uname` = Linux ]'
 
 - shell:
-  - ./scripts/install_tpm.sh
+  - command: .local/bin/install
+    stdout: true
+    description: install packages/repos
