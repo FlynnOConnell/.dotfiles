@@ -1,0 +1,80 @@
+- defaults:
+    link:
+      relink: true
+      create: true
+      force: true
+
+- clean: ['~']
+
+- clean:
+    ~/:
+    ~/.config:
+      recursive: true
+
+- link:
+
+    # General configs ----
+    ~/.gitconfig:
+      path: .gitconfig
+    ~/fonts:
+      path: fonts
+    ~/.bashrc:
+      path: .bashrc
+    ~/.bash_history:
+      path: .bash_history
+    ~/.zshrc:
+      path: .zshrc
+    ~/.zsh_profile:
+      path: .zsh_profile
+    ~/.config/tmux:
+      path: .config/tmux
+    ~/.config/vim:
+      path: .config/vim
+    ~/.config/nvim:
+      path: .config/nvim
+
+    # Linux configs ----
+    ~/.icons:
+      path: .icons
+      if: '[ `uname` = Linux ]'
+    ~/.Xmodmap:
+      path: .Xmodmap
+      if: '[ `uname` = Linux ]'
+    ~/.config/gtk-2.0:
+      path: .config/gtk-2.0
+      if: '[ `uname` = Linux ]'
+    ~/.config/gtk-3.0:
+      path: .config/gtk-3.0
+      if: '[ `uname` = Linux ]'
+    ~/.config/i3:
+      path: .config/i3
+      if: '[ `uname` = Linux ]'
+    ~/.config/bottom:
+      path: .config/bottom
+      if: '[ `uname` = Linux ]'
+    ~/.config/lazygit:
+      path: .config/lazygit
+      if: '[ `uname` = Linux ]'
+    ~/.config/polybar:
+      path: .config/polybar
+      if: '[ `uname` = Linux ]'
+    ~/.config/rofi:
+      path: .config/rofi
+      if: '[ `uname` = Linux ]'
+    ~/.config/flameshot:
+      path: .config/flameshot
+      if: '[ `uname` = Linux ]'
+    ~/.config/dunst:
+      path: .config/dunst
+      if: '[ `uname` = Linux ]'
+    ~/.config/neofetch:
+      path: .config/neofetch
+      if: '[ `uname` = Linux ]'
+    ~/.config/picom:
+      path: .config/picom
+      if: '[ `uname` = Linux ]'
+
+- shell:
+  - [chsh -s $(which zsh), Making zsh the default shell]
+  - [git submodule update --init --recursive, Installing submodules]
+  - ./scripts/install_tpm.sh

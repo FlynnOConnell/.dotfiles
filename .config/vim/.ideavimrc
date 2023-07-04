@@ -1,0 +1,83 @@
+"" source your .vimrc
+"source ~/.vimrc
+
+""" plugins  --------------------------------
+set surround
+"gcc to comment out a line
+set commentary
+set relativenumber
+set number
+set incsearch
+set showmode
+
+"python auto-indent
+filetype plugin indent on
+set smartindent
+" show existing tab with 4 spaces width
+set tabstop=4
+" when indenting with '>', use 4 spaces width
+set shiftwidth=4
+" on pressing tab, insert 4 spaces
+set expandtab
+"methods of classes are folded, but internals arent
+set foldnestmax=2
+set foldmethod=indent
+
+set clipboard+=unnamed
+set clipboard+=ideaputnnoremap \e :e ~/.ideavimrc<CR>
+nnoremap \r :action IdeaVim.ReloadVimRc.reload<CR>
+
+" Normal Mode Navigation --------------------------------"
+nnoremap <cr> zz
+nnoremap <c-d> <c-d>zz
+nnoremap <c-u> <c-u>zz
+xnoremap <leader>p <+p>
+nnoremap <leader>y <+y>
+nnoremap <leader>dd "_dd
+imap <S-SPACE> <ESC>
+vnoremap <S-SPACE> <ESC>
+
+"move between splits"
+nmap <c-h> <c-w>h
+nmap <c-l> <c-w>l
+
+nmap j jzz
+nmap k kzz
+nnoremap n nzz
+nnoremap n nzz
+nnoremap N Nzz
+"keep selection after indent/outdent"
+vnoremap < <gv
+vnoremap > >gv
+
+" Window Navigation --------------------------------"
+nnoremap [[ :action MethodUp<CR>
+nnoremap ]] :action MethodDown<CR>
+
+nnoremap <c-t> :action ActivateTerminalToolWindow<CR>
+nnoremap <c-p> :action ActivatePythonConsole<CR>
+nnoremap <c-\> :action SplitVertically<CR>
+nnoremap <c--> :action SplitHorizontally<CR>
+nnoremap <c-=> :action Unsplit<CR>
+
+nnoremap <s-TAB> :action NextTab<CR>
+nnoremap <c-m> :action MoveEditorToOppositeTabGroup<CR>
+nnoremap <Leader>en :action EditSourceInNewWindow<CR>
+
+""" action --------------------------------
+"debugging"
+
+nnoremap ,r :action ContextRun<CR>
+nnoremap ,u :action Rerun<CR>
+nnoremap ,s :action Stop<CR>
+nnoremap ,d :action Debug<CR>
+nnoremap ,c :action Continue<CR>
+nnoremap ,i :action StepInto<CR>
+nnoremap ,o :action StepOver<CR>
+nnoremap ,p :action StepOut<CR>
+nnoremap ,b :action ToggleLineBreakpoint<CR>
+nnoremap ,n :action GotoNextBreakpoint<CR>
+nnoremap ,m :action GotoPreviousBreakpoint<CR>
+
+" find more examples here: https://jb.gg/share-ideavimrc
+set ideajoin
