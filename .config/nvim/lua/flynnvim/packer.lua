@@ -7,20 +7,15 @@ return require('packer').startup(function(use)
     use { "folke/which-key.nvim" }
     use 'roxma/vim-tmux-clipboard'
     use { "christoomey/vim-tmux-navigator" }
-    use({
-        'projekt0n/github-nvim-theme',
-        config = function()
-            require('github-theme').setup({
-                palettes = {
-                    github_dark_high_contrast = {
-                        bg1 = '#0F111A',
-                    },
-                },
-            })
-
-            vim.cmd('colorscheme github_dark_high_contrast')
-        end
-    })
+    use { "catppuccin/nvim", as = "catppuccin",
+    config=function() require("catppuccin").setup({
+        flavor = "mocha",
+        background = {dark="mocha"},
+        integrations = {
+            cmp = true,
+            telescope = true,
+        }
+    }) end }
 
     use {
         'nvim-lualine/lualine.nvim',
