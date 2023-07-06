@@ -19,7 +19,6 @@ vim.keymap.set("n", "<leader>Y", [["+Y]])
 vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
 vim.keymap.set("n", "<leader>bo", "<cmd>%bd|e#<cr>")
 vim.keymap.set("i", "kj", "<Esc>")
-vim.keymap.set("v", "kj", "<Esc>")
 
 vim.keymap.set("n", "Q", "<nop>")
 vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
@@ -42,6 +41,7 @@ vim.keymap.set('n', '<leader>|', ':vsplit<CR>', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>_', ':split<CR>', {noremap = true, silent = true})
 
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 
 -- QUICK ROUTING TO DIRS -------
 vim.keymap.set("n", "<leader>Gon", "<cmd>e ~/.config/nvim/<CR>"); -- go nvim

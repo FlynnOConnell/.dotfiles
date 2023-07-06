@@ -1,8 +1,6 @@
 [global]
     ### Display ###
-    monitor = 0
-	follow = keyboard
-
+    monitor = 1
 
     ### Geometry ###
     width = (0, 300)
@@ -46,7 +44,7 @@
 
     # Sort messages by urgency.
     sort = yes
- 
+
 
     ### Text ###
     font = ShureTechMono Nerd Font 11

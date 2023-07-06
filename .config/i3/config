@@ -4,7 +4,6 @@
 
 set $mod Mod1
 
-
 for_window [class=".*"] border pixel 0
 gaps inner 13
 gaps outer 6
@@ -14,34 +13,13 @@ font pango:Jetbrains Mono 9
 
 # Autostart
 exec_always --no-startup-id xrandr --output DP-2 --rate 143.91 --mode 2560x1440 --left-of DP-4 --output DP-4 --rotate left --mode 1920x1080 --rate 60.0
-exec_always --no-startup-id nitrogen --restore
-exec --no-startup-id dunst -config "/home/$USER/.config/dunst/dunstrc"
-exec_always --no-startup-id $HOME/.config/polybar/scripts/polybarstart.sh
-exec_always --no-startup-id picom
-exec --no-startup-id "xset r rate 300 50"
-exec --no-startup-id "xset m 1/1 4"
+exec_always --no-startup-id nitrogen --set-zoom-fill --head=0 "/home/$USER/wallpapers/lost-in-space_1.png"
+exec_always --no-startup-id nitrogen --set-zoom-fill --head=1 --random "/home/$USER/wallpapers/vert/purpmount.jpg"
+exec_always --no-startup-id picom --config /home/$USER/.config/picom/picom.conf
+exec_always --no-startup-id /home/$USER/.config/polybar/scripts/polybarstart.sh
 
-# Remap Caps-Lock left to Control
-exec --no-startup-id "xmodmap ~/.Xmodmap"
-
-exec --no-startup-id dex --autostart --environment i3
-# Workspace 1 on left monitor, the rest on the right monitor
-assign [class="(?i)kitty"] 1
-assign [class="(?i)navigator"] 3
-
-exec --no-startup-id i3-msg 'workspace 1; exec kitty; workspace 2; exec firefox; workspace 3; exec firefox'
-workspace 1 output DP-2
-workspace 2 output DP-2
-workspace 3 output DP-4
-workspace 4 output DP-4
-
-# xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
-# screen before suspend. Use loginctl lock-session to lock your screen.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
-
-# NetworkManager is the most popular way to manage wireless networks on Linux,
-# and nm-applet is a desktop environment-independent system tray GUI for it.
 exec --no-startup-id nm-applet
+exec_always --no-startup-id blueman-applet
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -51,8 +29,7 @@ bindsym $mod+Ctrl+s exec "/home/$USER/.config/i3/scripts/lock.sh && systemctl su
 bindsym $mod+Ctrl+l exec "/home/$USER/.config/i3/scripts/lock.sh"
 
 # start screenshots
-bindsym Print exec --no-startup-id flameshot screen
-bindsym $mod+Print exec --no-startup-id flameshot gui
+bindsym Print  exec --no-startup-id flameshot gui -c -s
 
 # move focused window
 bindsym $mod+Shift+h move left
@@ -63,7 +40,6 @@ bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
-# bindsym $mod+Return exec kitty
 bindsym $mod+Return exec --no-startup-id kitty @ new-window || kitty
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 bindsym $mod+Shift+f exec firefox
@@ -131,9 +107,23 @@ bindsym $mod+Shift+8 move container to workspace number $ws8
 bindsym $mod+Shift+9 move container to workspace number $ws9
 bindsym $mod+Shift+0 move container to workspace number $ws10
 
+workspace "1" output --primary DP-2
+workspace "2" output --primary DP-2
+workspace "3" output DP-4
+workspace "4" output DP-4
+workspace "5" output DP-4
+workspace "6" output DP-4
+workspace "7" output DP-4
 
 for_window [class="^.*"] border pixel 1
 for_window [class="^.*"] client.focused
+
+# Start applications on specific workspaces
+assign [class="kitty"] workspace "1"
+assign [class="jetbrains-pycharm"] workspace "2"
+assign [class="firefox"] workspace "3"
+assign [class="discord"] workspace "4"
+assign [class="spotify"] workspace "4"
 
 exec_always --no-startup-id "setxkbmap -option ctrl:nocaps"
 

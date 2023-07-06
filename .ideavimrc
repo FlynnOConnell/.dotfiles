@@ -1,0 +1,81 @@
+""" Map leader to space ---------------------
+let mapleader=" "
+
+""" Plugins  --------------------------------
+set surround
+set commentary
+set NERDTree
+set highlightedyank
+set quickscope
+
+""" Plugin settings -------------------------
+let g:NerdTreeFocus
+let g:NerdTreeFocusOnVimOpen=1
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+
+""" Common settings -------------------------
+set showmode
+set so=5
+set incsearch
+set nu
+set relativenumber
+
+""" Idea specific settings ------------------
+set ideajoin
+set ideastatusicon=gray
+
+""" Mappings --------------------------------
+map <leader>z <Action>(ToggleDistractionFreeMode)
+nnoremap <leader>pv :NERDTreeFocus<CR>
+
+map <leader>J <Action>(MoveLineDown)
+map <leader>K <Action>(MoveLineUp)
+map <leader>j :action GotoNextError<CR>
+map <leader>k :action GotoPreviousError<CR>
+
+map J mzJ`z
+map j jzz
+map k kzz
+
+map <C-d> <C-d>zz
+map <C-u> <C-u>zz
+map n nzzzv
+map N Nzzzv
+
+map <C-w> <Action>(CloseActiveTab)
+map <C-f> <Action>(Find)
+
+" -- tabs
+map <C-1> 1gt
+map <C-2> 2gt
+map <C-3> 3gt
+map <C-4> 4gt
+map <C-5> 5gt
+map <C-n> <Action>(NextTab)
+map <C-p> <Action>(PreviousTab)
+
+map gh <Action>(ShowErrorDescription)
+
+map <leader>p ["_dP]
+map <leader>y ["+y]
+map <leader>Y ["+Y]
+
+map <leader>d ["_d]
+imap kj <Esc>
+
+noremap <C-L> <C-W><C-L>
+noremap <C-H> <C-W><C-H>
+
+map <leader>| :vsplit<CR>
+map <leader>_ :split<CR>
+
+" Original mappings from provided example
+map ,d :action Debug<CR>
+map ,r <Action>(RenameElement)
+map ,c <Action>(Stop)
+
+map <leader>h <Action>(Vcs.ShowTabbedFileHistory)
+map <S-Space> <Action>(GotoNextError)
+
+map <leader>b <Action>(ToggleLineBreakpoint)
+map <leader>o <Action>(FileStructurePopup)

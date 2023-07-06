@@ -1,11 +1,12 @@
 echo "Reading .zshrc file..."
-ZSH_THEME="steeef"
+source ~/.zsh_profile
 
+bindkey -s ^f "tmux-sessionizer\n"
+
+ZSH_THEME="steeef"
 # ---------------------------------------------------------------------------------
 # Path Configuration --------------------------------------------------------------
 # ---------------------------------------------------------------------------------
-export TMPATH="$XDG_CONFIG_HOME/TMUX"
-export ANACONDA_HOME="$HOME/.local/anaconda3"
 export PATH="$HOME/.cargo/bin:$HOME/.local/anaconda3/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 # Source environment files
@@ -33,21 +34,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-
-# ---------------------------------------------------------------------------------
-# Conda initialize ----------------------------------------------------------------
-# ---------------------------------------------------------------------------------
-
-__conda_setup="$('$ANACONDA_HOME/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "$ANACONDA_HOME/etc/profile.d/conda.sh" ]; then
-        . "$ANACONDA_HOME/etc/profile.d/conda.sh"
-    fi
-fi
-unset __conda_setup
-
 # ---------------------------------------------------------------------------------
 # Tmux ----------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------
@@ -67,6 +53,23 @@ if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
     git clone https://github.com/tmux-plugins/tpm.git ~/.tmux/plugins/tpm
 fi
 
+# connect to tmux session named "main" on startup as base
+if command -v tmux &> /dev/null; then
+  # Check if we are already inside a tmux session
+  if [ -z "$TMUX" ]; then
+    # Check if the "main" session already exists
+    if ! tmux has-session -t main &> /dev/null; then
+      # Create a new session named "main"
+      tmux new-session -s main -d
+    fi
+
+    # Attach to the "main" session
+    tmux attach-session -t main
+  else
+    echo "Please run this script outside of a tmux session."
+  fi
+fi
+
 # ---------------------------------------------------------------------------------
 # User Configuration / Aliases ----------------------------------------------------
 # ---------------------------------------------------------------------------------
@@ -76,9 +79,11 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias ~="cd ~"
+
 alias cdz="cd ~/.zshrc"
 alias cdt="cd ~/.config/tmux/tmux.conf"
 alias cddot="cd ~/repos/.dotfiles/"
+alias cddotc="cd ~/repos/.dotfiles/.config"
 alias cdi3="cd ~/.config/i3/config"
 alias cdn="cd ~/.config/nvim/"
 alias cdnr="cd ~/.config/nvim/lua/flynnvim/remap.lua"
@@ -91,6 +96,7 @@ alias cdna="cd ~/.config/nvim/after/plugin"
 alias goz="nvim ~/.zshrc"
 alias got="nvim ~/.config/tmux/tmux.conf"
 alias godot="nvim ~/repos/.dotfiles/"
+alias godotc="nvim ~/repos/.dotfiles/.config"
 alias goi3="nvim ~/.config/i3/config"
 alias gon="nvim ~/.config/nvim/"
 alias gonr="nvim ~/.config/nvim/lua/flynnvim/remap.lua"
@@ -99,6 +105,14 @@ alias gonp="nvim ~/.config/nvim/lua/flynnvim/packer.lua"
 alias gons="nvim ~/.config/nvim/lua/flynnvim/set.lua"
 alias gona="nvim ~/.config/nvim/after/plugin"
 
+
+# Check if zsh-completions is installed
+if [ ! -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions" ]; then
+    # Clone zsh-completions
+    git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+fi
+
+fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 
 # - Source --------
 alias sz="source ~/.zshrc"
@@ -136,3 +150,19 @@ function myip() {
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/flynn/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/flynn/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/flynn/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/flynn/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+

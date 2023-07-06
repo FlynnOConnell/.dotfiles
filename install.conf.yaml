@@ -21,7 +21,8 @@
       path: .zshrc
     ~/.zsh_profile:
       path: .zsh_profile
-
+    ~/.ideavimrc:
+      path: .ideavimrc
     ~/.config/tmux:
       path: .config/tmux
     ~/.config/vim:

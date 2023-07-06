@@ -9,12 +9,4 @@ export CXX="clang++-12"
 export PYTHONBREAKPOINT="pudb.set_trace"
 
 export GIT_EDITOR=$VIM
-export DENO_INSTALL="$HOME/.deno"
-export DOTFILES=$HOME/.dotfiles
-
-
-cat1Line() {
-    cat $1 | tr -d "\n"
-}
-
 
