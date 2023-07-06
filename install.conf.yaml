@@ -11,8 +11,6 @@
       recursive: true
 
 - link:
-    ~/.xsettingsd:
-      path: .xsettingsd
     ~/.gitconfig:
       path: .gitconfig
     ~/.bashrc:
@@ -31,15 +29,21 @@
       path: .config/vim
     ~/.config/nvim:
       path: .config/nvim
-
+    ~/.config/lazygit:
+      path: .config/lazygit
     ~/.local/bin/:
       path: .local/bin/*
       glob: true
-
     # Linux configs ----
     ~/.Xmodmap:
       path: .Xmodmap
       if: '[ `uname` = Linux ]'
+    ~/.fonts:
+      path: .fonts
+    ~/.icons:
+      path: .icons
+    ~/.xsettingsd:
+      path: .xsettingsd
     ~/.config/gtk-2.0:
       path: .config/gtk-2.0
       if: '[ `uname` = Linux ]'
@@ -51,9 +55,6 @@
       if: '[ `uname` = Linux ]'
     ~/.config/bottom:
       path: .config/bottom
-      if: '[ `uname` = Linux ]'
-    ~/.config/lazygit:
-      path: .config/lazygit
       if: '[ `uname` = Linux ]'
     ~/.config/polybar:
       path: .config/polybar
