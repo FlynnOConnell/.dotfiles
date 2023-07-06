@@ -126,8 +126,8 @@ assign [class="discord"] workspace "4"
 assign [class="spotify"] workspace "4"
 
 exec_always --no-startup-id "setxkbmap -option ctrl:nocaps"
+exec_always --nostartup-id "xsettingsd" & exec_always --no-startup-id "xsetroot -cursor_name left_ptr"
 
-# resize window (you can also use the mouse for that)
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
 

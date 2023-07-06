@@ -11,6 +11,8 @@
       recursive: true
 
 - link:
+    ~/.xsettingsd:
+      path: .xsettingsd
     ~/.gitconfig:
       path: .gitconfig
     ~/.bashrc:
