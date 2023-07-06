@@ -65,8 +65,6 @@ if command -v tmux &> /dev/null; then
 
     # Attach to the "main" session
     tmux attach-session -t main
-  else
-    echo "Please run this script outside of a tmux session."
   fi
 fi
 
@@ -74,7 +72,6 @@ fi
 # User Configuration / Aliases ----------------------------------------------------
 # ---------------------------------------------------------------------------------
 
-alias nvim="nvim ."
 
 # - Navigation -
 alias ..="cd .."

@@ -42,7 +42,6 @@ map <C-u> <C-u>zz
 map n nzzzv
 map N Nzzzv
 
-map <C-w> <Action>(CloseActiveTab)
 map <C-f> <Action>(Find)
 
 " -- tabs
@@ -53,8 +52,10 @@ map <C-4> 4gt
 map <C-5> 5gt
 map <C-n> <Action>(NextTab)
 map <C-p> <Action>(PreviousTab)
+map <C-w> <Action>(CloseActiveTab)
 
 map gh <Action>(ShowErrorDescription)
+map gi <Action>(GotoImplementation)
 map <leader>h <Action>(QuickJavaDoc)
 
 map <leader>p ["_dP]
@@ -70,21 +71,17 @@ noremap <C-H> <C-W><C-H>
 map <leader>| :vsplit<CR>
 map <leader>_ :split<CR>
 
-" github functionality"
-map <leader>gc <Action>(Commit)
-map <leader>gp <Action>(Push)
-map <leader>gl <Action>(Pull)
-map <leader>gb <Action>(Branches)
-map <leader>gd <Action>(Diff)
-map <leader>gs <Action>(Status)
+" open terminal"
+map <leader>c :action DebugConsole<CR>
 
 " Original mappings from provided example
+map ,r <Action>(run)<CR>
 map ,d <Action>(Debug)<CR>
-map ,r <Action>(RenameElement)
+map ,R <Action>(Rerun)<CR>
+
+map <leader>e <Action>(ExecuteInPyConsoleAction)<CR>
 map ,c <Action>(Stop)
 map ,b <Action>(ToggleLineBreakpoint)
-map ,B <Action>(ToggleMethodBreakpoint)
-map ,m <Action>(ToggleFieldBreakpoint)
 map ,n <Action>(MuteBreakpoints)
 map ,s <Action>(StepOver)
 map ,i <Action>(StepInto)

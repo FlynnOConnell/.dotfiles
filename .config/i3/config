@@ -9,7 +9,7 @@ gaps inner 13
 gaps outer 6
 smart_borders on
 
-font pango:Jetbrains Mono 9
+font pango:Jetbrains Mono 10
 
 # Autostart
 exec_always --no-startup-id xrandr --output DP-2 --rate 143.91 --mode 2560x1440 --left-of DP-4 --output DP-4 --rotate left --mode 1920x1080 --rate 60.0
@@ -17,6 +17,7 @@ exec_always --no-startup-id nitrogen --set-zoom-fill --head=0 "/home/$USER/wallp
 exec_always --no-startup-id nitrogen --set-zoom-fill --head=1 --random "/home/$USER/wallpapers/vert/purpmount.jpg"
 exec_always --no-startup-id picom --config /home/$USER/.config/picom/picom.conf
 exec_always --no-startup-id /home/$USER/.config/polybar/scripts/polybarstart.sh
+exec --no-startup-id xrdb -merge ~/.Xresources
 
 exec --no-startup-id nm-applet
 exec_always --no-startup-id blueman-applet
@@ -126,7 +127,7 @@ assign [class="discord"] workspace "4"
 assign [class="spotify"] workspace "4"
 
 exec_always --no-startup-id "setxkbmap -option ctrl:nocaps"
-exec_always --nostartup-id "xsettingsd" & exec_always --no-startup-id "xsetroot -cursor_name left_ptr"
+exec_always --no-startup-id "xsettingsd"
 
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
