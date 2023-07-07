@@ -9,8 +9,6 @@ set highlightedyank
 set quickscope
 
 """ Plugin settings -------------------------
-let g:NerdTreeFocus
-let g:NerdTreeFocusOnVimOpen=1
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
 """ Common settings -------------------------
@@ -26,7 +24,7 @@ set ideastatusicon=gray
 
 """ Mappings --------------------------------
 map <leader>z <Action>(ToggleDistractionFreeMode)
-nnoremap <leader>pv :NERDTreeFocus<CR>
+nnoremap <leader>pv :NERDTreeToggle<CR>
 
 map <leader>J <Action>(MoveLineDown)
 map <leader>K <Action>(MoveLineUp)
@@ -52,10 +50,14 @@ map <C-4> 4gt
 map <C-5> 5gt
 map <C-n> <Action>(NextTab)
 map <C-p> <Action>(PreviousTab)
-map <C-w> <Action>(CloseActiveTab)
+map <leader>q <Action>(CloseContent)
 
+map <C-j> <Action>(EditorEnter)
 map gh <Action>(ShowErrorDescription)
 map gi <Action>(GotoImplementation)
+map gd <Action>(GotoDeclaration)
+" rename "
+map gr <Action>(RenameElement)
 map <leader>h <Action>(QuickJavaDoc)
 
 map <leader>p ["_dP]
@@ -75,14 +77,16 @@ map <leader>_ :split<CR>
 map <leader>c :action DebugConsole<CR>
 
 " Original mappings from provided example
-map ,r <Action>(run)<CR>
-map ,d <Action>(Debug)<CR>
-map ,R <Action>(Rerun)<CR>
+map ,r <Action>(Run)
+map ,d <Action>(Debug)
+map ,R <Action>(Rerun)
 
-map <leader>e <Action>(ExecuteInPyConsoleAction)<CR>
+map <leader>e <Action>(ExecuteInPyConsoleAction)
 map ,c <Action>(Stop)
 map ,b <Action>(ToggleLineBreakpoint)
 map ,n <Action>(MuteBreakpoints)
+" show all breakpoints"
+map ,a <Action>(ViewBreakpoints)
 map ,s <Action>(StepOver)
 map ,i <Action>(StepInto)
 map ,o <Action>(StepOut)

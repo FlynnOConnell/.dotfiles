@@ -13,8 +13,7 @@ font pango:Jetbrains Mono 10
 
 # Autostart
 exec_always --no-startup-id xrandr --output DP-2 --rate 143.91 --mode 2560x1440 --left-of DP-4 --output DP-4 --rotate left --mode 1920x1080 --rate 60.0
-exec_always --no-startup-id nitrogen --set-zoom-fill --head=0 "/home/$USER/wallpapers/lost-in-space_1.png"
-exec_always --no-startup-id nitrogen --set-zoom-fill --head=1 --random "/home/$USER/wallpapers/vert/purpmount.jpg"
+exec_always nitrogen --restore
 exec_always --no-startup-id picom --config /home/$USER/.config/picom/picom.conf
 exec_always --no-startup-id /home/$USER/.config/polybar/scripts/polybarstart.sh
 exec --no-startup-id xrdb -merge ~/.Xresources
