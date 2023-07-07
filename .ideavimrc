@@ -8,6 +8,10 @@ set NERDTree
 set highlightedyank
 set quickscope
 
+""" Handlers --------------------------------
+sethandler <C-C> v-i:ide n:vim
+sethandler <C-V> v-i:ide n:vim
+
 """ Plugin settings -------------------------
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
@@ -56,6 +60,10 @@ map <C-j> <Action>(EditorEnter)
 map gh <Action>(ShowErrorDescription)
 map gi <Action>(GotoImplementation)
 map gd <Action>(GotoDeclaration)
+
+" open ~/.ideavimrc"
+map <leader>ev :e ~/.ideavimrc<CR>
+
 " rename "
 map gr <Action>(RenameElement)
 map <leader>h <Action>(QuickJavaDoc)
@@ -70,8 +78,8 @@ imap kj <Esc>
 noremap <C-L> <C-W><C-L>
 noremap <C-H> <C-W><C-H>
 
-map <leader>| :vsplit<CR>
-map <leader>_ :split<CR>
+map <leader>\ <Action>(SplitVertically)
+map <leader>- <Action>(SplitHorizontally)
 
 " open terminal"
 map <leader>c :action DebugConsole<CR>
