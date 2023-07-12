@@ -192,3 +192,5 @@ case "$(uname -s)" in
      fi
      ;;
 esac
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

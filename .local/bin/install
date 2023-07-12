@@ -1,5 +1,8 @@
 #!/bin/bash
 
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
+
 # - Kitty ----
 if ! command -v kitty &> /dev/null; then
     echo "kitty terminal emulator is not installed. Installing..."
@@ -7,8 +10,6 @@ if ! command -v kitty &> /dev/null; then
 else
     echo "kitty terminal emulator is already installed. Skipping installation."
 fi
-
-
 
 # - Node ----
 if ! command -v npm &> /dev/null; then
@@ -29,4 +30,4 @@ else
     echo "tmux plugin manager (tpm) already exists. Skipping clone."
 fi
 
-
+chmod +x $HOME/.local/bin/tmux-sessionizer
