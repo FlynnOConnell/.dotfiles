@@ -28,7 +28,6 @@ nnoremap <c-u> <c-u>zz
 xnoremap <leader>p <+p>
 nnoremap <leader>y <+y>
 nnoremap <leader>dd "_dd
-vnoremap <S-SPACE> <ESC>
 imap kj <ESC>
 
 "move between splits"
@@ -43,3 +42,6 @@ nnoremap N Nzz
 "keep selection after indent/outdent"
 vnoremap < <gv
 vnoremap > >gv
+
+" Chezmoi apply
+autocmd BufWritePost ~/.local/share/chezmoi/* ! chezmoi apply --source-path "%"
