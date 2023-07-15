@@ -11,6 +11,9 @@
       recursive: true
 
 - link:
+    ~/wallpapers:
+      path: wallpapers
+
     ~/.gitconfig:
       path: .gitconfig
     ~/.bashrc:
