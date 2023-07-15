@@ -130,13 +130,7 @@ alias gb="git branch"
 alias gc="git commit"
 alias gd="git diff"
 
-alias pushconfig="cd ~/repos/.dotfiles; git add .; git commit -m 'Updated dotfiles'; git push"
-
-# # Start tmux session if it doesn't exist, otherwise attach to the previous session named "main"
-# tmux source ~/.config/tmux/tmux.conf
-# if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
-#   exec tmux new-session -A -s main
-# fi
+alias pushconfig='f() { cd ~/repos/.dotfiles; git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
 
 function myip() {
     ifconfig lo0 | grep 'inet ' | sed -e 's/:/ /' | awk '{print "lo0       : " $2}'

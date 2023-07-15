@@ -17,7 +17,7 @@ exec_always nitrogen --restore
 exec_always --no-startup-id picom --config /home/$USER/.config/picom/picom.conf
 exec_always --no-startup-id /home/$USER/.config/polybar/scripts/polybarstart.sh
 exec --no-startup-id xrdb -merge ~/.Xresources
-
+exec --no-startup-id /home/$USER/.local/bin/set-wallpaper
 exec --no-startup-id nm-applet
 exec_always --no-startup-id blueman-applet
 
