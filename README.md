@@ -7,7 +7,7 @@ A set of dotfiles and install scripts. I have two primary goals:
 ## Tools
 
 - [dotbot](https://github.com/anishathalye/dotbot)
-- [13 desktop environment](https://i3wm.org/)
+- [i3 desktop environment](https://i3wm.org/)
 - [kitty terminal emulator](https://sw.kovidgoyal.net/kitty/)
 - [zsh shell + oh-my-zsh](https://ohmyz.sh/)
 - [tmux + tmux-sessionizer + tpm](https://github.com/tmux/tmux/wiki)
