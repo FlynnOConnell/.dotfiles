@@ -13,7 +13,6 @@
 - link:
     ~/wallpapers:
       path: wallpapers
-
     ~/.gitconfig:
       path: .gitconfig
     ~/.bashrc:
@@ -37,6 +36,8 @@
     ~/.local/bin/:
       path: .local/bin/*
       glob: true
+    ~/.config/neofetch:
+      path: .config/neofetch
 
     # Linux configs ----
     ~/.Xmodmap:
@@ -44,10 +45,13 @@
       if: '[ `uname` = Linux ]'
     ~/.fonts:
       path: .fonts
+      if: '[ `uname` = Linux ] '
     ~/.icons:
       path: .icons
+      if: '[ `uname` = Linux ] '
     ~/.xsettingsd:
       path: .xsettingsd
+      if: '[ `uname` = Linux ] '
     ~/.config/gtk-2.0:
       path: .config/gtk-2.0
       if: '[ `uname` = Linux ]'
@@ -71,9 +75,6 @@
       if: '[ `uname` = Linux ]'
     ~/.config/dunst:
       path: .config/dunst
-      if: '[ `uname` = Linux ]'
-    ~/.config/neofetch:
-      path: .config/neofetch
       if: '[ `uname` = Linux ]'
     ~/.config/picom:
       path: .config/picom

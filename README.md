@@ -1,7 +1,7 @@
 # dotfiles
 
 A set of dotfiles and install scripts. I have two primary goals:
-- Uniquitous platform independent installation (MacOS, Linux, Windows)
+- Uniquitous platform independent installation (MacOS, Linux, Windows, WSL2)
 - No external dependencies, click and go
 
 ## Tools
