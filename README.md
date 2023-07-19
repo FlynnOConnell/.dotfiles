@@ -4,6 +4,8 @@ A set of dotfiles and install scripts. I have two primary goals:
 - Uniquitous platform independent installation (MacOS, Linux, Windows, WSL2)
 - No external dependencies, click and go
 
+Linux, macOS, and WSL2 can all be ran with the install script. With windows, this led to too much trouble than it was worth so instead these configs can be applied manually through powershell scripts running the install.bat file. 
+
 ## Tools
 
 - [dotbot](https://github.com/anishathalye/dotbot)
