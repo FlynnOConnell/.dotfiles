@@ -11,11 +11,11 @@
       recursive: true
 
 - link:
-    ~/wallpapers:
+    ~\wallpapers:
       path: wallpapers
-    ~/.gitconfig:
+    ~\.gitconfig:
       path: .gitconfig
-    ~/.bashrc:
+    ~\.bashrc:
       path: .bashrc
     ~/.bash_history:
       path: .bash_history
