@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Define the font name
+font_name="JetBrainsMono"
+
+# Define the download URL
+font_url="https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${font_name}.zip"
+
+# Determine OS type
+case "$(uname -s)" in
+    Linux*)     os=linux;;
+    Darwin*)    os=mac;;
+    CYGWIN*)    os=windows;;
+    MINGW*)     os=windows;;
+    *)          os=unknown
+esac
+
+if [ "$os" = "windows" ]; then
+    echo "This script is not designed to run on Windows. Please manually install the font."
+    exit 1
+fi
+
+# Define the fonts directory depending on the OS
+if [ "$os" = "mac" ]; then
+    font_dir=~/Library/Fonts
+else
+    font_dir=~/.local/share/fonts
+fi
+
+# Create a temporary directory
+temp_dir=$(mktemp -d)
+
+# Download the font to the temporary directory
+curl -L "$font_url" -o "${temp_dir}/${font_name}.zip"
+
+# Unzip the downloaded file
+unzip "${temp_dir}/${font_name}.zip" -d "$temp_dir"
+
+# Copy the font files to the local fonts directory excluding the "NL" variants
+mkdir -p $font_dir
+find "$temp_dir" -iname '*.ttf' ! -iname '*NL*' -exec cp {} $font_dir/ \;
+
+# Reset the font cache
+fc-cache -f -v
+
+# Remove the temporary directory
+rm -rf "$temp_dir"
+
+echo "Font installed successfully"
+
