@@ -2,8 +2,76 @@ echo "Reading .zshrc file..."
 source ~/.zsh_profile
 
 bindkey -s ^f "tmux-sessionizer\n"
+echo "cntrl-f to open tmux sessionizer"
 
 ZSH_THEME="steeef"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# ---------------------------------------------------------------------------------
+# Helper Functions ----------------------------------------------------------------
+# ---------------------------------------------------------------------------------
+
+function myip() {
+    ifconfig lo0 | grep 'inet ' | sed -e 's/:/ /' | awk '{print "lo0       : " $2}'
+	ifconfig en0 | grep 'inet ' | sed -e 's/:/ /' | awk '{print "en0 (IPv4): " $2 " " $3 " " $4 " " $5 " " $6}'
+	ifconfig en0 | grep 'inet6 ' | sed -e 's/ / /' | awk '{print "en0 (IPv6): " $2 " " $3 " " $4 " " $5 " " $6}'
+	ifconfig en1 | grep 'inet ' | sed -e 's/:/ /' | awk '{print "en1 (IPv4): " $2 " " $3 " " $4 " " $5 " " $6}'
+	ifconfig en1 | grep 'inet6 ' | sed -e 's/ / /' | awk '{print "en1 (IPv6): " $2 " " $3 " " $4 " " $5 " " $6}'
+}
+
+get_os() {
+  case "$(uname -s)" in
+    Linux*)     echo "linux";;
+    Darwin*)    echo "macos";;
+    CYGWIN*)    echo "windows";;
+    MINGW*)     echo "windows";;
+    MSYS*)      echo "windows";;
+    *)          echo "unknown"
+  esac
+}
+
+os=$(get_os)
+
+case "$os" in
+  "macos")
+    __conda_setup="$('/Users/flynnoconnell/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+      eval "$__conda_setup"
+    else
+      if [ -f "/Users/flynnoconnell/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/Users/flynnoconnell/miniconda3/etc/profile.d/conda.sh"
+      else
+        export PATH="/Users/flynnoconnell/miniconda3/bin:$PATH"
+      fi
+    fi
+    ;;
+  "linux")
+    __conda_setup="$('/home/flynn/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+      eval "$__conda_setup"
+    else
+      if [ -f "/home/flynn/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/flynn/miniconda3/etc/profile.d/conda.sh"
+      else
+        export PATH="/home/flynn/miniconda3/bin:$PATH"
+      fi
+    fi
+    ;;
+  "windows")
+    __conda_setup="$('C:/Users/flynn/miniconda3/Scripts/conda' 'shell.bash' 'hook' 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+      eval "$__conda_setup"
+    else
+      if [ -f "C:/Users/flynn/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "C:/Users/flynn/miniconda3/etc/profile.d/conda.sh"
+      else
+        export PATH="C:/Users/flynn/miniconda3/Scripts:$PATH"
+      fi
+    fi
+    ;;
+esac
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 
 # ---------------------------------------------------------------------------------
@@ -106,6 +174,9 @@ alias cdna="cd ~/.config/nvim/after/plugin"
 # - Nvim To File ----
 alias goz="nvim ~/.zshrc"
 alias got="nvim ~/.config/tmux/tmux.conf"
+alias gos="nvim ~/.config/skhd/skhdrc"
+alias gok="nvim ~/.config/kitty/kitty.conf"
+alias goy="nvim ~/.config/yabai/yabairc"
 alias godot="nvim ~/repos/.dotfiles/"
 alias godotc="nvim ~/repos/.dotfiles/.config"
 alias goi3="nvim ~/.config/i3/config"
@@ -119,6 +190,8 @@ alias gona="nvim ~/.config/nvim/after/plugin"
 # - Source --------
 alias sz="source ~/.zshrc"
 alias st="tmux source ~/.config/tmux/tmux.conf"
+alias sy="yabai --restart-service"
+alias ss="skhd --reload"
 
 # - List --------
 alias ll="ls -lah"
@@ -137,79 +210,5 @@ alias pushconfig='f() { cd ~/repos/.dotfiles; git add .; echo "Enter commit mess
 
 alias push='f() { git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
 
-# ---------------------------------------------------------------------------------
-# Miniconda -----------------------------------------------------------------------
-# ---------------------------------------------------------------------------------
 
-case "$(uname -s)" in
-   Darwin)
-     __conda_setup="$('/Users/flynnoconnell/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-     if [ $? -eq 0 ]; then
-         eval "$__conda_setup"
-     else
-         if [ -f "/Users/flynnoconnell/miniconda3/etc/profile.d/conda.sh" ]; then
-             . "/Users/flynnoconnell/miniconda3/etc/profile.d/conda.sh"
-         else
-             export PATH="/Users/flynnoconnell/miniconda3/bin:$PATH"
-         fi
-     fi
-     ;;get_os() {
-  case "$(uname -s)" in
-    Linux*)     echo "linux";;
-    Darwin*)    echo "macos";;
-    CYGWIN*)    echo "windows";;
-    MINGW*)     echo "windows";;
-    MSYS*)      echo "windows";;
-    *)          echo "unknown"
-  esac
-}
-   Linux)
-     __conda_setup="$('/home/flynn/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-     if [ $? -eq 0 ]; then
-         eval "$__conda_setup"
-     else
-         if [ -f "/home/flynn/miniconda3/etc/profile.d/conda.sh" ]; then
-             . "/home/flynn/miniconda3/etc/profile.d/conda.sh"
-         else
-             export PATH="/home/flynn/miniconda3/bin:$PATH"
-         fi
-     fi
-     ;;
-   CYGWIN*|MINGW32*|MSYS*|MINGW*)
-     __conda_setup="$('C:/Users/flynn/miniconda3/Scripts/conda' 'shell.bash' 'hook' 2> /dev/null)"
-     if [ $? -eq 0 ]; then
-         eval "$__conda_setup"
-     else
-         if [ -f "C:/Users/flynn/miniconda3/etc/profile.d/conda.sh" ]; then
-             . "C:/Users/flynn/miniconda3/etc/profile.d/conda.sh"
-         else
-             export PATH="C:/Users/flynn/miniconda3/Scripts:$PATH"
-         fi
-     fi
-     ;;
-esac
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# ---------------------------------------------------------------------------------
-# Helper Functions ----------------------------------------------------------------
-# ---------------------------------------------------------------------------------
-
-function myip() {
-    ifconfig lo0 | grep 'inet ' | sed -e 's/:/ /' | awk '{print "lo0       : " $2}'
-	ifconfig en0 | grep 'inet ' | sed -e 's/:/ /' | awk '{print "en0 (IPv4): " $2 " " $3 " " $4 " " $5 " " $6}'
-	ifconfig en0 | grep 'inet6 ' | sed -e 's/ / /' | awk '{print "en0 (IPv6): " $2 " " $3 " " $4 " " $5 " " $6}'
-	ifconfig en1 | grep 'inet ' | sed -e 's/:/ /' | awk '{print "en1 (IPv4): " $2 " " $3 " " $4 " " $5 " " $6}'
-	ifconfig en1 | grep 'inet6 ' | sed -e 's/ / /' | awk '{print "en1 (IPv6): " $2 " " $3 " " $4 " " $5 " " $6}'
-}
-
-get_os() {
-  case "$(uname -s)" in
-    Linux*)     echo "linux";;
-    Darwin*)    echo "macos";;
-    CYGWIN*)    echo "windows";;
-    MINGW*)     echo "windows";;
-    MSYS*)      echo "windows";;
-    *)          echo "unknown"
-  esac
-}
