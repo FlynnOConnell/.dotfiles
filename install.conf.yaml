@@ -12,35 +12,37 @@
 
 - link:
     ~/.dotfiles:
-      path: ..
-    ~/gitconfig:
-      path: dots/.gitconfig
+      path: .
     ~/.bashrc:
       path: dots/.bashrc
-    ~/.bash_history:
-      path: dots/.bash_history
-    ~/.zshrc:
-      path: dots/.zshrc
-    ~/.zsh_profile:
-      path: dots/.zsh_profile
     ~/.ideavimrc:
       path: dots/.ideavimrc
-    ~/.config/tmux:
-      path: dots/.config/tmux
     ~/.config/vim:
       path: dots/.config/vim
-    ~/.config/nvim:
-      path: dots/.config/nvim
     ~/.config/lazygit:
       path: dots/.config/lazygit
-    ~/.local/bin/:
-      path: dots/.local/bin/*
-      glob: true
+    ~/.local:
+      path: dots/.local
     ~/.config/neofetch:
       path: dots/.config/neofetch
     ~/.config/kitty:
       path: dots/.config/kitty
-    # macOS configs ----
+
+    # Non-Windows Configs ---
+    ~/.config/nvim:
+      path: dots/.config/nvim
+      if: '[ `uname` != MINGW* ]'
+    ~/.zshrc:
+      path: dots/.zshrc
+      if: '[ `uname` != MINGW* ]'
+    ~/.zsh_profile:
+      path: dots/.zsh_profile
+      if: '[ `uname` != MINGW* ]'
+    ~/.config/tmux:
+      path: dots/.config/tmux
+      if: '[ `uname` != MINGW* ]'
+
+    # macOS configs ---
     ~/.config/yabai:
       path: dots/.config/yabai
     ~/.config/sketchybar:
@@ -48,7 +50,15 @@
     ~/.config/skhd:
       path: dots/.config/skhd
 
-    # Linux configs ----
+    # Windows Configs ---
+    ~/.config/komorebi:
+      path: dots/.config/komorebi
+    ~/.config/wkhdrc:
+      path: dots/.config/whkd/whkdrc
+    ~/AppData/local/nvim:
+      path: dots/.config/nvim
+
+    # Linux configs ---
     ~/.Xmodmap:
       path: .Xmodmap
       if: '[ `uname` = Linux ]'
@@ -90,6 +100,12 @@
       if: '[ `uname` = Linux ]'
 
 - shell:
-  - command: .local/bin/install
+  - command: scripts/install
     stdout: true
     description: install packages/repos
+  - command: scripts/install-fonts
+    stdout: true
+    description: install fonts
+  - command: scripts/set-wallpaper
+    stdout: true
+    description: set wallpaper
