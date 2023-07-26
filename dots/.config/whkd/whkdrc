@@ -8,7 +8,7 @@ ctrl + shift + r         : komorebic reload-configuration
 # app shortcuts - these require shell to be pwsh / powershell
 # the apps will be focused if open, or launched if not open
 # alt + f               : if ($wshell.AppActivate('Firefox') -eq $False) { start firefox }
-ctrl + shift + return   : wt # windows terminal 
+ctrl + shift + return   : wt # windows terminal
 ctrl + shift + c        : code # vscode
 ctrl + shift + s        : spotify # spotify
 
@@ -57,15 +57,16 @@ alt + p     			: komorebic cycle-move-to-workspace previous
 alt + n    				: komorebic cycle-move-to-workspace next
 
 # workspaces
-alt + 1          : komorebic focus-workspace 0
-alt + 2          : komorebic focus-workspace 1
-alt + 3          : komorebic focus-workspace 2
-alt + 4          : komorebic focus-workspace 3
-alt + 5          : komorebic focus-workspace 4
-alt + 6          : komorebic focus-workspace 5
-alt + 7          : komorebic focus-workspace 6
-alt + 8          : komorebic focus-workspace 7
-alt + 9          : komorebic focus-workspace 8
+# alt + 1          : komorebic focus-workspace main
+# alt + 2          : komorebic focus-workspace code
+# alt + 3          : komorebic focus-workspace ref
+# alt + 4          : komorebic focus-workspace other
+
+alt + keysym_1 : komorebic workspace-focus DISPLAY1 main
+alt + keysym_2 : komorebic workspace-focus DISPLAY2 code
+alt + keysym_3 : komorebic workspace-focus DISPLAY2 ref
+alt + keysym_4 : komorebic workspace-focus DISPLAY2 other
+
 
 ctrl + alt + left       : komorebic cycle-workspace previous
 ctrl + alt + right      : komorebic cycle-workspace next
