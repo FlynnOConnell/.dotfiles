@@ -3,37 +3,14 @@
 # 1Password
 komorebic.exe float-rule exe "1Password.exe"
 
-# Ableton Live
-# Targets VST2 windows
-komorebic.exe float-rule class "AbletonVstPlugClass"
-# Targets VST3 windows
-komorebic.exe float-rule class "Vst3PlugWindow"
-
-# Adobe Creative Cloud
-# If you have disabled minimize/close to tray for this application, you can delete/comment out the next line
-komorebic.exe identify-tray-application class "CreativeCloudDesktopWindowClass"
 
 # Adobe Photoshop
 komorebic.exe identify-border-overflow-application class "Photoshop"
-
-# ArmCord
-komorebic.exe identify-border-overflow-application exe "ArmCord.exe"
-# If you have disabled minimize/close to tray for this application, you can delete/comment out the next line
-komorebic.exe identify-tray-application exe "ArmCord.exe"
 
 # AutoHotkey
 # If you have disabled minimize/close to tray for this application, you can delete/comment out the next line
 komorebic.exe identify-tray-application exe "AutoHotkeyU64.exe"
 komorebic.exe float-rule title "Window Spy"
-
-# Beeper
-komorebic.exe identify-border-overflow-application exe "Beeper.exe"
-# If you have disabled minimize/close to tray for this application, you can delete/comment out the next line
-komorebic.exe identify-tray-application exe "Beeper.exe"
-
-# Bitwarden
-# If you have disabled minimize/close to tray for this application, you can delete/comment out the next line
-komorebic.exe identify-tray-application exe "Bitwarden.exe"
 
 # Bloxstrap
 komorebic.exe float-rule exe "Bloxstrap.exe"

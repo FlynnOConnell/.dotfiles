@@ -46,20 +46,7 @@ else
     handle:close()
 end
 
-if system_name == "Windows" then
-    vim.g.clipboard = {
-        name = 'WslClipboard',
-        copy = {
-            ['+'] = '/mnt/c/Windows/System32/clip.exe',
-            ['*'] = '/mnt/c/Windows/System32/clip.exe',
-        },
-        paste = {
-            ['+'] = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-            ['*'] = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-        },
-        cache_enabled = 0,
-    }
-elseif system_name == "Darwin" then
+if system_name == "Darwin" then
     -- Configurations for MacOS
     vim.g.clipboard = {
         name = 'macOS-clipboard',
