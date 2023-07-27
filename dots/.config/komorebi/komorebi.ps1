@@ -4,7 +4,6 @@ if (!(Get-Process whkd -ErrorAction SilentlyContinue))
 }
 
 . $PSScriptRoot\komorebi.generated.ps1
-. $PSScriptRoot\komorebi.window-rules.ps1
 . $PSScriptRoot\komorebi.workspaces.ps1
 
 # Send the ALT key whenever changing focus to force focus changes
@@ -17,14 +16,12 @@ komorebic cross-monitor-move-behaviour insert
 komorebic watch-configuration enable
 
 # Configure the invisible border dimensions
-komorebic invisible-borders 7 0 14 7
-
-# Uncomment the next lines if you want a visual border around the active window
-komorebic active-window-border-colour 138 173 244 --window-kind single
-# komorebic active-window-border-colour 256 165 66 --window-kind stack
+komorebic invisible-borders 7 0 10 7
 komorebic active-window-border enable
+komorebic active-window-border-colour 180 190 254 --window-kind single
+komorebic active-window-border-colour 238 75 43 --window-kind stack
+komorebic active-window-border-colour 255 255 50 --window-kind monocle
 
 # enable focus following the mouse
 komorebic toggle-focus-follows-mouse --implementation komorebi
-
 komorebic complete-configuration
