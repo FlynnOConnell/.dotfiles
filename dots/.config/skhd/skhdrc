@@ -46,5 +46,6 @@ shift + lalt - 4 : SPACES=($(yabai -m query --displays --display | jq '.spaces[]
                   && yabai -m window --space $SPACES[4] \
                   && sketchybar --trigger windows_on_spaces
 
-# open a new instance of kitty with alt - enter
-alt - enter : open -a kitty
+cmd + shift - space : yabai -m window --toggle float;\
+          yabai -m window --grid 5:5:1:1:3:3
+
