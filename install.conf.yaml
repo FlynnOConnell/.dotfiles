@@ -11,18 +11,29 @@
       recursive: true
 
 - link:
-    ~/.dotfiles:
-      path: .
+    ~/.local:
+      path: dots/.local
     ~/.bashrc:
       path: dots/.bashrc
     ~/.ideavimrc:
       path: dots/.ideavimrc
+    ~/.zshrc:
+      path: dots/.zshrc
+      if: '[ `uname` != MINGW* ]'
+    ~/.zsh_profile:
+      path: dots/.zsh_profile
+      if: '[ `uname` != MINGW* ]'
+
     ~/.config/vim:
       path: dots/.config/vim
+    ~/.config/spicetify:
+      path: dots/.config/spicetify
+    ~/.config/BetterDiscord:
+      path: dots/.config/BetterDiscord
+    ~/.config/github-copilot:
+      path: dots/.config/github-copilot
     ~/.config/lazygit:
       path: dots/.config/lazygit
-    ~/.local:
-      path: dots/.local
     ~/.config/neofetch:
       path: dots/.config/neofetch
     ~/.config/kitty:
@@ -31,12 +42,6 @@
     # Non-Windows Configs ---
     ~/.config/nvim:
       path: dots/.config/nvim
-      if: '[ `uname` != MINGW* ]'
-    ~/.zshrc:
-      path: dots/.zshrc
-      if: '[ `uname` != MINGW* ]'
-    ~/.zsh_profile:
-      path: dots/.zsh_profile
       if: '[ `uname` != MINGW* ]'
     ~/.config/tmux:
       path: dots/.config/tmux
