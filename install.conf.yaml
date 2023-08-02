@@ -19,10 +19,6 @@
       path: dots/.ideavimrc
     ~/.zshrc:
       path: dots/.zshrc
-      if: '[ `uname` != MINGW* ]'
-    ~/.zsh_profile:
-      path: dots/.zsh_profile
-      if: '[ `uname` != MINGW* ]'
 
     ~/.config/vim:
       path: dots/.config/vim
@@ -42,18 +38,19 @@
     # Non-Windows Configs ---
     ~/.config/nvim:
       path: dots/.config/nvim
-      if: '[ `uname` != MINGW* ]'
     ~/.config/tmux:
       path: dots/.config/tmux
-      if: '[ `uname` != MINGW* ]'
 
     # macOS configs ---
     ~/.config/yabai:
       path: dots/.config/yabai
+      if: '[ `uname` = Darwin ]'
     ~/.config/sketchybar:
       path: dots/.config/sketchybar
+      if: '[ `uname` = Darwin ]'
     ~/.config/skhd:
       path: dots/.config/skhd
+      if: '[ `uname` = Darwin ]'
 
     # Windows Configs ---
     ~/.config/komorebi:
@@ -104,13 +101,3 @@
       path: .config/picom
       if: '[ `uname` = Linux ]'
 
-- shell:
-  - command: scripts/install
-    stdout: true
-    description: install packages/repos
-  - command: scripts/install-fonts
-    stdout: true
-    description: install fonts
-  - command: scripts/set-wallpaper
-    stdout: true
-    description: set wallpaper
