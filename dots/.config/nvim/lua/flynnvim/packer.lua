@@ -73,6 +73,7 @@ return require('packer').startup(function(use)
             require('crates').setup()
         end,
     }
+    use ("tpope/vim-vinegar")
     use ("tpope/vim-surround")
     use ("tpope/vim-commentary")
     use ("tpope/vim-fugitive")
