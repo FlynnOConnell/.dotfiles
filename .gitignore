@@ -1,3 +1,6 @@
 .DS_Store
 wallpapers/
 fonts/
+# Don't want packer plugins to be included
+**/pack/**/start/*
+
