@@ -1,6 +1,7 @@
 lastupdatecheck: 0
 recentrepos:
-- /Users/flynnoconnell/repos/.dotfiles
+- /home/flynnoconnell/repos/fluke
 startuppopupversion: 5
 customcommandshistory: []
 hidecommandlog: true
+ignorewhitespaceindiffview: false

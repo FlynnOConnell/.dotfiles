@@ -1,6 +1,5 @@
 require("flynnvim.set")
 require("flynnvim.remap")
-require("flynnvim.maps")
 require("mason").setup()
 require("mason-lspconfig").setup()
 

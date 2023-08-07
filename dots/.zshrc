@@ -1,5 +1,4 @@
 echo "Reading .zshrc file..."
-source ~/.zsh_profile
 
 bindkey -s ^f "tmux-sessionizer\n"
 echo "cntrl-f to open tmux sessionizer"
@@ -152,6 +151,9 @@ fi
 # ---------------------------------------------------------------------------------
 # User Configuration / Aliases ----------------------------------------------------
 # ---------------------------------------------------------------------------------
+#
+
+[ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
 
 # - Navigation -
 alias ..="cd .."
