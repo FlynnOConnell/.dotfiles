@@ -1,9 +1,9 @@
 vim.cmd.packadd('packer.nvim')
 
 return require('packer').startup(function(use)
+
     use 'wbthomason/packer.nvim'
-
-
+    use 'nvim-tree/nvim-web-devicons'
     use { "folke/which-key.nvim" }
     use 'roxma/vim-tmux-clipboard'
     use { "christoomey/vim-tmux-navigator" }
@@ -22,7 +22,7 @@ return require('packer').startup(function(use)
         requires = { 'nvim-tree/nvim-web-devicons', opt = true },
         config = function()
             require('lualine').setup({
-                options = { theme = "gruvbox-material" },
+                options = { theme = "auto" },
                 sections = {
                     lualine_a = {
                         {
@@ -53,7 +53,7 @@ return require('packer').startup(function(use)
         "folke/trouble.nvim",
         config = function()
             require("trouble").setup {
-                icons=false
+                icons=true
             }
         end
     })
@@ -81,7 +81,27 @@ return require('packer').startup(function(use)
     use("theprimeagen/harpoon")
     use("mbbill/undotree")
 
-    use { "williamboman/mason.nvim", "williamboman/mason-lspconfig.nvim" }
+    use { "williamboman/mason.nvim"}
+    use {
+        "williamboman/mason-lspconfig.nvim",
+        config = function()
+            require("mason-lspconfig").setup({
+                ensure_installed = {
+                    "bashls",
+                    "cssls",
+                    "eslint",
+                    "html",
+                    "jsonls",
+                    "lua_ls",
+                    "rust_analyzer",
+                    "tsserver",
+                    'dockerls',
+                    'docker_compose_language_service',
+                    'dotls',
+                },
+            })
+        end,
+    }
 
     use { "simrat39/rust-tools.nvim" }
     use { "neovim/nvim-lspconfig" }
@@ -105,8 +125,8 @@ return require('packer').startup(function(use)
                     end,
                 },
                 mapping = {
-                    ['<C-p>'] = cmp.mapping.select_prev_item(),
-                    ['<C-n>'] = cmp.mapping.select_next_item(),
+                    ['<C-j>'] = cmp.mapping.select_prev_item(),
+                    ['<C-k>'] = cmp.mapping.select_next_item(),
                     ['<C-y>'] = cmp.mapping.confirm({
                         behavior = cmp.ConfirmBehavior.Replace,
                         select = true,

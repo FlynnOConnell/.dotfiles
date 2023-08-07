@@ -1,5 +1,18 @@
 local nvim_lsp = require('lspconfig')
-local servers = { 'rust_analyzer', 'bashls', 'pyright' }
+local servers = {
+                    "bashls",
+                    "cssls",
+                    "eslint",
+                    "html",
+                    "jsonls",
+                    "lua_ls",
+                    "rust_analyzer",
+                    "tsserver",
+                    'docker_compose_language_service',
+                    'dockerls',
+                    'dotls',
+                }
+
 local on_attach = function(_, bufnr)
     local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
     local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
@@ -15,7 +28,6 @@ local on_attach = function(_, bufnr)
     buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
     buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
     buf_set_keymap('n', 'gc', '<cmd>lua vim.lsp.buf.code_action()<CR>', {noremap=true, silent=false})
-    buf_set_keymap('n', 'gk', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
 
     buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
 
@@ -29,8 +41,8 @@ local on_attach = function(_, bufnr)
     buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.setloclist()<CR>', opts)
     buf_set_keymap('n', '<leader>ce', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
 
-    buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-    buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+    buf_set_keymap('n', '<leader>]', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+    buf_set_keymap('n', '<leader>[', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
 end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -50,13 +62,27 @@ require('rust-tools').setup({
     }
 })
 
-for _, lsp in ipairs(servers) do
-    nvim_lsp[lsp].setup {
+for _, server in ipairs(servers) do
+    nvim_lsp[server].setup {
         on_attach = on_attach,
         capabilities = capabilities,
+        handlers = {
+            ["textDocument/publishDiagnostics"] = vim.lsp.with(
+                vim.lsp.diagnostic.on_publish_diagnostics, {
+                    -- Disable virtual text
+                    virtual_text = false,
+                    -- Enable signs
+                    signs = true,
+                    -- Enable underline
+                    underline = true,
+
+                    -- Enable diagnostics pop-up on hover
+                    update_in_insert = false,
+                }
+            ),
+        },
     }
 end
-
 local wk = require("which-key")
 
 wk.setup {}
@@ -64,7 +90,7 @@ wk.setup {}
 wk.register({
     ["<leader>"] = {
         g = {
-            name = "+GoBuff",
+            name = "+LSP",
             D = "Go to Declaration",
             d = "Go to Definition",
             i = "Go to Implementation",
@@ -83,8 +109,6 @@ wk.register({
     ["r"] = "Buff-rename",
     ["O"] = "Open Diagnostic Float",
     ["ce"] = "Show Line Diagnostics",
-    ["[d"] = "Go to Previous Diagnostic",
-    ["]d"] = "Go to Next Diagnostic",
     gc = "Code Action",
     K = "Hover",
     f = "format document",
