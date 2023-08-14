@@ -79,7 +79,7 @@ esac
 mkdir -p "$HOME/.local/bin"
 export PATH="$HOME/.cargo/bin:$HOME/.local/anaconda3/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-export NVM_DIR="$HOME/.nvm"
+export PATH="$HOME/bin/:$PATH"
 
 # ---------------------------------------------------------------------------------
 # Oh My Zsh Configuration ---------------------------------------------------------
