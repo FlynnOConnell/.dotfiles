@@ -9,3 +9,4 @@ fonts/
 **/nvim/state/**
 **/nvim/telescope_history
 **/nvim/rplugin.vim
+**/mason/**/*
