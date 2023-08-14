@@ -1,1 +1,1 @@
-require("flynnvim")
+require("myvim")
