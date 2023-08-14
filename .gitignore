@@ -10,3 +10,5 @@ fonts/
 **/nvim/telescope_history
 **/nvim/rplugin.vim
 **/mason/**/*
+dots/.local/state/nvim
+dots/.local/share/nvim
