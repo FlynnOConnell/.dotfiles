@@ -11,15 +11,14 @@
       recursive: true
 
 - link:
-    ~/.local:
-      path: dots/.local
+    ~/.local/bin/tmux-sessionizer:
+      path: dots/.local/bin/tmux-sessionizer
     ~/.bashrc:
       path: dots/.bashrc
     ~/.ideavimrc:
       path: dots/.ideavimrc
     ~/.zshrc:
       path: dots/.zshrc
-
     ~/.config/vim:
       path: dots/.config/vim
     ~/.config/spicetify:
