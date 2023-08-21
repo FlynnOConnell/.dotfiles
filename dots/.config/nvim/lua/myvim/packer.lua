@@ -350,6 +350,8 @@ use {
 
 use { "simrat39/rust-tools.nvim" }
 use { "neovim/nvim-lspconfig" }
+use('jose-elias-alvarez/null-ls.nvim')
+use('MunifTanjim/prettier.nvim')
 
 use {
     'hrsh7th/nvim-cmp',
@@ -387,16 +389,6 @@ use {
         })
     end
 }
-use("folke/zen-mode.nvim")
-use {
-	    "zbirenbaum/copilot.lua", -- Pure lua replacement for copilot.vim
-		event = { "VimEnter" },
-	    config = function ()
-	    	vim.defer_fn(function () -- Defer loading Copilot until nvim has already started
-	    	    require("copilot").setup()
-	    	end, 100)
-	    end,
-	}
 
 end)
 
