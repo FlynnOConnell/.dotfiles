@@ -3,9 +3,6 @@
 # 1Password
 komorebic.exe float-rule exe "1Password.exe"
 
-# 1Password
-komorebic.exe float-rule exe "explorer.exe"
-
 # Adobe Photoshop
 komorebic.exe identify-border-overflow-application class "Photoshop"
 
