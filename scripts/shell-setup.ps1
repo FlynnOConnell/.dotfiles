@@ -287,7 +287,6 @@ if ($HomeWorkstation) {
     Remove-Variable -Name "Scoop"
     $Scoop = @(
         "ffmpeg",
-        "obs-studio",
 )
     foreach ($item in $Scoop) {
         Install-ScoopApp -Package "$item"
@@ -306,9 +305,7 @@ $WinGet = @(
     "GoLang.Go.1.19",
     "CPUID.HWMonitor",
     "Google.Chrome",
-    "Lexikos.AutoHotkey",
     "RARLab.WinRAR",
-    "Starship.Starship"
     )
 foreach ($item in $WinGet) {
     Install-WinGetApp -PackageID "$item"
@@ -320,7 +317,6 @@ if ($HomeWorkstation) {
     $WinGet = @(
         "Discord.Discord",
         "Plex.Plex",
-        "PointPlanck.FileBot",
         "CPUID.CPU-Z",
         "TechPowerUp.GPU-Z",
         "Valve.Steam"
@@ -333,18 +329,6 @@ if ($HomeWorkstation) {
 # Custom WinGet install for VSCode
 winget install Microsoft.VisualStudioCode --override '/SILENT /mergetasks="!runcode,addcontextmenufiles,addcontextmenufolders"'
 
-# Install Chocolatey Packages
-$Choco = @(
-    "syspin",
-    "sd-card-formatter",
-    "winimage",
-    "winsetupfromusb",
-    "fluidsynth"
-)
-
-foreach ($item in $Choco) {
-    Install-ChocoApp -Package "$item"
-}
 
 # Create scoop-tray shortcut in shell:startup
 if (!(Test-Path -Path "$Env:AppData\Microsoft\Windows\Start Menu\Programs\Startup\scoop-tray.lnk" -PathType Leaf)) {
@@ -365,36 +349,6 @@ if (!(Test-Path -Path "$Env:UserProfile\go\" -PathType Container)) {
     New-Item -Path "${Env:UserProfile}\go" -ItemType Directory | Out-Null
     [System.Environment]::SetEnvironmentVariable('GOPATH', "${Env:UserProfile}\go", 'USER')
 }
-
-# Pin Run to Taskbar
-#Start-Process -FilePath "PowerShell" -ArgumentList "syspin","'$Env:AppData\Microsoft\Windows\Start Menu\Programs\System Tools\Run.lnk'","c:5386" -Wait -NoNewWindow
-# Pin Google Chrome to Taskbar
-Write-Verbose -Message "Pin Google Chrome to Taskbar..."
-Start-Process -FilePath "PowerShell" -ArgumentList "syspin","'$Env:ProgramData\Microsoft\Windows\Start Menu\Programs\Google Chrome.lnk'","c:5386" -Wait -NoNewWindow
-
-# Install my PowerShell dot files
-if (!(Test-Path -Path "$Env:UserProfile\dotposh" -PathType Container)) {
-    Write-Verbose -Message "Install my PowerShell dot files..."
-    Start-Process -FilePath "PowerShell" -ArgumentList "git","clone","https://github.com/mikepruett3/dotposh.git","$Env:UserProfile\dotposh" -Wait -NoNewWindow
-@'
-New-Item -Path $Env:UserProfile\Documents\WindowsPowerShell -ItemType Directory -ErrorAction Ignore
-Remove-Item -Path $Env:UserProfile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1 -Force
-New-Item -Path $Env:UserProfile\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1 -ItemType SymbolicLink -Target $Env:UserProfile\dotposh\profile.ps1
-'@ > $Env:Temp\dotposh.ps1
-    Start-Process -FilePath "PowerShell" -ArgumentList "$Env:Temp\dotposh.ps1" -Verb RunAs -Wait -WindowStyle Hidden
-    Remove-Item -Path $Env:Temp\dotposh.ps1 -Force
-@'
-cd $Env:UserProfile\dotposh
-git submodule init
-git submodule update
-'@ > $Env:Temp\submodule.ps1
-    Start-Process -FilePath "PowerShell" -ArgumentList "$Env:Temp\submodule.ps1" -Wait -NoNewWindow
-    Remove-Item -Path $Env:Temp\submodule.ps1 -Force
-}
-
-# Pin PowerShell to Taskbar
-Write-Verbose -Message "Pin PowerShell to Taskbar..."
-Start-Process -FilePath "PowerShell" -ArgumentList "syspin","'$Env:AppData\Microsoft\Windows\Start Menu\Programs\Windows PowerShell\Windows PowerShell.lnk'","c:5386" -Wait -NoNewWindow
 
 # Install PowerShell 7
 $PS7 = winget list --exact -q Microsoft.PowerShell

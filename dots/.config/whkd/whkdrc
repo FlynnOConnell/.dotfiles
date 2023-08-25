@@ -25,11 +25,8 @@ alt + oem_4             : komorebic cycle-stack previous # oem_4 is [
 alt + oem_6             : komorebic cycle-stack next # oem_6 is ]
 
 # workspaces
-alt + 1          : komorebic focus-workspace I
-alt + 2          : komorebic focus-workspace II
-alt + 3          : komorebic focus-workspace III
-alt + 4          : komorebic focus-workspace IV
-alt + 5          : komorebic focus-workspace V
+alt + 1          : komorebic focus-workspace 0
+alt + 2          : komorebic focus-workspace 1
 
 alt + shift + o : taskkill /f /im whkd.exe && Start-Process whkd -WindowStyle hidden
 # move windows
@@ -37,7 +34,6 @@ alt + shift + h         : komorebic move left
 alt + shift + j         : komorebic move down
 alt + shift + k         : komorebic move up
 alt + shift + l         : komorebic move right
-alt + shift + return    : komorebic promote
 alt + shift + b         : komorebic workspace-layout bsp
 alt + shift + s         : komorebic workspace-layout stack-horizontal
 alt + shift + v         : komorebic workspace-layout stack-vertical

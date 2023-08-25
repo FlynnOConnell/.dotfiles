@@ -3,6 +3,8 @@
 # 1Password
 komorebic.exe float-rule exe "1Password.exe"
 
+# 1Password
+komorebic.exe float-rule exe "explorer.exe"
 
 # Adobe Photoshop
 komorebic.exe identify-border-overflow-application class "Photoshop"
@@ -38,6 +40,10 @@ komorebic.exe identify-border-overflow-application exe "Discord.exe"
 # If you have disabled minimize/close to tray for this application, you can delete/comment out the next line
 komorebic.exe identify-tray-application exe "Discord.exe"
 
+# Discord
+komorebic.exe identify-border-overflow-application exe "BetterDiscord.exe"
+# If you have disabled minimize/close to tray for this application, you can delete/comment out the next line
+komorebic.exe identify-tray-application exe "BetterDiscord.exe"
 # DiscordCanary
 komorebic.exe identify-border-overflow-application exe "DiscordCanary.exe"
 # If you have disabled minimize/close to tray for this application, you can delete/comment out the next line

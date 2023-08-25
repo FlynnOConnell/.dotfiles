@@ -1,9 +1,4 @@
 #!/usr/bin/env bash
-#
-# ░█▀▀░▀█▀░█▀▄░█▀▀░█▀▀░█▀█░█░█░░░█▀▀░█▀█░█▀█░█▀▀░▀█▀░█▀▀
-# ░█▀▀░░█░░█▀▄░█▀▀░█▀▀░█░█░▄▀▄░░░█░░░█░█░█░█░█▀▀░░█░░█░█
-# ░▀░░░▀▀▀░▀░▀░▀▀▀░▀░░░▀▀▀░▀░▀░░░▀▀▀░▀▀▀░▀░▀░▀░░░▀▀▀░▀▀▀SCRIPT_DIR="$(git rev-parse --show-toplevel)"
-#
 SCRIPTS_DIR="$SCRIPT_DIR"/scripts
 DOTS_DIR="$SCRIPT_DIR"/dots
 
@@ -43,16 +38,8 @@ install_config() {
 		message "Firefox user profile directory located..."
 		backup_dir="${FF_USER_PROFILE}-backup"
 
-		# Create backup folder
-		if [[ ! -d "${backup_dir}" ]]; then
-			message "Profile backup folder does not exist! Creating..."
-			mkdir "${backup_dir}"
-		fi
-
-		backup_files "${FF_USER_PROFILE}"/ "${backup_dir}"
-
 		if [[ $? -eq 0 ]]; then
-			copy_files "$DOTS_DIR"/shared/home/.mozilla/firefox/khaneliman.default/ "${FF_USER_PROFILE}"
+			copy_files "$DOTS_DIR"/shared/home/.mozilla/firefox/flynn.default/ "${FF_USER_PROFILE}"
 			success_message "Installed firefox config"
 		else
 			error_message "Couldn't backup existing profile. Skipping installation."

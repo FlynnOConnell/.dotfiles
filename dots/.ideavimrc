@@ -45,7 +45,6 @@ map n nzzzv
 map N Nzzzv
 
 map <C-f> <Action>(Find)
-
 " -- tabs
 map <C-1> 1gt
 map <C-2> 2gt
@@ -63,6 +62,7 @@ map gd <Action>(GotoDeclaration)
 
 " open ~/.ideavimrc"
 map <leader>ev :e ~/.ideavimrc<CR>
+:map <leader>r <Action>(ReformatCode)
 
 " rename "
 map gr <Action>(RenameElement)
