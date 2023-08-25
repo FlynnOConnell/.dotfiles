@@ -33,6 +33,10 @@
       path: dots/.config/neofetch
     ~/.config/kitty:
       path: dots/.config/kitty
+    ~/.config/btop:
+      path: dots/.config/btop
+    ~/.config/micro:
+      path: dots/.config/micro
 
     # Non-Windows Configs ---
     ~/.config/nvim:
