@@ -12,7 +12,8 @@ smart_borders on
 font pango:Jetbrains Mono 10
 
 # Autostart
-exec_always --no-startup-id xrandr --output DP-2 --rate 143.91 --mode 2560x1440 --left-of DP-4 --output DP-4 --rotate left --mode 1920x1080 --rate 60.0
+exec_always --no-startup-id xrandr --output DP-2 --primary --rate 143.91 --mode 2560x1440 --output DP-0 --rotate left --mode 1920x1080 --rate 60.0 --right-of DP-2
+
 exec_always nitrogen --restore
 exec_always --no-startup-id picom --config /home/$USER/.config/picom/picom.conf
 exec_always --no-startup-id /home/$USER/.config/polybar/scripts/polybarstart.sh
@@ -40,7 +41,6 @@ bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
-bindsym $mod+Return exec --no-startup-id kitty @ new-window || kitty
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 bindsym $mod+Shift+f exec firefox
 bindsym $mod+Shift+p exec postman
@@ -50,6 +50,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 bindsym $mod+Shift+q kill
 
+bindsym $mod+Return exec --no-startup-id kitty @ new-window || kitty
 bindsym $mod+bar split v
 bindsym $mod+minus split h
 bindsym $mod+d exec "rofi -modi drun -show drun"
@@ -118,12 +119,19 @@ workspace "7" output DP-4
 for_window [class="^.*"] border pixel 1
 for_window [class="^.*"] client.focused
 
-# Start applications on specific workspaces
+# Start applications on specific workspaces --------------------
 assign [class="kitty"] workspace "1"
+
 assign [class="jetbrains-pycharm"] workspace "2"
+for_window [class="jetbrains-pycharm"] move to workspace $ws2
+assign [class="jetbrains-pycharm"] $ws2
+assign [class="jetbrains-pycharm"] → $ws2
+for_window [class="jetbrains-pycharm"] layout tabbed
+
 assign [class="firefox"] workspace "3"
 assign [class="discord"] workspace "4"
 assign [class="spotify"] workspace "4"
+
 
 exec_always --no-startup-id "setxkbmap -option ctrl:nocaps"
 exec_always --no-startup-id "xsettingsd"

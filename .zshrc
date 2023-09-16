@@ -131,6 +131,7 @@ alias gc="git commit"
 alias gd="git diff"
 
 alias pushconfig='f() { cd ~/repos/.dotfiles; git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
+alias push='f() { git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
 
 function myip() {
     ifconfig lo0 | grep 'inet ' | sed -e 's/:/ /' | awk '{print "lo0       : " $2}'
