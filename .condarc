@@ -1,8 +1,0 @@
-
-channels:
-  - r
-  - defaults
-
-# Show channel URLs when displaying what is going to be downloaded
-# and in 'conda list'. The default is False.
-show_channel_urls: True
