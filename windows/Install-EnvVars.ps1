@@ -9,6 +9,7 @@ if (-NOT $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Adm
 
 Write-Output "Setting environment variable CONFIG_DIR..."
 [System.Environment]::SetEnvironmentVariable("CONFIG_DIR", "$Env:USERPROFILE\.config", [System.EnvironmentVariableTarget]::Machine)
+[System.Environment]::SetEnvironmentVariable("RUST_LOG", "debug", [System.EnvironmentVariableTarget]::Machine)
 Write-Output "Setting environment variable DOTS_DIR..."
 [System.Environment]::SetEnvironmentVariable("DOTS_DIR", "$Env:USERPROFILE\.dotfiles", [System.EnvironmentVariableTarget]::Machine)
 Write-Output "Setting environment variable DOTS_WINDOWS_DIR..."

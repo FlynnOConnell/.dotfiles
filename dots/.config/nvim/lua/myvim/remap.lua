@@ -15,6 +15,8 @@ vim.keymap.set("n", "ciw", [["_ciw]])
 vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
 vim.keymap.set("i", "kj", "<Esc>")
 vim.api.nvim_set_keymap('n', 'ciw', '"_ciw', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'qq', ':q<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'qa', ':qa<CR>', { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>F", vim.lsp.buf.format)
 
 vim.keymap.set('n', '<C-J>', '<C-W><C-J>', {noremap = true})
@@ -36,14 +38,7 @@ vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 
 -- QUICK ROUTING TO DIRS -------
 vim.keymap.set("n", "<leader>Gon", "<cmd>e ~/.config/nvim/<CR>"); -- go nvim
-vim.keymap.set("n", "<leader>GoNm", "<cmd>e ~/.config/nvim/lua/flynnvim/maps.lua<CR>"); -- go nvim
-vim.keymap.set("n", "<leader>GoNr", "<cmd>e ~/.config/nvim/lua/flynnvim/remap.lua<CR>"); -- go nvim
-vim.keymap.set("n", "<leader>GoNl", "<cmd>e ~/.config/nvim/lua/flynnvim/<CR>"); -- go nvim
-vim.keymap.set("n", "<leader>GoNp", "<cmd>e ~/.config/nvim/after/plugin/<CR>"); -- go nvim
-
 vim.keymap.set("n", "<leader>Gor", "<cmd>e ~/repos/<CR>"); -- go repos
-vim.keymap.set("n", "<leader>GoRf", "<cmd>e ~/repos/fluke<CR>"); -- go repos
-vim.keymap.set("n", "<leader>GoRd", "<cmd>e ~/repos/.dotfiles<CR>"); -- go repos
 vim.keymap.set("n", "<leader>Got", "<cmd>e ~/config/tmux/<CR>"); -- go tmux config
 
 local wk = require("which-key")

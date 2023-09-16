@@ -38,7 +38,7 @@ case "$os" in
       eval "$__conda_setup"
     else
       if [ -f "/Users/flynnoconnell/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/flynnoconnell/miniconda3/etc/profile.d/conda.sh"
+# . "/Users/flynnoconnell/miniconda3/etc/profile.d/conda.sh"  # commented out by conda initialize
       else
         export PATH="/Users/flynnoconnell/miniconda3/bin:$PATH"
       fi
@@ -50,7 +50,7 @@ case "$os" in
       eval "$__conda_setup"
     else
       if [ -f "/home/flynn/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/flynn/miniconda3/etc/profile.d/conda.sh"
+# . "/home/flynn/miniconda3/etc/profile.d/conda.sh"  # commented out by conda initialize
       else
         export PATH="/home/flynn/miniconda3/bin:$PATH"
       fi
@@ -62,7 +62,7 @@ case "$os" in
       eval "$__conda_setup"
     else
       if [ -f "C:/Users/flynn/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "C:/Users/flynn/miniconda3/etc/profile.d/conda.sh"
+# . "C:/Users/flynn/miniconda3/etc/profile.d/conda.sh"  # commented out by conda initialize
       else
         export PATH="C:/Users/flynn/miniconda3/Scripts:$PATH"
       fi
@@ -213,4 +213,12 @@ alias pushconfig='f() { cd ~/repos/.dotfiles; git add .; echo "Enter commit mess
 alias push='f() { git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
 
 
+
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+if [ -f '/c/Users/Flynn/mambaforge/Scripts/conda.exe' ]; then
+    eval "$('/c/Users/Flynn/mambaforge/Scripts/conda.exe' 'shell.zsh' 'hook')"
+fi
+# <<< conda initialize <<<
 

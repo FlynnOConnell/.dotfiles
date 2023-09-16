@@ -1,18 +1,31 @@
-if (!(Get-Process whkd -ErrorAction SilentlyContinue))
-{
-    Start-Process whkd -WindowStyle hidden
-}
-
 . $PSScriptRoot\komorebi.generated.ps1
-. $PSScriptRoot\komorebi.workspaces.ps1
+
+komorebic ensure-named-workspaces 0 I II III IV V VI
+komorebic ensure-named-workspaces 1 A B
+
+komorebic named-workspace-layout I bsp
+komorebic named-workspace-layout A horizontal-stack
+komorebic named-workspace-layout B horizontal-stack
+
+komorebic initial-workspace-rule exe "firefox.exe" 0 0
+
+komorebic initial-workspace-rule exe "WindowsTerminal.exe" 0 1
+komorebic initial-workspace-rule exe "OpenConsole.exe" 0 1
+komorebic initial-workspace-rule exe "OpenConsole.exe" 0 1
+komorebic initial-workspace-rule exe "pwsh.exe" 0 1
+komorebic initial-workspace-rule exe "wsl.exe" 0 1
+
+komorebic initial-workspace-rule exe "pycharm64.exe" 0 3
+komorebic initial-workspace-rule exe "pycharm64.exe" 0 3
+
+komorebic initial-workspace-rule exe "POWERPNT.exe" 0 4
+
+komorebic initial-workspace-rule exe "Discord.exe" 1 0
 
 # Send the ALT key whenever changing focus to force focus changes
 komorebic alt-focus-hack enable
-# Default to minimizing windows when switching workspaces
 komorebic window-hiding-behaviour cloak
-# Set cross-monitor move behaviour to insert instead of swap
 komorebic cross-monitor-move-behaviour insert
-# Enable hot reloading of changes to this file
 komorebic watch-configuration enable
 
 # Configure the invisible border dimensions
@@ -24,4 +37,5 @@ komorebic active-window-border-colour 255 255 50 --window-kind monocle
 
 # enable focus following the mouse
 komorebic toggle-focus-follows-mouse --implementation komorebi
+
 komorebic complete-configuration

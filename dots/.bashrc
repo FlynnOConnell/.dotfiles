@@ -111,3 +111,4 @@ if ! shopt -oq posix; then
 fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+. /c/Users/Flynn/miniconda3/etc/profile.d/conda.sh
