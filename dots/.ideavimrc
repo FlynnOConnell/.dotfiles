@@ -6,7 +6,6 @@ set surround
 set commentary
 set NERDTree
 set highlightedyank
-set quickscope
 
 """ Handlers --------------------------------
 sethandler <C-C> v-i:ide n:vim
@@ -21,58 +20,44 @@ set so=5
 set incsearch
 set nu
 set relativenumber
+set ideajoin
 
 """ Idea specific settings ------------------
-set ideajoin
 set ideastatusicon=gray
 
 """ Mappings --------------------------------
-map <leader>z <Action>(ToggleDistractionFreeMode)
 nnoremap <leader>pv :NERDTreeToggle<CR>
-
-map <leader>J <Action>(MoveLineDown)
-map <leader>K <Action>(MoveLineUp)
-map <leader>j :action GotoNextError<CR>
-map <leader>k :action GotoPreviousError<CR>
-
-map J mzJ`z
-map j jzz
-map k kzz
 
 map <C-d> <C-d>zz
 map <C-u> <C-u>zz
 map n nzzzv
 map N Nzzzv
 
-map <C-f> <Action>(Find)
 " -- tabs
 map <C-1> 1gt
 map <C-2> 2gt
 map <C-3> 3gt
 map <C-4> 4gt
 map <C-5> 5gt
-map <C-n> <Action>(NextTab)
-map <C-p> <Action>(PreviousTab)
+map <C-6> 6gt
+map <C-7> 7gt
 map <leader>q <Action>(CloseContent)
 
-map <C-j> <Action>(EditorEnter)
+nnoremap <leader>k :action GotoPreviousError<CR>
+nnoremap <leader>j :action GotoNextError<CR>
 map gh <Action>(ShowErrorDescription)
 map gi <Action>(GotoImplementation)
 map gd <Action>(GotoDeclaration)
-
-" open ~/.ideavimrc"
-map <leader>ev :e ~/.ideavimrc<CR>
-:map <leader>r <Action>(ReformatCode)
-
-" rename "
 map gr <Action>(RenameElement)
+
+map <leader>c :action DebugConsole<CR>
+map <leader>r <Action>(ReformatCode)
 map <leader>h <Action>(QuickJavaDoc)
+map <S-Space> <Action>(SmartTypeCompletion)
 
 map <leader>p ["_dP]
-map <leader>y ["+y]
-map <leader>Y ["+Y]
-
 map <leader>d ["_d]
+
 imap kj <Esc>
 
 noremap <C-L> <C-W><C-L>
@@ -81,19 +66,17 @@ noremap <C-H> <C-W><C-H>
 map <leader>\ <Action>(SplitVertically)
 map <leader>- <Action>(SplitHorizontally)
 
-" open terminal"
-map <leader>c :action DebugConsole<CR>
+map <C-k> <Action>(Tree-selectNext)
+map <C-j> <Action>(Tree-selectPrevious)
 
 " Original mappings from provided example
 map ,r <Action>(Run)
 map ,d <Action>(Debug)
 map ,R <Action>(Rerun)
 
-map <leader>e <Action>(ExecuteInPyConsoleAction)
-map ,c <Action>(Stop)
+map ,q <Action>(Stop)
 map ,b <Action>(ToggleLineBreakpoint)
 map ,n <Action>(MuteBreakpoints)
-" show all breakpoints"
 map ,a <Action>(ViewBreakpoints)
 map ,s <Action>(StepOver)
 map ,i <Action>(StepInto)
@@ -101,5 +84,10 @@ map ,o <Action>(StepOut)
 map ,u <Action>(RunToCursor)
 map ,p <Action>(Resume)
 
-map <S-Space> <Action>(GotoNextError)
-map <leader>o <Action>(FileStructurePopup)
+nnoremap [q :action PreviousOccurence<cr>
+nnoremap ]q :action NextOccurence<cr>
+nnoremap [[ :action MethodUp<cr>
+nnoremap ]] :action MethodDown<cr>
+
+" remove extra whitespace
+nmap <leader>s :%s/\s\+$<CR>

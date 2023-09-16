@@ -1,7 +1,5 @@
 .shell pwsh
 
-ctrl + shift + return   : wt # windows terminal
-
 # focus windows
 alt + h                 : komorebic focus left
 alt + j                 : komorebic focus down
@@ -10,11 +8,18 @@ alt + l                 : komorebic focus right
 alt + p                 : komorebic cycle-monitor next
 
 # manipulate windows
-alt + f                 : komorebic toggle-float
 alt + m                 : komorebic toggle-monocle
 # layouts
 alt + x                 : komorebic flip-layout horizontal
 alt + y                 : komorebic flip-layout vertical
+alt + f                 : komorebic promote
+
+alt + w                 : komorebic minimize
+alt + shift + w         : komorebic close
+
+alt + shift + m         : komorebic manage
+alt + shift + u         : komorebic unmanage
+
 # stack windows
 alt + left              : komorebic stack left
 alt + down              : komorebic stack down
@@ -32,17 +37,15 @@ alt + 4          : komorebic focus-workspace 3
 alt + 5          : komorebic focus-workspace 4
 alt + 6          : komorebic focus-workspace 5
 
-alt + shift + o : taskkill /f /im whkd.exe && Start-Process whkd -WindowStyle hidden
 # move windows
 alt + shift + h         : komorebic move left
 alt + shift + j         : komorebic move down
 alt + shift + k         : komorebic move up
 alt + shift + l         : komorebic move right
-alt + M                 : komorebic manage
 
-alt + shift + b         : komorebic workspace-layout bsp
-alt + shift + s         : komorebic workspace-layout stack-horizontal
-alt + shift + v         : komorebic workspace-layout stack-vertical
+alt + shift + b         : komorebic toggle-layout bsp
+alt + shift + s         : komorebic toggle-layout horizontal-stack
+alt + shift + f         : komorebic promote-focus
 
 alt + oem_plus          : komorebic resize-axis horizontal increase
 alt + oem_minus         : komorebic resize-axis horizontal decrease
@@ -50,8 +53,8 @@ alt + shift + oem_plus  : komorebic resize-axis vertical increase
 alt + shift + oem_minus : komorebic resize-axis vertical decrease
 
 # move windows across workspace
-shift + alt + 1        : komorebic move-to-workspace 0
-shift + alt + 2        : komorebic move-to-workspace 1
-shift + alt + 3        : komorebic move-to-workspace 2
-shift + alt + 4        : komorebic move-to-workspace 3
-
+alt + shift + 1        : komorebic move-to-workspace 0
+alt + shift + 2        : komorebic move-to-workspace 1
+alt + shift + 3        : komorebic move-to-workspace 2
+alt + shift + 4        : komorebic move-to-workspace 3
+alt + shift + 5        : komorebic move-to-workspace 4
