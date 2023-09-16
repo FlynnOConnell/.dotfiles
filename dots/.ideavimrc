@@ -1,0 +1,102 @@
+""" Map leader to space ---------------------
+let mapleader=" "
+
+""" Plugins  --------------------------------
+set surround
+set commentary
+set NERDTree
+set highlightedyank
+
+""" Handlers --------------------------------
+sethandler <C-C> v-i:ide n:vim
+sethandler <C-V> v-i:ide n:vim
+
+""" Plugin settings -------------------------
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+
+""" Common settings -------------------------
+set showmode
+set so=5
+set incsearch
+set nu
+set relativenumber
+set ideajoin
+
+""" Idea specific settings ------------------
+set ideastatusicon=gray
+
+""" Mappings --------------------------------
+map <leader>z <Action>(ToggleDistractionFreeMode)
+nnoremap \ :NERDTree<CR>
+
+map <C-d> <C-d>zz
+map <C-u> <C-u>zz
+map n nzzzv
+map N Nzzzv
+
+" -- tabs
+map <C-1> 1gt
+map <C-2> 2gt
+map <C-3> 3gt
+map <C-4> 4gt
+map <C-5> 5gt
+map <C-6> 6gt
+map <C-7> 7gt
+map <leader>q <Action>(CloseContent)
+
+nnoremap <leader>k :action GotoPreviousError<CR>
+nnoremap <leader>j :action GotoNextError<CR>
+map gh <Action>(ShowErrorDescription)
+map gi <Action>(GotoImplementation)
+map gd <Action>(GotoDeclaration)
+map gr <Action>(RenameElement)
+
+map <leader>c :action DebugConsole<CR>
+map <leader>r <Action>(ReformatCode)
+map <leader>h <Action>(QuickJavaDoc)
+map <S-Space> <Action>(SmartTypeCompletion)
+
+map <leader>p ["_dP]
+map <leader>d ["_d]
+
+imap kj <Esc>
+
+""" Window / Split Management ---------------
+noremap <C-L> <C-W><C-L>
+noremap <C-H> <C-W><C-H>
+map <leader>\ <Action>(SplitVertically)
+map <leader>- <Action>(SplitHorizontally)
+
+map <C-k> <Action>(Tree-selectNext)
+map <C-j> <Action>(Tree-selectPrevious)
+
+"dock pinned"
+map <leader>wd <Action>(DockPinned)
+map <leader>wf <Action>(Float)
+map <leader>ww <Action>(Window)
+
+"Dock Pinned: <C-d>
+"Float: <C-f>
+"Window: <C-w>
+
+""" Run/Debug --------------------------------
+map ,r <Action>(Run)
+map ,R <Action>(Rerun)
+
+map ,q <Action>(Stop)
+map ,b <Action>(ToggleLineBreakpoint)
+map ,n <Action>(MuteBreakpoints)
+map ,a <Action>(ViewBreakpoints)
+map ,s <Action>(StepOver)
+map ,i <Action>(StepInto)
+map ,o <Action>(StepOut)
+map ,u <Action>(RunToCursor)
+map ,p <Action>(Resume)
+
+nnoremap [q :action PreviousOccurence<cr>
+nnoremap ]q :action NextOccurence<cr>
+nnoremap [[ :action MethodUp<cr>
+nnoremap ]] :action MethodDown<cr>
+
+" remove extra whitespace
+nmap <leader>s :%s/\s\+$<CR>

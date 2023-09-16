@@ -11,43 +11,71 @@
       recursive: true
 
 - link:
-    ~/wallpapers:
-      path: wallpapers
-
-    ~/.gitconfig:
-      path: .gitconfig
+    ~/.local/bin/tmux-sessionizer:
+      path: dots/.local/bin/tmux-sessionizer
     ~/.bashrc:
-      path: .bashrc
-    ~/.bash_history:
-      path: .bash_history
-    ~/.zshrc:
-      path: .zshrc
-    ~/.zsh_profile:
-      path: .zsh_profile
+      path: dots/.bashrc
     ~/.ideavimrc:
-      path: .ideavimrc
-    ~/.config/tmux:
-      path: .config/tmux
+      path: dots/.ideavimrc
+    ~/.zshrc:
+      path: dots/.zshrc
     ~/.config/vim:
-      path: .config/vim
-    ~/.config/nvim:
-      path: .config/nvim
+      path: dots/.config/vim
+    ~/.config/spicetify:
+      path: dots/.config/spicetify
+    ~/.config/BetterDiscord:
+      path: dots/.config/BetterDiscord
+    ~/.config/github-copilot:
+      path: dots/.config/github-copilot
     ~/.config/lazygit:
-      path: .config/lazygit
-    ~/.local/bin/:
-      path: .local/bin/*
-      glob: true
+      path: dots/.config/lazygit
+    ~/.config/neofetch:
+      path: dots/.config/neofetch
+    ~/.config/kitty:
+      path: dots/.config/kitty
+    ~/.config/btop:
+      path: dots/.config/btop
+    ~/.config/micro:
+      path: dots/.config/micro
 
-    # Linux configs ----
+    # Non-Windows Configs ---
+    ~/.config/nvim:
+      path: dots/.config/nvim
+    ~/.config/tmux:
+      path: dots/.config/tmux
+
+    # macOS configs ---
+    ~/.config/yabai:
+      path: dots/.config/yabai
+      if: '[ `uname` = Darwin ]'
+    ~/.config/sketchybar:
+      path: dots/.config/sketchybar
+      if: '[ `uname` = Darwin ]'
+    ~/.config/skhd:
+      path: dots/.config/skhd
+      if: '[ `uname` = Darwin ]'
+
+    # Windows Configs ---
+    ~/.config/komorebi:
+      path: dots/.config/komorebi
+    ~/.config/wkhdrc:
+      path: dots/.config/whkd/whkdrc
+    ~/AppData/local/nvim:
+      path: dots/.config/nvim
+
+    # Linux configs ---
     ~/.Xmodmap:
       path: .Xmodmap
       if: '[ `uname` = Linux ]'
     ~/.fonts:
       path: .fonts
+      if: '[ `uname` = Linux ] '
     ~/.icons:
       path: .icons
+      if: '[ `uname` = Linux ] '
     ~/.xsettingsd:
       path: .xsettingsd
+      if: '[ `uname` = Linux ] '
     ~/.config/gtk-2.0:
       path: .config/gtk-2.0
       if: '[ `uname` = Linux ]'
@@ -72,14 +100,7 @@
     ~/.config/dunst:
       path: .config/dunst
       if: '[ `uname` = Linux ]'
-    ~/.config/neofetch:
-      path: .config/neofetch
-      if: '[ `uname` = Linux ]'
     ~/.config/picom:
       path: .config/picom
       if: '[ `uname` = Linux ]'
 
-- shell:
-  - command: .local/bin/install
-    stdout: true
-    description: install packages/repos
