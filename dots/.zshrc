@@ -3,6 +3,7 @@ echo "Reading .zshrc file..."
 bindkey -s ^f "tmux-sessionizer\n"
 echo "cntrl-f to open tmux sessionizer"
 
+export PATH="/Users/flynnoconnell/miniconda3/bin:$PATH"
 ZSH_THEME="steeef"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -38,7 +39,6 @@ case "$os" in
       eval "$__conda_setup"
     else
       if [ -f "/Users/flynnoconnell/miniconda3/etc/profile.d/conda.sh" ]; then
-# . "/Users/flynnoconnell/miniconda3/etc/profile.d/conda.sh"  # commented out by conda initialize
       else
         export PATH="/Users/flynnoconnell/miniconda3/bin:$PATH"
       fi
@@ -50,7 +50,6 @@ case "$os" in
       eval "$__conda_setup"
     else
       if [ -f "/home/flynn/miniconda3/etc/profile.d/conda.sh" ]; then
-# . "/home/flynn/miniconda3/etc/profile.d/conda.sh"  # commented out by conda initialize
       else
         export PATH="/home/flynn/miniconda3/bin:$PATH"
       fi
