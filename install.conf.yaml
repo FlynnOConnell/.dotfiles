@@ -71,36 +71,36 @@
       path: .fonts
       if: '[ `uname` = Linux ] '
     ~/.icons:
-      path: .icons
+      path: dots/.icons
       if: '[ `uname` = Linux ] '
     ~/.xsettingsd:
-      path: .xsettingsd
+      path: dots/.xsettingsd
       if: '[ `uname` = Linux ] '
     ~/.config/gtk-2.0:
-      path: .config/gtk-2.0
+      path: dots/.config/gtk-2.0
       if: '[ `uname` = Linux ]'
     ~/.config/gtk-3.0:
-      path: .config/gtk-3.0
+      path: dots/.config/gtk-3.0
       if: '[ `uname` = Linux ]'
     ~/.config/i3:
-      path: .config/i3
+      path: dots/.config/i3
       if: '[ `uname` = Linux ]'
     ~/.config/bottom:
-      path: .config/bottom
+      path: dots/.config/bottom
       if: '[ `uname` = Linux ]'
     ~/.config/polybar:
-      path: .config/polybar
+      path: dots/.config/polybar
       if: '[ `uname` = Linux ]'
     ~/.config/rofi:
-      path: .config/rofi
+      path: dots/.config/rofi
       if: '[ `uname` = Linux ]'
     ~/.config/flameshot:
-      path: .config/flameshot
+      path: dots/.config/flameshot
       if: '[ `uname` = Linux ]'
     ~/.config/dunst:
-      path: .config/dunst
+      path: dots/.config/dunst
       if: '[ `uname` = Linux ]'
     ~/.config/picom:
-      path: .config/picom
+      path: dots/.config/picom
       if: '[ `uname` = Linux ]'
 

@@ -15,18 +15,25 @@ sethandler <C-V> v-i:ide n:vim
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
 """ Common settings -------------------------
-set showmode
-set so=5
-set incsearch
+set so=20  " Keep 10 lines above/below cursor
 set nu
 set relativenumber
+set ideamarks " Sync marks and idea bookmarks
 set ideajoin
+set sneak
+set clipboard+=unnamed
+set ignorecase
+set smartcase
+set scrolloff=5
+set wildmenu
+set wildmode=list:longest
+set wildignore+=*/target/*,*/.idea/*,*/.git/*,*/.svn/*,*/.hg/*,*/build/*
+set guicursor=n:hor10,i:ver25
 
 """ Idea specific settings ------------------
 set ideastatusicon=gray
 
 """ Mappings --------------------------------
-map <leader>z <Action>(ToggleDistractionFreeMode)
 nnoremap \ :NERDTree<CR>
 
 map <C-d> <C-d>zz
@@ -42,24 +49,30 @@ map <C-4> 4gt
 map <C-5> 5gt
 map <C-6> 6gt
 map <C-7> 7gt
+nnoremap <C-n> :tabnext<CR>
+nnoremap <C-p> :tabprevious<CR>
+
 map <leader>q <Action>(CloseContent)
 
 nnoremap <leader>k :action GotoPreviousError<CR>
 nnoremap <leader>j :action GotoNextError<CR>
+
 map gh <Action>(ShowErrorDescription)
 map gi <Action>(GotoImplementation)
 map gd <Action>(GotoDeclaration)
 map gr <Action>(RenameElement)
 
 map <leader>c :action DebugConsole<CR>
-map <leader>r <Action>(ReformatCode)
+map <leader>r :action ReformatCode<CR>
 map <leader>h <Action>(QuickJavaDoc)
 map <S-Space> <Action>(SmartTypeCompletion)
 
 map <leader>p ["_dP]
 map <leader>d ["_d]
-
 imap kj <Esc>
+
+map <C-j> <Action>(EditorDown)
+map <C-k> <Action>(EditorUp)
 
 """ Window / Split Management ---------------
 noremap <C-L> <C-W><C-L>
@@ -67,22 +80,9 @@ noremap <C-H> <C-W><C-H>
 map <leader>\ <Action>(SplitVertically)
 map <leader>- <Action>(SplitHorizontally)
 
-map <C-k> <Action>(Tree-selectNext)
-map <C-j> <Action>(Tree-selectPrevious)
-
-"dock pinned"
-map <leader>wd <Action>(DockPinned)
-map <leader>wf <Action>(Float)
-map <leader>ww <Action>(Window)
-
-"Dock Pinned: <C-d>
-"Float: <C-f>
-"Window: <C-w>
-
 """ Run/Debug --------------------------------
 map ,r <Action>(Run)
 map ,R <Action>(Rerun)
-
 map ,q <Action>(Stop)
 map ,b <Action>(ToggleLineBreakpoint)
 map ,n <Action>(MuteBreakpoints)
@@ -90,13 +90,20 @@ map ,a <Action>(ViewBreakpoints)
 map ,s <Action>(StepOver)
 map ,i <Action>(StepInto)
 map ,o <Action>(StepOut)
-map ,u <Action>(RunToCursor)
 map ,p <Action>(Resume)
+map ,d <Action>(Debug)
 
 nnoremap [q :action PreviousOccurence<cr>
 nnoremap ]q :action NextOccurence<cr>
 nnoremap [[ :action MethodUp<cr>
 nnoremap ]] :action MethodDown<cr>
 
-" remove extra whitespace
-nmap <leader>s :%s/\s\+$<CR>
+map <leader>am <action>(ShowIntentionActions)
+map <leader>as <action>(SearchEverywhere)
+
+" File navigation
+map <leader>ff <action>(GotoFile)
+map <leader>fr <action>(RecentFiles)
+map <leader>fc <action>(FindInPath)
+map <leader><leader> <Action>(RecentFiles)
+map <leader>fs <action>(NewScratchFile)
