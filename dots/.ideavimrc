@@ -107,3 +107,4 @@ map <leader>fr <action>(RecentFiles)
 map <leader>fc <action>(FindInPath)
 map <leader><leader> <Action>(RecentFiles)
 map <leader>fs <action>(NewScratchFile)
+
