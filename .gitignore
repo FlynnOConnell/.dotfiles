@@ -1,7 +1,7 @@
 .DS_Store
 wallpapers/
 fonts/
-# Don't want packer plugins to be included
+
 **/pack/**/start/*
 **/node_modules/
 **/nvim/log
@@ -12,3 +12,5 @@ fonts/
 **/mason/**/*
 dots/.local/state/nvim
 dots/.local/share/nvim
+
+hosts.json
