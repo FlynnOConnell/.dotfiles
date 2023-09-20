@@ -110,27 +110,39 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 
 workspace "1" output --primary DP-2
 workspace "2" output --primary DP-2
-workspace "3" output DP-4
-workspace "4" output DP-4
-workspace "5" output DP-4
-workspace "6" output DP-4
-workspace "7" output DP-4
+workspace "3" output --primary DP-2
+workspace "4" output DP-0
+workspace "5" output DP-0
+workspace "6" output DP-0
+workspace "7" output DP-0
 
 for_window [class="^.*"] border pixel 1
 for_window [class="^.*"] client.focused
 
+
 # Start applications on specific workspaces --------------------
-assign [class="kitty"] workspace "1"
+workspace "1" output DP-2
+workspace "2" output DP-2
+workspace "3" output DP-2
+workspace "4" output DP-2
+workspace "5" output DP-0
+workspace "6" output DP-0
 
-assign [class="jetbrains-pycharm"] workspace "2"
-for_window [class="jetbrains-pycharm"] move to workspace $ws2
-assign [class="jetbrains-pycharm"] $ws2
-assign [class="jetbrains-pycharm"] → $ws2
-for_window [class="jetbrains-pycharm"] layout tabbed
+# App to workspace assignments
+assign [class="^firefox$"] $ws1
+for_window [class="firefox"] move to workspace $ws1
 
-assign [class="firefox"] workspace "3"
-assign [class="discord"] workspace "4"
-assign [class="spotify"] workspace "4"
+assign [class="^kitty$"] $ws2
+for_window [class="kitty"] move to workspace $ws2
+
+assign [class="^jetbrains-pycharm$"] $ws3
+for_window [class="jetbrains-pycharm"] move to workspace $ws3
+
+assign [class="^discord$"] $ws5
+for_window [class="discord"] move to workspace $ws5
+
+assign [class="^spotify$"] $ws5
+for_window [class="spotify"] move to workspace $ws5
 
 
 exec_always --no-startup-id "setxkbmap -option ctrl:nocaps"
