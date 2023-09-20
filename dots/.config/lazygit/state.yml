@@ -1,6 +1,7 @@
 lastupdatecheck: 0
 recentrepos:
-- /Users/flynnoconnell/repos/obsidian
+- /home/flynn/repos/.dotfiles
+- /home/flynn/repos/spk2py
 startuppopupversion: 5
 customcommandshistory:
 - q
