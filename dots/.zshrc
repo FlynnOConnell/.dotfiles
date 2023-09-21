@@ -213,7 +213,26 @@ alias push='f() { git add .; echo "Enter commit message: "; read message; git co
 
 alias push='f() { git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
 
+download_github_folder() {
+  # $1 = GitHub repo URL (e.g., https://github.com/numpy/numpy)
+  # $2 = Specific folder path from the root of the repo (e.g., doc/source/_templates)
 
+  # Extract the repo name from the URL
+  repo_name=$(basename $1)
+
+  # Download the entire repo as a zip file
+  wget "$1/archive/refs/heads/main.zip" -O "${repo_name}-main.zip"
+
+  # Unzip the file
+  unzip -q "${repo_name}-main.zip"
+
+  # Move the specific folder to the current working directory
+  mv "${repo_name}-main/$2" .
+
+  # Clean up: remove the downloaded zip file and the extracted repo folder
+  rm "${repo_name}-main.zip"
+  rm -r "${repo_name}-main"
+}
 
 
 # >>> conda initialize >>>
