@@ -14,7 +14,6 @@ font pango:Jetbrains Mono 10
 # Autostart
 exec_always --no-startup-id xrandr --output DP-2 --primary --rate 143.91 --mode 2560x1440 --output DP-0 --rotate left --mode 1920x1080 --rate 60.0 --right-of DP-2
 
-exec_always nitrogen --restore
 exec_always --no-startup-id picom --config /home/$USER/.config/picom/picom.conf
 exec_always --no-startup-id /home/$USER/.config/polybar/scripts/polybarstart.sh
 exec --no-startup-id xrdb -merge ~/.Xresources
@@ -176,3 +175,4 @@ client.urgent           #d95177 #d54c73 #D4D7FF #EF4A73   #d54c73
 client.placeholder      #12121F #12121F #D4D7FF #12121F   #222236
 client.background       #12121F
 
+exec_always nitrogen --restore
