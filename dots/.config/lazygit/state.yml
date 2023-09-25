@@ -5,4 +5,5 @@ recentrepos:
 startuppopupversion: 5
 customcommandshistory:
 - q
+- x
 hidecommandlog: true
