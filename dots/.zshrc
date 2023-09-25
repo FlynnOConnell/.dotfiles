@@ -160,6 +160,8 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias ~="cd ~"
 
+alias lg="lazygit"
+
 alias cdz="cd ~/.zshrc"
 alias cdt="cd ~/.config/tmux/tmux.conf"
 alias cddot="cd ~/repos/.dotfiles/"
