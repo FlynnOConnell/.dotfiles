@@ -331,7 +331,6 @@ use {
 use { "simrat39/rust-tools.nvim" }
 use { "neovim/nvim-lspconfig" }
 use('jose-elias-alvarez/null-ls.nvim')
-use('MunifTanjim/prettier.nvim')
 
 use {
     'hrsh7th/nvim-cmp',
