@@ -3,3 +3,5 @@
 	name = Flynn OConnell
 [core]
 	autocrlf = input
+[init]
+	defaultBranch = master
