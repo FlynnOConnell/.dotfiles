@@ -2,6 +2,7 @@
 wallpapers/
 fonts/
 
+**/state.yml
 **/pack/**/start/*
 **/node_modules/
 **/nvim/log
