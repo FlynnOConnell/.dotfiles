@@ -1,7 +1,7 @@
 lastupdatecheck: 0
 recentrepos:
-- /home/flynn/repos/.dotfiles
 - /home/flynn/repos/spk2py
+- /home/flynn/repos/.dotfiles
 startuppopupversion: 5
 customcommandshistory:
 - q
