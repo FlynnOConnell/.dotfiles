@@ -11,15 +11,10 @@ set highlightedyank
 sethandler <C-C> v-i:ide n:vim
 sethandler <C-V> v-i:ide n:vim
 
-""" Plugin settings -------------------------
-let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
-
 """ Common settings -------------------------
 set so=20  " Keep 10 lines above/below cursor
 set nu
 set relativenumber
-set ideamarks " Sync marks and idea bookmarks
-set ideajoin
 set sneak
 set clipboard+=unnamed
 set ignorecase
@@ -32,6 +27,8 @@ set guicursor=n:hor10,i:ver25
 
 """ Idea specific settings ------------------
 set ideastatusicon=gray
+set ideamarks " Sync marks and idea bookmarks
+set ideajoin
 
 """ Mappings --------------------------------
 nnoremap \ :NERDTree<CR>
@@ -41,7 +38,11 @@ map <C-u> <C-u>zz
 map n nzzzv
 map N Nzzzv
 
-" -- tabs
+""" keep selection after visual indent
+vnoremap < <gv
+vnoremap > >gv
+
+""" Tabs ------------------------------------
 map <C-1> 1gt
 map <C-2> 2gt
 map <C-3> 3gt
@@ -49,13 +50,15 @@ map <C-4> 4gt
 map <C-5> 5gt
 map <C-6> 6gt
 map <C-7> 7gt
+
 nnoremap <C-n> :tabnext<CR>
 nnoremap <C-p> :tabprevious<CR>
+map <C-w> <Action>(CloseContent)
 
-map <leader>q <Action>(CloseContent)
-
+""" Docs and LSP -----------------------------
 nnoremap <leader>k :action GotoPreviousError<CR>
 nnoremap <leader>j :action GotoNextError<CR>
+
 
 map gh <Action>(ShowErrorDescription)
 map gi <Action>(GotoImplementation)
@@ -65,14 +68,10 @@ map gr <Action>(RenameElement)
 map <leader>c :action DebugConsole<CR>
 map <leader>r :action ReformatCode<CR>
 map <leader>h <Action>(QuickJavaDoc)
-map <S-Space> <Action>(SmartTypeCompletion)
 
 map <leader>p ["_dP]
 map <leader>d ["_d]
 imap kj <Esc>
-
-map <C-j> <Action>(EditorDown)
-map <C-k> <Action>(EditorUp)
 
 """ Window / Split Management ---------------
 noremap <C-L> <C-W><C-L>
@@ -86,6 +85,7 @@ map ,R <Action>(Rerun)
 map ,q <Action>(Stop)
 map ,b <Action>(ToggleLineBreakpoint)
 map ,n <Action>(MuteBreakpoints)
+
 map ,a <Action>(ViewBreakpoints)
 map ,s <Action>(StepOver)
 map ,i <Action>(StepInto)
@@ -93,18 +93,15 @@ map ,o <Action>(StepOut)
 map ,p <Action>(Resume)
 map ,d <Action>(Debug)
 
-nnoremap [q :action PreviousOccurence<cr>
-nnoremap ]q :action NextOccurence<cr>
-nnoremap [[ :action MethodUp<cr>
-nnoremap ]] :action MethodDown<cr>
+" File navigation
+nnoremap mk <Action>(MethodUp)
+nnoremap mj <Action>(MethodDown)
 
 map <leader>am <action>(ShowIntentionActions)
 map <leader>as <action>(SearchEverywhere)
 
-" File navigation
 map <leader>ff <action>(GotoFile)
 map <leader>fr <action>(RecentFiles)
 map <leader>fc <action>(FindInPath)
 map <leader><leader> <Action>(RecentFiles)
 map <leader>fs <action>(NewScratchFile)
-
