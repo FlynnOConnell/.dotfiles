@@ -299,7 +299,6 @@ use ("tpope/vim-commentary")
 use ("tpope/vim-fugitive")
 
 use("theprimeagen/harpoon")
-use("mbbill/undotree")
 
 use { "williamboman/mason.nvim"}
 use {

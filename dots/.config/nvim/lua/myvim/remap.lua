@@ -12,38 +12,41 @@ vim.keymap.set("v", "<", "< gv")
 vim.keymap.set("v", ">", "> gv")
 
 vim.keymap.set("x", "<leader>p", [["_dP]])
-vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
 vim.keymap.set("n", "<leader>Y", [["+Y]])
+
 vim.keymap.set("n", "ciw", [["_ciw]])
+vim.keymap.set("n", "ciw", "\"_ciw", { noremap = true, silent = true })
 
-vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
+vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 vim.keymap.set("i", "kj", "<Esc>")
-vim.api.nvim_set_keymap('n', 'ciw', '"_ciw', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'qq', ':q<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'qa', ':qa<CR>', { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>F", vim.lsp.buf.format)
 
-vim.keymap.set('n', '<C-J>', '<C-W><C-J>', {noremap = true})
-vim.keymap.set('n', '<C-K>', '<C-W><C-K>', {noremap = true})
-vim.keymap.set('n', '<C-L>', '<C-W><C-L>', {noremap = true})
-vim.keymap.set('n', '<C-H>', '<C-W><C-H>', {noremap = true})
+vim.keymap.set("n", "qq", ":q<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "qa", ":qa<CR>", { noremap = true, silent = true })
 
-vim.keymap.set('n', '<Left>', '<C-W><', {noremap = true})
-vim.keymap.set('n', '<Right>', '<C-W>>', {noremap = true})
-vim.keymap.set('n', '<Up>', ':resize -2<CR>', {noremap = true})
-vim.keymap.set('n', '<Down>', ':resize +2<CR>', {noremap = true})
-vim.keymap.set('n', '<C-=>', '<C-W>=', {noremap = true})
+vim.keymap.set("n", "<leader>f", vim.lsp.buf.format)
 
-vim.keymap.set('n', '<leader>|', ':vsplit<CR>', {noremap = true, silent = true})
-vim.keymap.set('n', '<leader>_', ':split<CR>', {noremap = true, silent = true})
+vim.keymap.set('n', '<C-J>', '<C-W><C-J>', { noremap = true })
+vim.keymap.set('n', '<C-K>', '<C-W><C-K>', { noremap = true })
+vim.keymap.set('n', '<C-L>', '<C-W><C-L>', { noremap = true })
+vim.keymap.set('n', '<C-H>', '<C-W><C-H>', { noremap = true })
+
+vim.keymap.set('n', '<Left>', '<C-W><', { noremap = true })
+vim.keymap.set('n', '<Right>', '<C-W>>', { noremap = true })
+vim.keymap.set('n', '<Up>', ':resize -2<CR>', { noremap = true })
+vim.keymap.set('n', '<Down>', ':resize +2<CR>', { noremap = true })
+vim.keymap.set('n', '<C-=>', '<C-W>=', { noremap = true })
+
+vim.keymap.set('n', '<leader>|', ':vsplit<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>_', ':split<CR>', { noremap = true, silent = true })
 
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 
 -- QUICK ROUTING TO DIRS -------
 vim.keymap.set("n", "<leader>Gon", "<cmd>e ~/.config/nvim/<CR>"); -- go nvim
-vim.keymap.set("n", "<leader>Gor", "<cmd>e ~/repos/<CR>"); -- go repos
-vim.keymap.set("n", "<leader>Got", "<cmd>e ~/config/tmux/<CR>"); -- go tmux config
+vim.keymap.set("n", "<leader>Gor", "<cmd>e ~/repos/<CR>");        -- go repos
+vim.keymap.set("n", "<leader>Got", "<cmd>e ~/config/tmux/<CR>");  -- go tmux config
 
 local wk = require("which-key")
 
@@ -64,7 +67,7 @@ wk.register({
                     Nl = { "Go to lua dir" },
                     Np = { "Go to plugin dir" },
                 },
-                R= {
+                R = {
                     name = "+repo-dirs",
                     Rf = { "Go to Repos: Fluke" },
                     Rd = { "Go to Repos: .dotfiles" },
@@ -73,12 +76,11 @@ wk.register({
         },
         f = {
             name = "+findFiles",
-            f = {"Find Files"},
-            g = {"Grep String"},
-            b = {"Find Buffers"},
-            h = {"Find Help Tags"},
+            f = { "Find Files" },
+            g = { "Grep String" },
+            b = { "Find Buffers" },
+            h = { "Find Help Tags" },
         },
-        u = {"Undo-Tree"},
+        u = { "Undo-Tree" },
     },
 })
-
