@@ -136,8 +136,12 @@ for_window [class="discord"] move to workspace $ws4
 assign [class="^spotify$"] $ws4
 for_window [class="spotify"] move to workspace $ws4
 
-assign [class="^zoom$"] $ws7
-for_window [class="discord"] move to workspace $ws7
+assign [class="^zoom$"] $ws6
+for_window [class="zoom"] move to workspace $ws6
+
+for_window [class="(.*join\?action\=join.*|.*zoom.*)"] floating enable
+for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom - Licensed Account"] floating disable
+for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom Meeting"] floating disable
 
 exec_always --no-startup-id "setxkbmap -option ctrl:nocaps"
 exec_always --no-startup-id "xsettingsd"
