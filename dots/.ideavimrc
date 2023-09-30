@@ -42,6 +42,10 @@ map N Nzzzv
 vnoremap < <gv
 vnoremap > >gv
 
+""" cancel visual selection
+vnoremap <C-j> <ESC>
+vnoremap <C-k> <ESC>
+
 """ Tabs ------------------------------------
 map <C-1> 1gt
 map <C-2> 2gt
@@ -59,7 +63,6 @@ map <C-w> <Action>(CloseContent)
 nnoremap <leader>k :action GotoPreviousError<CR>
 nnoremap <leader>j :action GotoNextError<CR>
 
-
 map gh <Action>(ShowErrorDescription)
 map gi <Action>(GotoImplementation)
 map gd <Action>(GotoDeclaration)
@@ -68,6 +71,8 @@ map gr <Action>(RenameElement)
 map <leader>c :action DebugConsole<CR>
 map <leader>r :action ReformatCode<CR>
 map <leader>h <Action>(QuickJavaDoc)
+map <leader>zc <Action>(ExpandAllRegions)
+map <leader>zo <Action>(CollapseAllRegions)
 
 map <leader>p ["_dP]
 map <leader>d ["_d]
