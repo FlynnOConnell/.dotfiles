@@ -111,4 +111,24 @@ if ! shopt -oq posix; then
 fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-. /c/Users/Flynn/miniconda3/etc/profile.d/conda.sh
+# . /c/Users/Flynn/miniconda3/etc/profile.d/conda.sh  # commented out by conda initialize
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/flynn/conda/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/flynn/conda/etc/profile.d/conda.sh" ]; then
+        . "/home/flynn/conda/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/flynn/conda/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+
+if [ -f "/home/flynn/conda/etc/profile.d/mamba.sh" ]; then
+    . "/home/flynn/conda/etc/profile.d/mamba.sh"
+fi
+# <<< conda initialize <<<
+
