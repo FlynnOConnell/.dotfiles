@@ -1,5 +1,7 @@
 local wk = require("which-key")
-wk.setup {}
+wk.setup {
+    ignore = { ":x", ":wq", ":q" },
+}
 wk.register({
     ["<leader>"] = {
         c = {

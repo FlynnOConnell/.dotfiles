@@ -1,17 +1,19 @@
 local nvim_lsp = require('lspconfig')
 local servers = {
-                    "bashls",
-                    "cssls",
-                    "eslint",
-                    "html",
-                    "jsonls",
-                    "lua_ls",
-                    "rust_analyzer",
-                    "tsserver",
-                    'docker_compose_language_service',
-                    'dockerls',
-                    'dotls',
-                }
+    "bashls",
+    "cssls",
+    "pyright",
+    "yamlls",
+    "eslint",
+    "html",
+    "jsonls",
+    "lua_ls",
+    "rust_analyzer",
+    "tsserver",
+    'docker_compose_language_service',
+    'dockerls',
+    'dotls',
+}
 
 local on_attach = function(_, bufnr)
     local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
@@ -58,19 +60,24 @@ for _, server in ipairs(servers) do
     nvim_lsp[server].setup {
         on_attach = on_attach,
         capabilities = capabilities,
+        autostart = true,
+        settings = {
+            Lua = {
+                diagnostics = { globals = {'vim'} }
+            },
+        },
         handlers = {
             ["textDocument/publishDiagnostics"] = vim.lsp.with(
-                vim.lsp.diagnostic.on_publish_diagnostics, {
-                    -- Disable virtual text
-                    virtual_text = false,
-                    -- Enable signs
-                    signs = true,
-                    -- Enable underline
-                    underline = true,
-
-                    -- Enable diagnostics pop-up on hover
-                    update_in_insert = false,
-                }
+            vim.lsp.diagnostic.on_publish_diagnostics, {
+                -- Disable virtual text
+                virtual_text = false,
+                -- Enable signs
+                signs = true,
+                -- Enable underline
+                underline = true,
+                -- Enable diagnostics pop-up on hover
+                update_in_insert = false,
+            }
             ),
         },
     }
