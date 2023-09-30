@@ -58,6 +58,7 @@ map <C-7> 7gt
 nnoremap <C-n> :tabnext<CR>
 nnoremap <C-p> :tabprevious<CR>
 map <C-w> <Action>(CloseContent)
+vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
 
 """ Docs and LSP -----------------------------
 nnoremap <leader>k :action GotoPreviousError<CR>

@@ -307,6 +307,7 @@ use {
         require("mason-lspconfig").setup({
             ensure_installed = {
                 "bashls",
+                "pyright",
                 "cssls",
                 "eslint",
                 "html",
