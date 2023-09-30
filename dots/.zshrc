@@ -3,7 +3,19 @@ echo "Reading .zshrc file..."
 bindkey -s ^f "tmux-sessionizer\n"
 echo "cntrl-f to open tmux sessionizer"
 
+# ssh agent for 1password-cli
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+# ---------------------------------------------------------------------------------
+# Environment Variables -----------------------------------------------------------
+# ---------------------------------------------------------------------------------
+
 export PATH="/Users/flynnoconnell/miniconda3/bin:$PATH"
+export PATH="/Users/flynnoconnell/mambaforge/bin:$PATH"
+# export PATH="/Users/flynnoconnell/conda/bin:$PATH"  # commented out by conda initialize
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/bin/:$PATH"
+
 ZSH_THEME="steeef"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -71,15 +83,6 @@ case "$os" in
 esac
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-
-# ---------------------------------------------------------------------------------
-# Path Configuration --------------------------------------------------------------
-# ---------------------------------------------------------------------------------
-mkdir -p "$HOME/.local/bin"
-export PATH="$HOME/.cargo/bin:$HOME/.local/anaconda3/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/bin/:$PATH"
 
 # ---------------------------------------------------------------------------------
 # Oh My Zsh Configuration ---------------------------------------------------------
@@ -181,6 +184,7 @@ alias goz="nvim ~/.zshrc"
 alias got="nvim ~/.config/tmux/tmux.conf"
 alias gos="nvim ~/.config/skhd/skhdrc"
 alias gok="nvim ~/.config/kitty/kitty.conf"
+alias gop="nvim ~/.config/picom/picom.conf"
 alias goy="nvim ~/.config/yabai/yabairc"
 alias godot="nvim ~/repos/.dotfiles/"
 alias godotc="nvim ~/repos/.dotfiles/.config"
@@ -240,8 +244,20 @@ download_github_folder() {
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-if [ -f '/c/Users/Flynn/mambaforge/Scripts/conda.exe' ]; then
-    eval "$('/c/Users/Flynn/mambaforge/Scripts/conda.exe' 'shell.zsh' 'hook')"
+__conda_setup="$('/home/flynn/conda/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/flynn/conda/etc/profile.d/conda.sh" ]; then
+        . "/home/flynn/conda/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/flynn/conda/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+
+if [ -f "/home/flynn/conda/etc/profile.d/mamba.sh" ]; then
+    . "/home/flynn/conda/etc/profile.d/mamba.sh"
 fi
 # <<< conda initialize <<<
 
