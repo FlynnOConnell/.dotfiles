@@ -1,7 +1,16 @@
 [user]
+  signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMo1dErQuZn4J4xh0aoF8gS+JtcJbW7p5AXPrzC0lMtk
 	email = flynnoconnell@gmail.com
 	name = Flynn OConnell
-[core]
-	autocrlf = input
+
+[gpg]
+  format = ssh
+
+[gpg "ssh"]
+  program = "/opt/1Password/op-ssh-sign"
+
+[commit]
+  gpgsign = true
+
 [init]
 	defaultBranch = master
