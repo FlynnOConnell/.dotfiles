@@ -96,7 +96,7 @@ map ,a <Action>(ViewBreakpoints)
 map ,s <Action>(StepOver)
 map ,i <Action>(StepInto)
 map ,o <Action>(StepOut)
-map ,p <Action>(Resume)
+map ,c <Action>(Resume)
 map ,d <Action>(Debug)
 
 " File navigation
@@ -111,3 +111,7 @@ map <leader>fr <action>(RecentFiles)
 map <leader>fc <action>(FindInPath)
 map <leader><leader> <Action>(RecentFiles)
 map <leader>fs <action>(NewScratchFile)
+
+
+""" Open .ideavimrc --------------------------
+map <leader>ev :e ~/.ideavimrc<CR>
