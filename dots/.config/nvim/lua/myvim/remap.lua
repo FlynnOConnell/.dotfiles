@@ -1,6 +1,5 @@
 -- luacheck: globals vim
 -- Disable 'q' for recording macro
-vim.keymap.set("n", "q", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
@@ -27,7 +26,10 @@ vim.keymap.set("n", "ciw", "\"_ciw", { noremap = true, silent = true })
 vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 vim.keymap.set("i", "kj", "<Esc>")
 
-vim.keymap.set("n", "qq", ":q<CR>", { noremap = true, silent = true })
+-- remap q and Q
+vim.keymap.set("n", "q", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("n", "Q", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("n", "qq", ":qa<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "qa", ":qa<CR>", { noremap = true, silent = true })
 
 vim.keymap.set("n", "<leader>r", vim.lsp.buf.format)
