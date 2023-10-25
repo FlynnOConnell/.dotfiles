@@ -13,12 +13,14 @@ font pango:Jetbrains Mono 10
 
 # Autostart
 exec_always --no-startup-id xrandr --output DP-2 --primary --rate 143.91 --mode 2560x1440 --output DP-0 --rotate left --mode 1920x1080 --rate 60.0 --right-of DP-2
-
+exec_always --no-startup-id chmod +x "/home/$USER/.config/i3/scripts/*"
+exec_always --no-startup-id chmod +x "/home/$USER/.config/polybar/scripts/*"
 exec_always --no-startup-id picom --config /home/$USER/.config/picom/picom.conf
 exec_always --no-startup-id /home/$USER/.config/polybar/scripts/polybarstart.sh
 exec --no-startup-id xrdb -merge ~/.Xresources
 exec --no-startup-id nm-applet
 exec_always --no-startup-id blueman-applet
+exec_always nitrogen --restore
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -46,6 +48,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 bindsym $mod+Shift+q kill
 
+bindsym $mod+p exec --no-startup-id "/home/$USER/.config/i3/scripts/switch-pycharm.sh"
 bindsym $mod+space exec "rofi -modi drun -show drun"
 bindsym $mod+Return exec --no-startup-id kitty @ new-window || kitty
 bindsym $mod+bar split v
@@ -109,7 +112,7 @@ for_window [class="^.*"] client.focused
 workspace "1" output DP-2
 workspace "2" output DP-2
 workspace "3" output DP-2
-workspace "4" output DP-0
+workspace "4" output DP-2
 workspace "5" output DP-0
 workspace "6" output DP-2
 workspace "7" output DP-2
@@ -118,29 +121,21 @@ workspace "9" output DP-2
 
 # App to workspace assignments
 assign [class="^firefox$"] $ws1
-for_window [class="firefox"] move to workspace $ws1
-
 assign [class="^kitty$"] $ws2
-for_window [class="kitty"] move to workspace $ws2
-
 assign [class="^jetbrains-pycharm$"] $ws3
-for_window [class="jetbrains-pycharm"] move to workspace $ws3
-
-assign [class="^discord$"] $ws4
-for_window [class="discord"] move to workspace $ws4
-
-assign [class="^spotify$"] $ws4
-for_window [class="spotify"] move to workspace $ws4
-
+assign [class="^discord$"] $ws5
+assign [class="^spotify$"] $ws5
 assign [class="^zoom$"] $ws6
+
+for_window [class="firefox"] move to workspace $ws1
+for_window [class="kitty"] move to workspace $ws2
+for_window [class="jetbrains-pycharm"] move to workspace $ws3
+for_window [class="discord"] move to workspace $ws5
+for_window [class="spotify"] move to workspace $ws5
 for_window [class="zoom"] move to workspace $ws6
 
-for_window [class="(.*join\?action\=join.*|.*zoom.*)"] floating enable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom - Licensed Account"] floating disable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom Meeting"] floating disable
-
-exec_always --no-startup-id "setxkbmap -option ctrl:nocaps"
-exec_always --no-startup-id "xsettingsd"
 
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
@@ -170,5 +165,6 @@ client.urgent           #d95177 #d54c73 #D4D7FF #EF4A73   #d54c73
 client.placeholder      #12121F #12121F #D4D7FF #12121F   #222236
 client.background       #12121F
 
-exec_always nitrogen --restore
+exec_always --no-startup-id "setxkbmap -option ctrl:nocaps"
+exec_always --no-startup-id "xsettingsd"
 
