@@ -1,11 +1,34 @@
 """ Map leader to space ---------------------
 let mapleader=" "
 
+imap kj <Esc>
+
+nnoremap yy "+yy
+vnoremap y "+y
+
+nnoremap p "+p
+vnoremap p "+p
+nnoremap P "+P
+vnoremap P "+P
+
+nnoremap <leader>yy yy
+vnoremap <leader>y y
+
+nnoremap <leader>p p
+vnoremap <leader>p p
+nnoremap <leader>P P
+vnoremap <leader>P P
+
+nnoremap <leader>dd "+dd
+vnoremap <leader>d "+d
+
 """ Plugins  --------------------------------
 set surround
 set commentary
 set NERDTree
 set highlightedyank
+
+
 
 """ Handlers --------------------------------
 sethandler <C-C> v-i:ide n:vim
@@ -61,23 +84,32 @@ map <C-w> <Action>(CloseContent)
 vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
 
 """ Docs and LSP -----------------------------
-nnoremap <leader>k :action GotoPreviousError<CR>
-nnoremap <leader>j :action GotoNextError<CR>
 
+map gn <Action>(GotoPreviousError)
+map gp <Action>(GotoNextError)
 map gh <Action>(ShowErrorDescription)
 map gi <Action>(GotoImplementation)
 map gd <Action>(GotoDeclaration)
 map gr <Action>(RenameElement)
+map gs <Action>(ShowUsages)
+map gf <Action>(Back)
 
-map <leader>c :action DebugConsole<CR>
-map <leader>r :action ReformatCode<CR>
-map <leader>h <Action>(QuickJavaDoc)
-map <leader>zc <Action>(ExpandAllRegions)
-map <leader>zo <Action>(CollapseAllRegions)
+map <leader>[ <Action>(ExecuteInPyConsoleAction)
+map <leader><leader> <Action>(PyRunFileInConsole)
+map <leader>o <Action>(OptimizeImports)
+map <leader>r <Action>(ReformatCode)
 
-map <leader>p ["_dP]
-map <leader>d ["_d]
-imap kj <Esc>
+map <leader>zo <Action>(ExpandAllRegions)
+map <leader>zc <Action>(CollapseAllRegions)
+map <leader>zr <Action>(ExpandRegion)
+map <leader>zm <Action>(CollapseRegion)
+
+map <leader>ff <action>(GotoFile)
+map <leader>fr <action>(RecentFiles)
+map <leader>fc <action>(FindInPath)
+map <leader>fs <action>(NewScratchFile)
+
+map <leader>ev :e ~/.ideavimrc<CR>
 
 """ Window / Split Management ---------------
 noremap <C-L> <C-W><C-L>
@@ -98,20 +130,3 @@ map ,i <Action>(StepInto)
 map ,o <Action>(StepOut)
 map ,c <Action>(Resume)
 map ,d <Action>(Debug)
-
-" File navigation
-nnoremap mk <Action>(MethodUp)
-nnoremap mj <Action>(MethodDown)
-
-map <leader>am <action>(ShowIntentionActions)
-map <leader>as <action>(SearchEverywhere)
-
-map <leader>ff <action>(GotoFile)
-map <leader>fr <action>(RecentFiles)
-map <leader>fc <action>(FindInPath)
-map <leader><leader> <Action>(RecentFiles)
-map <leader>fs <action>(NewScratchFile)
-
-
-""" Open .ideavimrc --------------------------
-map <leader>ev :e ~/.ideavimrc<CR>
