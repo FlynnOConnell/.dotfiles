@@ -3,32 +3,11 @@ let mapleader=" "
 
 imap kj <Esc>
 
-nnoremap yy "+yy
-vnoremap y "+y
-
-nnoremap p "+p
-vnoremap p "+p
-nnoremap P "+P
-vnoremap P "+P
-
-nnoremap <leader>yy yy
-vnoremap <leader>y y
-
-nnoremap <leader>p p
-vnoremap <leader>p p
-nnoremap <leader>P P
-vnoremap <leader>P P
-
-nnoremap <leader>dd "+dd
-vnoremap <leader>d "+d
-
 """ Plugins  --------------------------------
 set surround
 set commentary
 set NERDTree
 set highlightedyank
-
-
 
 """ Handlers --------------------------------
 sethandler <C-C> v-i:ide n:vim
@@ -94,8 +73,8 @@ map gr <Action>(RenameElement)
 map gs <Action>(ShowUsages)
 map gf <Action>(Back)
 
-map <leader>[ <Action>(ExecuteInPyConsoleAction)
-map <leader><leader> <Action>(PyRunFileInConsole)
+map <leader><leader> <Action>(ExecuteInPyConsoleAction)
+
 map <leader>o <Action>(OptimizeImports)
 map <leader>r <Action>(ReformatCode)
 
