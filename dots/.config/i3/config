@@ -42,15 +42,16 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
-bindsym $mod+Shift+f exec firefox-developer-edition
 bindsym $mod+Shift+space floating toggle
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 bindsym $mod+Shift+q kill
 
-bindsym $mod+p exec --no-startup-id "/home/$USER/.config/i3/scripts/switch-pycharm.sh"
+bindsym $mod+Shift+f exec firefox-developer-edition
+bindsym $mod+Shift+t exec --no-startup-id kitty @ new-window || kitty
+
 bindsym $mod+space exec "rofi -modi drun -show drun"
-bindsym $mod+Return exec --no-startup-id kitty @ new-window || kitty
+
 bindsym $mod+bar split v
 bindsym $mod+minus split h
 bindsym $mod+f fullscreen toggle
