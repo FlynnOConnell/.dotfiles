@@ -22,8 +22,6 @@ set clipboard+=unnamed
 set ignorecase
 set smartcase
 set scrolloff=5
-set wildmenu
-set wildmode=list:longest
 set wildignore+=*/target/*,*/.idea/*,*/.git/*,*/.svn/*,*/.hg/*,*/build/*
 set guicursor=n:hor10,i:ver25
 
@@ -39,6 +37,8 @@ map <C-d> <C-d>zz
 map <C-u> <C-u>zz
 map n nzzzv
 map N Nzzzv
+map j jzz
+map k kzz
 
 """ keep selection after visual indent
 vnoremap < <gv
@@ -64,12 +64,14 @@ vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
 
 """ Docs and LSP -----------------------------
 
-map gn <Action>(GotoPreviousError)
-map gp <Action>(GotoNextError)
+map gn <Action>(GotoNextError)
+map gp <Action>(GotoPreviousError)
 map gh <Action>(ShowErrorDescription)
+
 map gi <Action>(GotoImplementation)
 map gd <Action>(GotoDeclaration)
 map gr <Action>(RenameElement)
+
 map gs <Action>(ShowUsages)
 map gf <Action>(Back)
 
@@ -86,7 +88,6 @@ map <leader>zm <Action>(CollapseRegion)
 map <leader>ff <action>(GotoFile)
 map <leader>fr <action>(RecentFiles)
 map <leader>fc <action>(FindInPath)
-map <leader>fs <action>(NewScratchFile)
 
 map <leader>ev :e ~/.ideavimrc<CR>
 
