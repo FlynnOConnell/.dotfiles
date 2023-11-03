@@ -12,7 +12,6 @@ smart_borders on
 font pango:Jetbrains Mono 10
 
 # Autostart
-exec_always --no-startup-id xrandr --output DP-2 --primary --rate 143.91 --mode 2560x1440 --output DP-0 --rotate left --mode 1920x1080 --rate 60.0 --right-of DP-2
 exec_always --no-startup-id chmod +x "/home/$USER/.config/i3/scripts/*"
 exec_always --no-startup-id chmod +x "/home/$USER/.config/polybar/scripts/*"
 exec_always --no-startup-id picom --config /home/$USER/.config/picom/picom.conf
@@ -20,35 +19,38 @@ exec_always --no-startup-id /home/$USER/.config/polybar/scripts/polybarstart.sh
 exec --no-startup-id xrdb -merge ~/.Xresources
 exec --no-startup-id nm-applet
 exec_always --no-startup-id blueman-applet
-exec_always nitrogen --restore
+
+# set nitrogen manually wallpaper monitor 1
+exec_always --no-startup-id nitrogen --force-setter=xinerama --set-zoom /home/$USER/wallpapers/lost-in-space.png --head=1
+exec_always --no-startup-id nitrogen --force-setter=xinerama --set-zoom-fill /home/$USER/wallpapers/color_background.png --head=0
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
-# manuel lockscreen && suspend session
-bindsym $mod+Ctrl+s exec "/home/$USER/.config/i3/scripts/lock.sh && systemctl suspend"
-bindsym $mod+Ctrl+l exec "/home/$USER/.config/i3/scripts/lock.sh"
+# kill focused window
+bindsym $mod+Ctrl+q kill
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+Ctrl+r restart
+
+bindsym $mod+Shift+Ctrl+q exec --no-startup-id "i3-msg exit"
 
 # start screenshots
-bindsym Print  exec --no-startup-id flameshot gui -c -s
+bindsym $mod+Shift+Ctrl+p exec --no-startup-id flameshot gui -c -s
 
 # move focused window
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
+
 bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
-bindsym $mod+Shift+space floating toggle
-bindsym $mod+Shift+c reload
-bindsym $mod+Shift+r restart
-bindsym $mod+Shift+q kill
 
 bindsym $mod+Shift+f exec firefox-developer-edition
 bindsym $mod+Shift+t exec --no-startup-id kitty @ new-window || kitty
+bindsym $mod+Shift+p exec --no-startup-id kitty @ new-window --class pycharm --title pycharm --directory /home/$USER/repos
 
 bindsym $mod+space exec "rofi -modi drun -show drun"
 
