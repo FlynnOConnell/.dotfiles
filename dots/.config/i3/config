@@ -43,12 +43,9 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
-bindsym Control+Shift+Alt+Super+p exec --no-startup-id flameshot gui -c -s
-bindsym Control+Shift+Alt+Super+f exec firefox-developer-edition
-
-# bindsym $mod+Shift+f exec firefox-developer-edition
+bindsym $mod+Shift+p exec --no-startup-id flameshot gui -c -s
+bindsym $mod+Shift+f exec firefox-developer-edition
 bindsym $mod+Shift+t exec --no-startup-id kitty @ new-window || kitty
-bindsym $mod+Shift+p exec --no-startup-id kitty @ new-window --class pycharm --title pycharm --directory /home/$USER/repos
 
 bindsym $mod+space exec "rofi -modi drun -show drun"
 
@@ -63,7 +60,7 @@ bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
-bindsym $mod+m move workspace to output right
+bindsym $mod+m floating toggle
 bindsym $mod+n move workspace to output left
 bindsym $mod+Left focus left
 bindsym $mod+Down focus down
