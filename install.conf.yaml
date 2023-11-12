@@ -11,6 +11,8 @@
       recursive: true
 
 - link:
+    ~/obsidian:
+      path: obsidian/
     ~/.local/bin/tmux-sessionizer:
       path: dots/.local/bin/tmux-sessionizer
     ~/.bashrc:
@@ -21,10 +23,6 @@
       path: dots/.zshrc
     ~/.config/vim:
       path: dots/.config/vim
-    ~/.config/spicetify:
-      path: dots/.config/spicetify
-    ~/.config/BetterDiscord:
-      path: dots/.config/BetterDiscord
     ~/.config/github-copilot:
       path: dots/.config/github-copilot
     ~/.config/lazygit:
