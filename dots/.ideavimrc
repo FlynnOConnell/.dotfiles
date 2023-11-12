@@ -3,6 +3,15 @@ let mapleader=" "
 
 imap kj <Esc>
 
+nnoremap <c-e> :action ActivateDebugToolWindow<CR>
+nnoremap <c-t> :action ActivateTerminalToolWindow<CR>
+nnoremap <c-s> :action ActivateSciViewToolWindow<CR>
+nnoremap <c-x> :action HideAllWindows<CR>
+nnoremap <c-p> :action JumpToLastWindow<CR>
+nnoremap <c-a> :action ShowAllWindows<CR>
+
+""" Colorscheme ------------------------------
+
 """ Plugins  --------------------------------
 
 set surround
@@ -59,11 +68,13 @@ map <C-5> 5gt
 map <C-6> 6gt
 map <C-7> 7gt
 
-"""nnoremap <C-n> :tabnext<CR>
-"""nnoremap <C-p> :tabprevious<CR>
-nnoremap <TAB> :action PreviousTab<CR>
-nnoremap <s-TAB> :action NextTab<CR>
+nnoremap <TAB> :action NextTab<CR>
+nnoremap <s-TAB> :action PreviousTab<CR>
 map <C-w> <Action>(CloseContent)
+
+nnoremap <c-p> :action JumpToLastWindow<CR>
+nnoremap <c-x> :action HideAllWindows<CR>
+
 vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
 
 """ Docs and LSP -----------------------------
