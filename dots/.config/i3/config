@@ -28,14 +28,9 @@ exec_always --no-startup-id nitrogen --force-setter=xinerama --set-zoom-fill /ho
 floating_modifier $mod
 
 # kill focused window
-bindsym $mod+Ctrl+q kill
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
-bindsym $mod+Shift+Ctrl+r restart
+bindsym $mod+q kill
 
-bindsym $mod+Shift+Ctrl+q exec --no-startup-id "i3-msg exit"
-
-# start screenshots
-bindsym $mod+Shift+Ctrl+p exec --no-startup-id flameshot gui -c -s
+bindsym $mod+Shift+r restart
 
 # move focused window
 bindsym $mod+Shift+h move left
@@ -48,7 +43,10 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
-bindsym $mod+Shift+f exec firefox-developer-edition
+bindsym Control+Shift+Alt+Super+p exec --no-startup-id flameshot gui -c -s
+bindsym Control+Shift+Alt+Super+f exec firefox-developer-edition
+
+# bindsym $mod+Shift+f exec firefox-developer-edition
 bindsym $mod+Shift+t exec --no-startup-id kitty @ new-window || kitty
 bindsym $mod+Shift+p exec --no-startup-id kitty @ new-window --class pycharm --title pycharm --directory /home/$USER/repos
 
@@ -116,29 +114,65 @@ workspace "1" output DP-2
 workspace "2" output DP-2
 workspace "3" output DP-2
 workspace "4" output DP-2
-workspace "5" output DP-0
-workspace "6" output DP-2
-workspace "7" output DP-2
-workspace "8" output DP-2
-workspace "9" output DP-2
+workspace "5" output DP-2
 
-# App to workspace assignments
+workspace "6" output DP-1
+workspace "7" output DP-1
+workspace "8" output DP-1
+workspace "9" output DP-1
+
+# Monitor 1
 assign [class="^firefox$"] $ws1
 assign [class="^kitty$"] $ws2
 assign [class="^jetbrains-pycharm$"] $ws3
-assign [class="^discord$"] $ws5
-assign [class="^spotify$"] $ws5
-assign [class="^zoom$"] $ws6
+# ws4 saved for second ide process
+assign [class="^obsidian$"] $ws5
+
+# Monitor 2
+assign [class="^discord$"] $ws6
+assign [class="^slack$"] $ws6
+assign [class="^spotify$"] $ws7
+assign [class="^zoom$"] $ws7
 
 for_window [class="firefox"] move to workspace $ws1
 for_window [class="kitty"] move to workspace $ws2
 for_window [class="jetbrains-pycharm"] move to workspace $ws3
-for_window [class="discord"] move to workspace $ws5
-for_window [class="spotify"] move to workspace $ws5
-for_window [class="zoom"] move to workspace $ws6
+for_window [class="obsidian"] move to workspace $ws5
+
+for_window [class="slack"] move to workspace $ws6
+for_window [class="discord"] move to workspace $ws6
+for_window [class="spotify"] move to workspace $ws7
+for_window [class="zoom"] move to workspace $ws7
 
 for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom - Licensed Account"] floating disable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom Meeting"] floating disable
+
+# WINDOWS BEHAVIOR
+set $STICKY floating enable, sticky enable
+set $FLOAT floating enable
+
+for_window [class="Blueman-manager"] $FLOAT
+for_window [class="Firefox" window_role="GtkFileChooserDialog"] $FLOAT
+for_window [class="octopi"] $FLOAT
+for_window [class="Org.gnome.Software"] $FLOAT
+for_window [window_role="pop-up"] $FLOAT
+for_window [class="pritunl"] $FLOAT
+
+for_window [class="Evolution-alarm-notify"] $STICKY
+for_window [class="Gnome-screenshot"] $STICKY
+for_window [class="Slack"] $STICKY
+for_window [class="zoom"] $STICKY
+for_window [title="1Password"] $STICKY
+for_window [title="Telegram*"] $STICKY
+for_window [window_role="PictureInPicture"] $STICKY
+for_window [class="Xfce4-display-settings"] $STICKY
+for_window [class="Xfce4-settings-manager"] $STICKY
+for_window [class="Xfce4-appfinder"] $STICKY
+for_window [class="Manjaro Settings Manager"] $STICKY
+for_window [class="Xfce4-mime-settings"] $STICKY
+for_window [class="Nitrogen"] $STICKY
+
+for_window [urgent=latest] focus
 
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
@@ -168,6 +202,5 @@ client.urgent           #d95177 #d54c73 #D4D7FF #EF4A73   #d54c73
 client.placeholder      #12121F #12121F #D4D7FF #12121F   #222236
 client.background       #12121F
 
-exec_always --no-startup-id "setxkbmap -option ctrl:nocaps"
 exec_always --no-startup-id "xsettingsd"
 

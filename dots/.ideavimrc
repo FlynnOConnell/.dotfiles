@@ -4,6 +4,7 @@ let mapleader=" "
 imap kj <Esc>
 
 """ Plugins  --------------------------------
+
 set surround
 set commentary
 set NERDTree
@@ -23,7 +24,8 @@ set ignorecase
 set smartcase
 set scrolloff=5
 set wildignore+=*/target/*,*/.idea/*,*/.git/*,*/.svn/*,*/.hg/*,*/build/*
-set guicursor=n:hor10,i:ver25
+
+"""set guicursor=n:hor10,i:ver25
 
 """ Idea specific settings ------------------
 set ideastatusicon=gray
@@ -57,8 +59,10 @@ map <C-5> 5gt
 map <C-6> 6gt
 map <C-7> 7gt
 
-nnoremap <C-n> :tabnext<CR>
-nnoremap <C-p> :tabprevious<CR>
+"""nnoremap <C-n> :tabnext<CR>
+"""nnoremap <C-p> :tabprevious<CR>
+nnoremap <TAB> :action PreviousTab<CR>
+nnoremap <s-TAB> :action NextTab<CR>
 map <C-w> <Action>(CloseContent)
 vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
 

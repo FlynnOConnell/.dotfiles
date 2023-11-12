@@ -45,3 +45,11 @@ Upgrading submodules to latest published version:
 ## Inspiration
 - [khanelimans dotfiles for Windows 11](https://github.com/khaneliman/dotfiles)
 - [This UnixPorn post](https://www.reddit.com/r/unixporn/comments/11wd2jr/gnome_lost_in_space/)
+
+## Keybinds
+
+- Alt: WM
+- Alt + Shift: WM
+- Alt + Control: IDE
+- Control + b: tmux
+- Meh: Application specific
