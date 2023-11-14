@@ -47,7 +47,6 @@ zstyle ':omz:update' frequency 13
 source ~/.oh-my-zsh/oh-my-zsh.sh
 
 if [ ! -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions" ]; then
-    # Clone zsh-completions
     git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
 fi
 
@@ -58,7 +57,7 @@ bindkey -v
 
 if [ ! -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-autosuggestions" ]; then
     # Clone zsh-autosuggestions
-    git clone
+    git clone https://github.com/marlonrichert/zsh-autocomplete
 fi
 
 # ---------------------------------------------------------------------------------
@@ -115,28 +114,6 @@ fi
 
 
 [ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
-
-download_github_folder() {
-  # $1 = GitHub repo URL (e.g., https://github.com/numpy/numpy)
-  # $2 = Specific folder path from the root of the repo (e.g., doc/source/_templates)
-
-  # Extract the repo name from the URL
-  repo_name=$(basename $1)
-
-  # Download the entire repo as a zip file
-  wget "$1/archive/refs/heads/main.zip" -O "${repo_name}-main.zip"
-
-  # Unzip the file
-  unzip -q "${repo_name}-main.zip"
-
-  # Move the specific folder to the current working directory
-  mv "${repo_name}-main/$2" .
-
-  # Clean up: remove the downloaded zip file and the extracted repo folder
-  rm "${repo_name}-main.zip"
-  rm -r "${repo_name}-main"
-}
-
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
