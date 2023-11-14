@@ -1,25 +1,20 @@
 echo "Reading .zshrc file..."
+source ~/.bashrc
 
 bindkey -s ^f "tmux-sessionizer\n"
 echo "cntrl-f to open tmux sessionizer"
 
-# ssh agent for 1password-cli
-export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-# ---------------------------------------------------------------------------------
-# Environment Variables -----------------------------------------------------------
-# ---------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------
+# User-Setup -----------------------------------------------------------------------
+# ----------------------------------------------------------------------------------
 
-export PATH="/Users/flynnoconnell/miniconda3/bin:$PATH"
-export PATH="/Users/flynnoconnell/mambaforge/bin:$PATH"
-# export PATH="/Users/flynnoconnell/conda/bin:$PATH"  # commented out by conda initialize
 mkdir -p "$HOME/.local/bin"
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/bin/:$PATH"
 
 ZSH_THEME="steeef"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 setopt NO_BEEP
+
 # ---------------------------------------------------------------------------------
 # Helper Functions ----------------------------------------------------------------
 # ---------------------------------------------------------------------------------
@@ -43,47 +38,6 @@ get_os() {
   esac
 }
 
-os=$(get_os)
-
-case "$os" in
-  "macos")
-    __conda_setup="$('/Users/flynnoconnell/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-    if [ $? -eq 0 ]; then
-      eval "$__conda_setup"
-    else
-      if [ -f "/Users/flynnoconnell/miniconda3/etc/profile.d/conda.sh" ]; then
-      else
-        export PATH="/Users/flynnoconnell/miniconda3/bin:$PATH"
-      fi
-    fi
-    ;;
-  "linux")
-    __conda_setup="$('/home/flynn/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-    if [ $? -eq 0 ]; then
-      eval "$__conda_setup"
-    else
-      if [ -f "/home/flynn/miniconda3/etc/profile.d/conda.sh" ]; then
-      else
-        export PATH="/home/flynn/miniconda3/bin:$PATH"
-      fi
-    fi
-    ;;
-  "windows")
-    __conda_setup="$('C:/Users/flynn/miniconda3/Scripts/conda' 'shell.bash' 'hook' 2> /dev/null)"
-    if [ $? -eq 0 ]; then
-      eval "$__conda_setup"
-    else
-      if [ -f "C:/Users/flynn/miniconda3/etc/profile.d/conda.sh" ]; then
-# . "C:/Users/flynn/miniconda3/etc/profile.d/conda.sh"  # commented out by conda initialize
-      else
-        export PATH="C:/Users/flynn/miniconda3/Scripts:$PATH"
-      fi
-    fi
-    ;;
-esac
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 # ---------------------------------------------------------------------------------
 # Oh My Zsh Configuration ---------------------------------------------------------
 # ---------------------------------------------------------------------------------
@@ -98,6 +52,14 @@ if [ ! -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions" ]
 fi
 
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
+
+# zsh vi mode
+bindkey -v
+
+if [ ! -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-autosuggestions" ]; then
+    # Clone zsh-autosuggestions
+    git clone
+fi
 
 # ---------------------------------------------------------------------------------
 # Node/NPM ------------------------------------------------------------------------
@@ -151,74 +113,8 @@ if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
     git clone https://github.com/tmux-plugins/tpm.git ~/.tmux/plugins/tpm
 fi
 
-# ---------------------------------------------------------------------------------
-# User Configuration / Aliases ----------------------------------------------------
-# ---------------------------------------------------------------------------------
-#
 
 [ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
-
-# - Navigation -
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias ~="cd ~"
-
-alias lg="lazygit"
-
-alias cdz="cd ~/.zshrc"
-alias cdt="cd ~/.config/tmux/tmux.conf"
-alias cddot="cd ~/repos/.dotfiles/"
-alias cdr="cd ~/repos"
-alias cddotc="cd ~/repos/.dotfiles/.config"
-alias cdi3="cd ~/.config/i3/config"
-alias cdn="cd ~/.config/nvim/"
-alias cdnr="cd ~/.config/nvim/lua/flynnvim/remap.lua"
-alias cdnw="cd ~/.config/nvim/lua/flynnvim/maps.lua"
-alias cdnp="cd ~/.config/nvim/lua/flynnvim/packer.lua"
-alias cdns="cd ~/.config/nvim/lua/flynnvim/set.lua"
-alias cdna="cd ~/.config/nvim/after/plugin"
-
-# - Nvim To File ----
-alias goz="nvim ~/.zshrc"
-alias got="nvim ~/.config/tmux/tmux.conf"
-alias gos="nvim ~/.config/skhd/skhdrc"
-alias gok="nvim ~/.config/kitty/kitty.conf"
-alias gop="nvim ~/.config/picom/picom.conf"
-alias goy="nvim ~/.config/yabai/yabairc"
-alias godot="nvim ~/repos/.dotfiles/"
-alias godotc="nvim ~/repos/.dotfiles/.config"
-alias goi3="nvim ~/.config/i3/config"
-alias gon="nvim ~/.config/nvim/"
-alias gonr="nvim ~/.config/nvim/lua/flynnvim/remap.lua"
-alias gonw="nvim ~/.config/nvim/lua/flynnvim/maps.lua"
-alias gonp="nvim ~/.config/nvim/lua/flynnvim/packer.lua"
-alias gons="nvim ~/.config/nvim/lua/flynnvim/set.lua"
-alias gona="nvim ~/.config/nvim/after/plugin"
-
-# - Source --------
-alias sz="source ~/.zshrc"
-alias st="tmux source ~/.config/tmux/tmux.conf"
-alias sy="yabai --restart-service"
-alias ss="skhd --reload"
-
-# - List --------
-alias ll="ls -lah"
-alias l="ls -l"
-alias la="ls -la"
-alias ls="ls -GFh"
-
-# - Git ---------
-alias gs="git status"
-alias ga="git add"
-alias gb="git branch"
-alias gc="git commit"
-alias gd="git diff"
-
-alias pushconfig='f() { cd ~/repos/.dotfiles; git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
-alias push='f() { git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
-
-alias push='f() { git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
 
 download_github_folder() {
   # $1 = GitHub repo URL (e.g., https://github.com/numpy/numpy)

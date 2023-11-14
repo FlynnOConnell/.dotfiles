@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md.md",
+                "file": "Personal/Fix.md",
                 "mode": "source",
                 "backlinks": true,
                 "source": false
@@ -87,7 +87,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "README.md.md",
+                "file": "Personal/Fix.md",
                 "linksCollapsed": true,
                 "unlinkedCollapsed": true
               }
@@ -110,7 +110,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "README.md.md"
+                "file": "Personal/Fix.md"
               }
             }
           },
@@ -120,7 +120,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "README.md.md",
+                "file": "Personal/Fix.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -161,9 +161,10 @@
   },
   "active": "88465f28af161215",
   "lastOpenFiles": [
+    "README.md",
+    "README.md.md",
     "Scratchpad.md",
     "Untitled.md",
-    "README.md.md",
     "Cornell/LFP.md",
     "RBO/Data Server.md",
     "Personal/CommandLine.md",
@@ -206,7 +207,6 @@
     "LFM Technical",
     "New folder",
     "RBO/LBM-sample/Code/Pre_Processing_Executable/preProcessMAxiMum.m.md",
-    "Cornell.md",
     "RBO/LBM-sample/Code/Pre_Processing_Executable"
   ]
 }
