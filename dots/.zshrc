@@ -44,21 +44,28 @@ get_os() {
 
 zstyle ':omz:update' mode auto      # update automatically without asking
 zstyle ':omz:update' frequency 13
-source ~/.oh-my-zsh/oh-my-zsh.sh
 
 if [ ! -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions" ]; then
-    git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+    git clone https://github.com/zsh-users/zsh-completions "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions"
 fi
 
-fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
-
-# zsh vi mode
-bindkey -v
+if [ ! -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-vi-mode" ]; then
+    git clone https://github.com/jeffreytse/zsh-vi-mode "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-vi-mode"
+    source ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-vi-mode
+    ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
+fi
 
 if [ ! -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-autosuggestions" ]; then
-    # Clone zsh-autosuggestions
-    git clone https://github.com/marlonrichert/zsh-autocomplete
+    git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-autosuggestions"
 fi
+
+plugins=(
+    zsh-completions
+    zsh-vi-mode
+    zsh-autosuggestions
+)
+
+source ~/.oh-my-zsh/oh-my-zsh.sh
 
 # ---------------------------------------------------------------------------------
 # Node/NPM ------------------------------------------------------------------------
