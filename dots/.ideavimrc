@@ -3,12 +3,13 @@ let mapleader=" "
 
 imap kj <Esc>
 
-nnoremap <c-e> :action ActivateDebugToolWindow<CR>
-nnoremap <c-t> :action ActivateTerminalToolWindow<CR>
-nnoremap <c-s> :action ActivateSciViewToolWindow<CR>
-nnoremap <c-x> :action HideAllWindows<CR>
-nnoremap <c-p> :action JumpToLastWindow<CR>
-nnoremap <c-a> :action ShowAllWindows<CR>
+nnoremap <c-a-e> :action ActivateDebugToolWindow<CR>
+nnoremap <c-a-h> :action ActivateServicesToolWindow<CR>
+nnoremap <c-a-t> :action ActivateTerminalToolWindow<CR>
+nnoremap <c-a-s> :action ActivateSciViewToolWindow<CR>
+nnoremap <c-a-x> :action HideAllWindows<CR>
+nnoremap <c-a-p> :action JumpToLastWindow<CR>
+nnoremap <c-a-a> :action ShowAllWindows<CR>
 
 """ Colorscheme ------------------------------
 
