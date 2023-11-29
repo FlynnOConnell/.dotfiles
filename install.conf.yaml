@@ -13,14 +13,22 @@
 - link:
     ~/obsidian:
       path: obsidian/
-    ~/.local/bin/tmux-sessionizer:
-      path: dots/.local/bin/tmux-sessionizer
+    ~/.local/bin:
+      path: dots/.local/bin
+
     ~/.bashrc:
       path: dots/.bashrc
     ~/.ideavimrc:
       path: dots/.ideavimrc
     ~/.zshrc:
       path: dots/.zshrc
+    ~/.zshenv:
+      path: dots/.zshenv
+    ~/.zsh_profile:
+      path: dots/.zsh_profile
+    ~/.exports:
+      path: dots/.exports
+
     ~/.config/vim:
       path: dots/.config/vim
     ~/.config/github-copilot:
@@ -62,12 +70,6 @@
       path: dots/.config/nvim
 
     # Linux configs ---
-    ~/.Xmodmap:
-      path: .Xmodmap
-      if: '[ `uname` = Linux ]'
-    ~/.fonts:
-      path: .fonts
-      if: '[ `uname` = Linux ] '
     ~/.icons:
       path: dots/.icons
       if: '[ `uname` = Linux ] '
