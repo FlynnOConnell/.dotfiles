@@ -1,5 +1,6 @@
 echo "Reading .zshrc file..."
 source ~/.bashrc
+source ~/.exports
 
 bindkey -s ^f "tmux-sessionizer\n"
 echo "cntrl-f to open tmux sessionizer"
@@ -54,7 +55,10 @@ plugins=(
     zsh-vi-mode
 )
 
+echo ZVM_VI_ESCAPE_BINDKEY=kj >> ~/.oh-my-zsh/custom/custom.zsh
+
 source ~/.oh-my-zsh/oh-my-zsh.sh
+source ~/.oh-my-zsh/custom/custom.zsh
 
 # ---------------------------------------------------------------------------------
 # Node/NPM ------------------------------------------------------------------------
@@ -125,8 +129,5 @@ else
 fi
 unset __conda_setup
 
-if [ -f "/home/flynn/conda/etc/profile.d/mamba.sh" ]; then
-    . "/home/flynn/conda/etc/profile.d/mamba.sh"
-fi
 # <<< conda initialize <<<
 

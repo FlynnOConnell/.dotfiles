@@ -1,7 +1,6 @@
 vim.g.mapleader = " "
 vim.opt.nu = true
 vim.opt.relativenumber = true
-
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
@@ -38,3 +37,5 @@ vim.opt.shortmess = vim.opt.shortmess + "c"
 -- this removes the jitter when warnings/errors flow in
 vim.wo.signcolumn = "yes"
 
+vim.g.python_host_prog = '~/.local/bin/nvim-dockerizer'
+vim.g.python3_host_prog = '~/.local/bin/nvim-dockerizer'
