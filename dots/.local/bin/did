@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Prompt to filter running Docker containers using FZF and output the ID to
+# stdout.
+#
+# Some example usages:
+#
+# Show logs of a container
+# $ docker logs $(did)
+# Copy container ID to the clipboard
+# $ did | pbcopy
+function did()
+{
+    local containerId=$(docker ps --format 'table {{.ID}}\t{{.Names}}' | eval "fzf -m --header='docker:containerId' --layout=reverse --height=40%" | awk '{print $1}')
+
+    if [ "$containerId" != "CONTAINER" ] && [ "x$containerId" != "x" ]
+    then
+        echo $containerId
+    fi
+}
+
+did

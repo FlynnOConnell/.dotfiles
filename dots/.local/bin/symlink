@@ -1,0 +1,51 @@
+#!/bin/bash
+############################
+# .make.sh
+# This script creates symlinks from the home directory to any desired dotfiles
+# in ~/.dotfiles
+# Symlinks folders/files from the "dots" directory as dotfiles to "~". Also
+# symlinks folders/files from the "config" directory to the "~/.config"
+# directory.
+############################
+
+########## Variables
+
+dir=~/repos/.dotfiles                  # dotfiles directory
+olddir=~/.dotfiles_old           # old dotfiles backup directory
+
+##########
+
+# create dotfiles_old in homedir
+echo "Creating $olddir for backup of any existing dotfiles in ~"
+mkdir -p $olddir
+echo "...done"
+
+# change to the dotfiles directory
+echo "Changing to the $dir directory"
+cd $dir
+echo "...done"
+
+# move any existing dotfiles in homedir to dotfiles_old directory, then create
+# symlinks
+for file in ./dots/*; do
+    filename=$(echo $file | rev | cut -d'/' -f-1 | rev)
+
+    if [ ! -f ~/.$filename ]; then
+        echo "Moving existing file ~/.$filename to $olddir/.$filename"
+        mv ~/.$filename $olddir/
+    fi
+
+    if [ ! -e ~/.$filename ]; then
+        echo "Creating symlink to $filename in home directory."
+        ln -s $dir/dots/$filename ~/.$filename
+    fi
+done
+
+# Link folders/files from the config folder to .config
+for file in ./config/*; do
+    filename=$(echo $file | rev | cut -d'/' -f-1 | rev)
+    if [ ! -e ~/.config/$filename ]; then
+        echo "Creating symlink to $filename in .config directory."
+        ln -s $dir/config/$filename ~/.config/$filename
+    fi
+done
