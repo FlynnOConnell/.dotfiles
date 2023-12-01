@@ -1,12 +1,24 @@
 #!/bin/bash
+#
+set -e
 
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install
+if ! command -v fzf &> /dev/null; then
+    echo "fzf is not installed. Installing..."
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install
+else
+    echo "fzf is already installed. Skipping installation."
+fi
 
 # - Kitty ----
 if ! command -v kitty &> /dev/null; then
     echo "kitty terminal emulator is not installed. Installing..."
-    curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
+    curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin launch=n installer=nightly
+    sudo ln -s ~/.local/kitty.app/bin/kitty /usr/local/bin/
+    cp ~/.local/kitty.app/share/applications/kitty.desktop ~/.local/share/applications/
+    cp ~/.local/kitty.app/share/applications/kitty-open.desktop ~/.local/share/applications/
+    sed -i "s|Icon=kitty|Icon=/home/$USER/.local/kitty.app/share/icons/hicolor/256x256/apps/kitty.png|g" ~/.local/share/applications/kitty*.desktop
+    sed -i "s|Exec=kitty|Exec=/home/$USER/.local/kitty.app/bin/kitty|g" ~/.local/share/applications/kitty*.desktop
 else
     echo "kitty terminal emulator is already installed. Skipping installation."
 fi
@@ -20,7 +32,6 @@ else
     echo "npm is already installed. Skipping installation."
 fi
 
-
 # - TPM ----
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
     # If not, clone the tpm repository
@@ -30,4 +41,4 @@ else
     echo "tmux plugin manager (tpm) already exists. Skipping clone."
 fi
 
-chmod +x $HOME/.local/bin/tmux-sessionizer
+chmod +x $HOME/.local/bin/*
