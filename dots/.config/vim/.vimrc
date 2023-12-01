@@ -20,7 +20,6 @@ set foldmethod=indent
 
 set clipboard+=unnamed
 set clipboard+=ideaputnnoremap \e :e ~/.ideavimrc<CR>
-nnoremap \r :action IdeaVim.ReloadVimRc.reload<CR>
 
 nnoremap <cr> zz
 nnoremap <c-d> <c-d>zz
@@ -28,7 +27,6 @@ nnoremap <c-u> <c-u>zz
 xnoremap <leader>p <+p>
 nnoremap <leader>y <+y>
 nnoremap <leader>dd "_dd
-vnoremap <S-SPACE> <ESC>
 imap kj <ESC>
 
 "move between splits"
@@ -40,6 +38,7 @@ nmap k kzz
 nnoremap n nzz
 nnoremap n nzz
 nnoremap N Nzz
+
 "keep selection after indent/outdent"
 vnoremap < <gv
 vnoremap > >gv
