@@ -2,6 +2,8 @@ echo "Reading .zshrc file..."
 source ~/.bashrc
 source ~/.exports
 
+export PATH="/home/flynn/.local:$PATH"
+
 bindkey -s ^f "tmux-sessionizer\n"
 echo "cntrl-f to open tmux sessionizer"
 
@@ -46,19 +48,25 @@ get_os() {
 zstyle ':omz:update' mode auto      # update automatically without asking
 zstyle ':omz:update' frequency 13
 
-if [ ! -d "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-vi-mode" ]; then
-    git clone https://github.com/jeffreytse/zsh-vi-mode "${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-vi-mode"
-    source ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-vi-mode
+# Ensure ZSH and ZSH_CUSTOM are properly set with home directory expansion
+ZSH="${ZSH:-$HOME/.oh-my-zsh}"
+ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
+
+# Clone zsh-vi-mode plugin if it doesn't exist
+if [ ! -d "$ZSH_CUSTOM/plugins/zsh-vi-mode" ]; then
+    git clone https://github.com/jeffreytse/zsh-vi-mode "$ZSH_CUSTOM/plugins/zsh-vi-mode"
+    source "$ZSH_CUSTOM/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh"
 fi
 
-plugins=(
-    zsh-vi-mode
-)
+# Add zsh-vi-mode to plugins array
+plugins=(zsh-vi-mode)
 
-echo ZVM_VI_ESCAPE_BINDKEY=kj >> ~/.oh-my-zsh/custom/custom.zsh
+# Configure ZVM_VI_ESCAPE_BINDKEY
+echo "ZVM_VI_ESCAPE_BINDKEY=kj" >> "$ZSH_CUSTOM/custom.zsh"
 
-source ~/.oh-my-zsh/oh-my-zsh.sh
-source ~/.oh-my-zsh/custom/custom.zsh
+# Source Oh My Zsh and custom configurations
+source "$ZSH/oh-my-zsh.sh"
+source "$ZSH_CUSTOM/custom.zsh"
 
 # ---------------------------------------------------------------------------------
 # Node/NPM ------------------------------------------------------------------------
