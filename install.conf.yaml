@@ -1,21 +1,25 @@
+- shell:
+  -
+    command: uname && scripts/install
+    stdout: true
+    quiet: true
+
 - defaults:
     link:
       relink: true
-      create: true
-      force: true
 
 - clean: ['~']
 - clean:
     ~/:
     ~/.config:
       recursive: true
-
 - link:
     ~/obsidian:
       path: obsidian/
+      force: true
+      create: true
     ~/.local/bin:
       path: dots/.local/bin
-
     ~/.bashrc:
       path: dots/.bashrc
     ~/.ideavimrc:
@@ -31,10 +35,15 @@
 
     ~/.config/vim:
       path: dots/.config/vim
+
     ~/.config/github-copilot:
       path: dots/.config/github-copilot
+      exclude: [ dots/.config/github-copilot/share ]
+
     ~/.config/lazygit:
       path: dots/.config/lazygit
+      exclude: [ dots/.config/lazygit/share ]
+
     ~/.config/neofetch:
       path: dots/.config/neofetch
     ~/.config/kitty:
@@ -103,4 +112,5 @@
     ~/.config/picom:
       path: dots/.config/picom
       if: '[ `uname` = Linux ]'
+
 
