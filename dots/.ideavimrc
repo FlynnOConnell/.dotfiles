@@ -3,26 +3,46 @@ let mapleader=" "
 
 imap kj <Esc>
 
-nnoremap <c-a-e> :action ActivateDebugToolWindow<CR>
-nnoremap <c-a-h> :action ActivateServicesToolWindow<CR>
-nnoremap <c-a-t> :action ActivateTerminalToolWindow<CR>
-nnoremap <c-a-s> :action ActivateSciViewToolWindow<CR>
-nnoremap <c-a-x> :action HideAllWindows<CR>
-nnoremap <c-a-p> :action JumpToLastWindow<CR>
-nnoremap <c-a-a> :action ShowAllWindows<CR>
+""" Window / Split Management ---------------
+noremap <C-L> <C-W><C-L>
+noremap <C-H> <C-W><C-H>
+noremap <C-K> <C-W><C-K>
+noremap <C-J> <C-W><C-J>
 
-""" Colorscheme ------------------------------
+map <c-a-\> <Action>(SplitVertically)
+map <c-a-/> <Action>(SplitHorizontally)
+map <c-a-x> <Action>(Unsplit)
+map <c-a-z> <Action>(UnsplitAll)
+
+nnoremap <c-a-m> :action MoveEditorToOppositeTabGroup<CR>
+nnoremap <c-a-n> :action EditSourceInNewWindow<CR>
+
+nnoremap <c-a-1> :action ActivateDebugToolWindow<CR>
+nnoremap <c-a-2> :action ActivateRunToolWindow<CR>
+nnoremap <c-a-3> :action ActivatePythonConsoleToolWindow<CR>
+nnoremap <c-a-4> :action ActivateSciViewToolWindow<CR>
+nnoremap <c-a-5> :action ActivateServicesToolWindow<CR>
+
+nnoremap <c-a-6> :action ActivateCommitToolWindow<CR>
+nnoremap <c-a-7> :action ActivateBookmarksToolWindow<CR>
+
+nnoremap <c-a-q> :action HideAllWindows<CR>
+nnoremap <c-a-w> :action HideActiveWindow<CR>
+nnoremap <c-a-;> :action JumpToLastWindow<CR>
 
 """ Plugins  --------------------------------
-
 set surround
 set commentary
 set NERDTree
 set highlightedyank
 
 """ Handlers --------------------------------
-sethandler <C-C> v-i:ide n:vim
-sethandler <C-V> v-i:ide n:vim
+sethandler <c-c> v-i:ide n:vim
+sethandler <c-v> v-i:ide n:vim
+sethandler <c-a-;> n:vim
+sethandler <c-a-n> n:vim
+sethandler <c-a-m> n:vim
+sethandler <c-a-p> n:vim
 
 """ Common settings -------------------------
 set so=20  " Keep 10 lines above/below cursor
@@ -30,14 +50,11 @@ set nu
 set relativenumber
 set sneak
 set clipboard+=unnamed
+set clipboard+=ideaput
 set ignorecase
 set smartcase
 set scrolloff=5
 set wildignore+=*/target/*,*/.idea/*,*/.git/*,*/.svn/*,*/.hg/*,*/build/*
-
-"""set guicursor=n:hor10,i:ver25
-
-""" Idea specific settings ------------------
 set ideastatusicon=gray
 set ideamarks " Sync marks and idea bookmarks
 set ideajoin
@@ -45,8 +62,6 @@ set ideajoin
 """ Mappings --------------------------------
 nnoremap \ :NERDTree<CR>
 
-map <C-d> <C-d>zz
-map <C-u> <C-u>zz
 map n nzzzv
 map N Nzzzv
 map j jzz
@@ -56,9 +71,13 @@ map k kzz
 vnoremap < <gv
 vnoremap > >gv
 
-""" cancel visual selection
+""" control binds 
 vnoremap <C-j> <ESC>
 vnoremap <C-k> <ESC>
+map <C-d> <C-d>zz
+map <C-u> <C-u>zz
+
+map <c-w> <Action>(CloseContent)
 
 """ Tabs ------------------------------------
 map <C-1> 1gt
@@ -71,18 +90,12 @@ map <C-7> 7gt
 
 nnoremap <TAB> :action NextTab<CR>
 nnoremap <s-TAB> :action PreviousTab<CR>
-map <C-w> <Action>(CloseContent)
 
-nnoremap <c-p> :action JumpToLastWindow<CR>
-nnoremap <c-x> :action HideAllWindows<CR>
-
-vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
-
-""" Docs and LSP -----------------------------
-
+""" gx LSP -----------------------------
 map gn <Action>(GotoNextError)
 map gp <Action>(GotoPreviousError)
 map gh <Action>(ShowErrorDescription)
+map ge <Action>(EvaluateExpression)
 
 map gi <Action>(GotoImplementation)
 map gd <Action>(GotoDeclaration)
@@ -91,7 +104,9 @@ map gr <Action>(RenameElement)
 map gs <Action>(ShowUsages)
 map gf <Action>(Back)
 
+""" Leader Key Mappings ----------------------
 map <leader><leader> <Action>(ExecuteInPyConsoleAction)
+vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
 
 map <leader>o <Action>(OptimizeImports)
 map <leader>r <Action>(ReformatCode)
@@ -107,11 +122,6 @@ map <leader>fc <action>(FindInPath)
 
 map <leader>ev :e ~/.ideavimrc<CR>
 
-""" Window / Split Management ---------------
-noremap <C-L> <C-W><C-L>
-noremap <C-H> <C-W><C-H>
-map <leader>\ <Action>(SplitVertically)
-map <leader>- <Action>(SplitHorizontally)
 
 """ Run/Debug --------------------------------
 map ,r <Action>(Run)

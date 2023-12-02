@@ -1,6 +1,20 @@
 #!/bin/bash
-#
+
 set -e
+
+# - Keymapp ----
+if ! command -v keymapp &> /dev/null; then
+    echo "keymapp is not installed. Installing..."
+    # Download the tar.gz file
+    curl -L https://oryx.nyc3.cdn.digitaloceanspaces.com/keymapp/keymapp-latest.tar.gz -o keymapp-latest.tar.gz
+    tar -xzf keymapp-latest.tar.gz
+    sudo mv keymapp /usr/bin/keymapp
+    sudo chmod +x /usr/bin/keymapp
+    rm keymapp-latest.tar.gz
+else
+    echo "keymapp is already installed. Skipping installation."
+fi
+
 
 if ! command -v fzf &> /dev/null; then
     echo "fzf is not installed. Installing..."
