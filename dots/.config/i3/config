@@ -20,10 +20,6 @@ exec --no-startup-id xrdb -merge ~/.Xresources
 exec --no-startup-id nm-applet
 exec_always --no-startup-id blueman-applet
 
-# set nitrogen manually wallpaper monitor 1
-exec_always --no-startup-id nitrogen --force-setter=xinerama --set-zoom /home/$USER/wallpapers/lost-in-space.png --head=1
-exec_always --no-startup-id nitrogen --force-setter=xinerama --set-zoom-fill /home/$USER/wallpapers/color_background.png --head=0
-
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
