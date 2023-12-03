@@ -1,5 +1,42 @@
-""" Map leader to space ---------------------
+""" Plugins  --------------------------------
+
+set surround
+set commentary
+set NERDTree
+set highlightedyank
+
+""" Handlers --------------------------------
+sethandler <c-c> v-i:ide n:vim
+sethandler <c-v> v-i:ide n:vim
+sethandler <c-a-;> n:vim
+sethandler <c-a-n> n:vim
+sethandler <c-a-m> n:vim
+sethandler <c-a-f> n:vim
+sethandler <c-a-F> n:vim
+sethandler <c-a-p> n:vim
+
+""" Common settings -------------------------
+
+set so=20  " Keep 10 lines above/below cursor
+set nu
+set relativenumber
+set sneak
+set clipboard+=unnamed
+set clipboard+=ideaput
+set ignorecase
+set smartcase
+set scrolloff=5
+set wildignore+=*/target/*,*/.idea/*,*/.git/*,*/.svn/*,*/.hg/*,*/build/*
+set ideastatusicon=gray
+set ideamarks " Sync marks and idea bookmarks
+set ideajoin
 let mapleader=" "
+
+nmap <leader>; :call Praise("IdeaVim")<CR>
+
+function! Praise(name)
+  echo a:name .. " is good"
+endfunction
 
 imap kj <Esc>
 
@@ -17,6 +54,10 @@ map <c-a-z> <Action>(UnsplitAll)
 nnoremap <c-a-m> :action MoveEditorToOppositeTabGroup<CR>
 nnoremap <c-a-n> :action EditSourceInNewWindow<CR>
 
+nnoremap <c-a-f> :action GoToFile<CR>
+nnoremap <c-a-o> :action GoToSymbol<CR>
+nnoremap <c-a-p> :action SearchEverywhere<CR>
+
 nnoremap <c-a-1> :action ActivateDebugToolWindow<CR>
 nnoremap <c-a-2> :action ActivateRunToolWindow<CR>
 nnoremap <c-a-3> :action ActivatePythonConsoleToolWindow<CR>
@@ -30,34 +71,6 @@ nnoremap <c-a-q> :action HideAllWindows<CR>
 nnoremap <c-a-w> :action HideActiveWindow<CR>
 nnoremap <c-a-;> :action JumpToLastWindow<CR>
 
-""" Plugins  --------------------------------
-set surround
-set commentary
-set NERDTree
-set highlightedyank
-
-""" Handlers --------------------------------
-sethandler <c-c> v-i:ide n:vim
-sethandler <c-v> v-i:ide n:vim
-sethandler <c-a-;> n:vim
-sethandler <c-a-n> n:vim
-sethandler <c-a-m> n:vim
-sethandler <c-a-p> n:vim
-
-""" Common settings -------------------------
-set so=20  " Keep 10 lines above/below cursor
-set nu
-set relativenumber
-set sneak
-set clipboard+=unnamed
-set clipboard+=ideaput
-set ignorecase
-set smartcase
-set scrolloff=5
-set wildignore+=*/target/*,*/.idea/*,*/.git/*,*/.svn/*,*/.hg/*,*/build/*
-set ideastatusicon=gray
-set ideamarks " Sync marks and idea bookmarks
-set ideajoin
 
 """ Mappings --------------------------------
 nnoremap \ :NERDTree<CR>
@@ -73,7 +86,7 @@ vnoremap > >gv
 
 """ control binds 
 vnoremap <C-j> <ESC>
-vnoremap <C-k> <ESC>
+map <C-k> :action SmartTypeCompletion<CR>
 map <C-d> <C-d>zz
 map <C-u> <C-u>zz
 
@@ -88,13 +101,14 @@ map <C-5> 5gt
 map <C-6> 6gt
 map <C-7> 7gt
 
-nnoremap <TAB> :action NextTab<CR>
-nnoremap <s-TAB> :action PreviousTab<CR>
+map <c-n> <Action>(NextTab)
+map <c-p> <Action>(PreviousTab)<CR>
 
 """ gx LSP -----------------------------
 map gn <Action>(GotoNextError)
 map gp <Action>(GotoPreviousError)
 map gh <Action>(ShowErrorDescription)
+map gk <Action>(ShowIntentionActions)
 map ge <Action>(EvaluateExpression)
 
 map gi <Action>(GotoImplementation)
