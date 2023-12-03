@@ -16,6 +16,8 @@ exec_always --no-startup-id chmod +x "/home/$USER/.config/i3/scripts/*"
 exec_always --no-startup-id chmod +x "/home/$USER/.config/polybar/scripts/*"
 exec_always --no-startup-id picom --config /home/$USER/.config/picom/picom.conf
 exec_always --no-startup-id /home/$USER/.config/polybar/scripts/polybarstart.sh
+exec_always --no-startup-id dwall -s firewatch
+
 exec --no-startup-id xrdb -merge ~/.Xresources
 exec --no-startup-id nm-applet
 exec_always --no-startup-id blueman-applet
@@ -109,16 +111,15 @@ workspace "3" output DP-2
 workspace "4" output DP-2
 workspace "5" output DP-2
 
-workspace "6" output DP-1
-workspace "7" output DP-1
-workspace "8" output DP-1
-workspace "9" output DP-1
+workspace "6" output DP-0
+workspace "7" output DP-0
+workspace "8" output DP-0
+workspace "9" output DP-0
 
 # Monitor 1
 assign [class="^firefox$"] $ws1
 assign [class="^kitty$"] $ws2
 assign [class="^jetbrains-pycharm$"] $ws3
-# ws4 saved for second ide process
 assign [class="^obsidian$"] $ws5
 
 # Monitor 2
