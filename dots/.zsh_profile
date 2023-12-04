@@ -1,12 +1,22 @@
 
-export XDG_CONFIG_HOME=$HOME/.config
-VIM="nvim"
-
 PERSONAL=$XDG_CONFIG_HOME/personal
 
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
+
+export PATH="$HOME/.local/share/nvim/site/pack/packer/start:$PATH"
+export XDG_CONFIG_HOME=$HOME/.config
 export CC="clang-12"
 export CXX="clang++-12"
 export PYTHONBREAKPOINT="pudb.set_trace"
 
+VIM="nvim"
 export GIT_EDITOR=$VIM
 

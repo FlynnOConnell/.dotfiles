@@ -42,7 +42,7 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
 bindsym $mod+Shift+p exec --no-startup-id flameshot gui -c -s
-bindsym $mod+Shift+f exec firefox-developer-edition
+bindsym $mod+Shift+f exec firefox-dev
 bindsym $mod+Shift+t exec --no-startup-id kitty @ new-window || kitty
 
 bindsym $mod+space exec "rofi -modi drun -show drun"
@@ -104,18 +104,20 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 for_window [class="^.*"] border pixel 1
 for_window [class="^.*"] client.focused
 
-# Start applications on specific workspaces --------------------
-workspace "1" output DP-2
-workspace "2" output DP-2
-workspace "3" output DP-2
-workspace "4" output DP-2
-workspace "5" output DP-2
+set $MONITORA DP-0
+set $MONITORB DP-4
 
-workspace "6" output DP-0
-workspace "7" output DP-0
-workspace "8" output DP-0
-workspace "9" output DP-0
+# Start applications on specific workspaces
+workspace "1" output $MONITORA
+workspace "2" output $MONITORA
+workspace "3" output $MONITORA
+workspace "4" output $MONITORA
+workspace "5" output $MONITORA
 
+workspace "6" output $MONITORB
+workspace "7" output $MONITORB
+workspace "8" output $MONITORB
+workspace "9" output $MONITORB
 # Monitor 1
 assign [class="^firefox$"] $ws1
 assign [class="^kitty$"] $ws2

@@ -7,6 +7,7 @@
 - defaults:
     link:
       relink: true
+      force: true
 
 - clean: ['~']
 - clean:
@@ -26,6 +27,8 @@
       path: dots/.ideavimrc
     ~/.zshrc:
       path: dots/.zshrc
+    ~/.aliases:
+      path: dots/.aliases
     ~/.zshenv:
       path: dots/.zshenv
     ~/.zsh_profile:

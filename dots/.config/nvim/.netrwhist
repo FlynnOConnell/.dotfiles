@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =4
+let g:netrw_dirhist_4='/usr/bin'
+let g:netrw_dirhist_3='/usr'
+let g:netrw_dirhist_2='/'
+let g:netrw_dirhist_1='/home'
+let g:netrw_dirhist_0='/home/thom'
+let g:netrw_dirhist_9='/home/thom/.local'
+let g:netrw_dirhist_8='/home/thom'
+let g:netrw_dirhist_7='/home/thom/.local'
+let g:netrw_dirhist_6='/home/thom/.local/opt'
+let g:netrw_dirhist_5='/home/thom/.local'
