@@ -1,7 +1,6 @@
 echo "Sourcing exports.."
 
 export XDG_CONFIG_HOME=$HOME/.config
-
 export FF_PROFILE_MAC="$HOME/Library/Application Support/Firefox/Profiles/j4j016y9.dev-edition-default/chrome"
 export CC="clang-12"
 export CXX="clang++-12"

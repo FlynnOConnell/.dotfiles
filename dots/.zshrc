@@ -1,8 +1,7 @@
 echo "Reading .zshrc file..."
-source ~/.bashrc
 source ~/.exports
+source ~/.aliases
 
-export PATH="/home/flynn/.local:$PATH"
 
 bindkey -s ^f "tmux-sessionizer\n"
 echo "cntrl-f to open tmux sessionizer"
@@ -14,7 +13,6 @@ echo "cntrl-f to open tmux sessionizer"
 mkdir -p "$HOME/.local/bin"
 
 ZSH_THEME="steeef"
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 setopt NO_BEEP
 
@@ -139,3 +137,5 @@ unset __conda_setup
 
 # <<< conda initialize <<<
 
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
