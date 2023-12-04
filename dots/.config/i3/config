@@ -104,8 +104,8 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 for_window [class="^.*"] border pixel 1
 for_window [class="^.*"] client.focused
 
-set $MONITORA DP-0
-set $MONITORB DP-4
+set $MONITORA DP-4
+set $MONITORB DP-0
 
 # Start applications on specific workspaces
 workspace "1" output $MONITORA
