@@ -59,12 +59,12 @@ fi
 # Add zsh-vi-mode to plugins array
 plugins=(zsh-vi-mode)
 
-# Configure ZVM_VI_ESCAPE_BINDKEY
-echo "ZVM_VI_ESCAPE_BINDKEY=kj" >> "$ZSH_CUSTOM/custom.zsh"
-
 # Source Oh My Zsh and custom configurations
 source "$ZSH/oh-my-zsh.sh"
 source "$ZSH_CUSTOM/custom.zsh"
+
+# Configure ZVM_VI_ESCAPE_BINDKEY
+echo "ZVM_VI_ESCAPE_BINDKEY=kj" >> "$ZSH_CUSTOM/custom.zsh"
 
 # ---------------------------------------------------------------------------------
 # Node/NPM ------------------------------------------------------------------------
