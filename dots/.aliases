@@ -42,12 +42,6 @@ alias st="tmux source ~/.config/tmux/tmux.conf"
 alias sy="yabai --restart-service"
 alias ss="skhd --reload"
 
-# - List --------
-alias ll="ls -lah"
-alias l="ls -l"
-alias la="ls -la"
-alias ls="ls -GFh"
-
 # - Git ---------
 alias gs="git status"
 alias ga="git add"
@@ -58,59 +52,3 @@ alias gd="git diff"
 alias pushconfig='f() { cd ~/repos/.dotfiles; git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
 
 alias push='f() { git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
-# - Navigation -
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias ~="cd ~"
-
-alias cdz="cd ~/.zshrc"
-alias cdt="cd ~/.config/tmux/tmux.conf"
-alias cddot="cd ~/repos/.dotfiles/"
-alias cddotc="cd ~/repos/.dotfiles/.config"
-alias cdi3="cd ~/.config/i3/config"
-alias cdn="cd ~/.config/nvim/"
-alias cdnr="cd ~/.config/nvim/lua/flynnvim/remap.lua"
-alias cdnw="cd ~/.config/nvim/lua/flynnvim/maps.lua"
-alias cdnp="cd ~/.config/nvim/lua/flynnvim/packer.lua"
-alias cdns="cd ~/.config/nvim/lua/flynnvim/set.lua"
-alias cdna="cd ~/.config/nvim/after/plugin"
-
-# - Nvim To File ----
-alias goz="nvim ~/.zshrc"
-alias got="nvim ~/.config/tmux/tmux.conf"
-alias gos="nvim ~/.config/skhd/skhdrc"
-alias gok="nvim ~/.config/kitty/kitty.conf"
-alias goy="nvim ~/.config/yabai/yabairc"
-alias godot="nvim ~/repos/.dotfiles/"
-alias godotc="nvim ~/repos/.dotfiles/.config"
-alias goi3="nvim ~/.config/i3/config"
-alias gon="nvim ~/.config/nvim/"
-alias gonr="nvim ~/.config/nvim/lua/flynnvim/remap.lua"
-alias gonw="nvim ~/.config/nvim/lua/flynnvim/maps.lua"
-alias gonp="nvim ~/.config/nvim/lua/flynnvim/packer.lua"
-alias gons="nvim ~/.config/nvim/lua/flynnvim/set.lua"
-alias gona="nvim ~/.config/nvim/after/plugin"
-
-# - Source --------
-alias sz="source ~/.zshrc"
-alias st="tmux source ~/.config/tmux/tmux.conf"
-alias sy="yabai --restart-service"
-alias ss="skhd --reload"
-
-# - List --------
-alias ll="ls -lah"
-alias l="ls -l"
-alias la="ls -la"
-alias ls="ls -GFh"
-
-# - Git ---------
-alias gs="git status"
-alias ga="git add"
-alias gb="git branch"
-alias gc="git commit"
-alias gd="git diff"
-
-alias pushconfig='f() { cd ~/repos/.dotfiles; git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
-alias push='f() { git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
-
