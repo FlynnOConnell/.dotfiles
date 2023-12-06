@@ -11,12 +11,17 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-export PATH="$HOME/.local/share/nvim/site/pack/packer/start:$PATH"
 export XDG_CONFIG_HOME=$HOME/.config
 export CC="clang-12"
 export CXX="clang++-12"
 export PYTHONBREAKPOINT="pudb.set_trace"
 
-VIM="nvim"
 export GIT_EDITOR=$VIM
+export SUDO_EDITOR="nvim"
 
+export FF_PROFILE_MAC="$HOME/Library/Application Support/Firefox/Profiles/j4j016y9.dev-edition-default/chrome"
+export GIT_EDITOR=$VIM
+export PATH="$HOME/.local/share/nvim/site/pack/packer/start:$PATH"
+export PATH="$HOME/bin:$PATH"
+export PATH="$HOME/.local:$PATH"
+export PATH="$HOME/.local/bin:$PATH"

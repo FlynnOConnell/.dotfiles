@@ -29,15 +29,10 @@
       path: dots/.zshrc
     ~/.aliases:
       path: dots/.aliases
-    ~/.zshenv:
-      path: dots/.zshenv
     ~/.zsh_profile:
       path: dots/.zsh_profile
-    ~/.exports:
-      path: dots/.exports
-
-    ~/.config/vim:
-      path: dots/.config/vim
+    ~/.vimrc:
+      path: dots/.config/vim/.vimrc
 
     ~/.config/github-copilot:
       path: dots/.config/github-copilot

@@ -1,5 +1,7 @@
-""" Plugins  --------------------------------
+let mapleader=" "
+imap kj <Esc>
 
+""" Plugins  --------------------------------
 set surround
 set commentary
 set NERDTree
@@ -14,15 +16,13 @@ sethandler <c-a-m> n:vim
 sethandler <c-a-f> n:vim
 sethandler <c-a-F> n:vim
 sethandler <c-a-p> n:vim
+sethandler <c-a-o> n:vim
+sethandler <c-a-d> n:vim
 
-""" Common settings -------------------------
-
-set so=20  " Keep 10 lines above/below cursor
+set so=20  " Keep 20 lines above/below cursor
 set nu
 set relativenumber
 set sneak
-set clipboard+=unnamed
-set clipboard+=ideaput
 set ignorecase
 set smartcase
 set scrolloff=5
@@ -30,15 +30,13 @@ set wildignore+=*/target/*,*/.idea/*,*/.git/*,*/.svn/*,*/.hg/*,*/build/*
 set ideastatusicon=gray
 set ideamarks " Sync marks and idea bookmarks
 set ideajoin
-let mapleader=" "
+set clipboard^=ideaput
 
 nmap <leader>; :call Praise("IdeaVim")<CR>
 
 function! Praise(name)
   echo a:name .. " is good"
 endfunction
-
-imap kj <Esc>
 
 """ Window / Split Management ---------------
 noremap <C-L> <C-W><C-L>
@@ -54,7 +52,9 @@ map <c-a-z> <Action>(UnsplitAll)
 nnoremap <c-a-m> :action MoveEditorToOppositeTabGroup<CR>
 nnoremap <c-a-n> :action EditSourceInNewWindow<CR>
 
-nnoremap <c-a-f> :action GoToFile<CR>
+"""nnoremap <c-a-f> :action GoToFile<CR>
+"""map <leader>ff <action>(GotoFile)
+map <c-a-f> <Action>(GotoFile)
 nnoremap <c-a-o> :action GoToSymbol<CR>
 nnoremap <c-a-p> :action SearchEverywhere<CR>
 
@@ -84,7 +84,7 @@ map k kzz
 vnoremap < <gv
 vnoremap > >gv
 
-""" control binds 
+""" control binds
 vnoremap <C-j> <ESC>
 map <C-k> :action SmartTypeCompletion<CR>
 map <C-d> <C-d>zz
@@ -130,7 +130,6 @@ map <leader>zc <Action>(CollapseAllRegions)
 map <leader>zr <Action>(ExpandRegion)
 map <leader>zm <Action>(CollapseRegion)
 
-map <leader>ff <action>(GotoFile)
 map <leader>fr <action>(RecentFiles)
 map <leader>fc <action>(FindInPath)
 
