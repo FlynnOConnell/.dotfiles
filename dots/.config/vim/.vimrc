@@ -1,44 +1,57 @@
+" General settings
+set so=20  " Keep 20 lines above/below cursor
+set nu
+set relativenumber
+set sneak
+set clipboard+=unnamed
+set ignorecase
+set smartcase
+set scrolloff=5
+set wildignore+=*/target/*,*/.idea/*,*/.git/*,*/.svn/*,*/.hg/*,*/build/*
+
+" Mappings
+let mapleader=" "
+imap kj <Esc>
+
+" Plugins
 set surround
 set commentary
-set relativenumber
-set number
-set incsearch
-set showmode
+set NERDTree
+set highlightedyank
 
-"python auto-indent
-filetype plugin indent on
-set smartindent
-" show existing tab with 4 spaces width
-set tabstop=4
-" when indenting with '>', use 4 spaces width
-set shiftwidth=4
-" on pressing tab, insert 4 spaces
-set expandtab
-"methods of classes are folded, but internals arent
-set foldnestmax=2
-set foldmethod=indent
+" Window / Split Management
+noremap <C-L> <C-W><C-L>
+noremap <C-H> <C-W><C-H>
+noremap <C-K> <C-W><C-K>
+noremap <C-J> <C-W><C-J>
 
-set clipboard+=unnamed
-set clipboard+=ideaputnnoremap \e :e ~/.ideavimrc<CR>
+" Mappings
+nnoremap \ :NERDTree<CR>
+map n nzzzv
+map N Nzzzv
+map j jzz
+map k kzz
 
-nnoremap <cr> zz
-nnoremap <c-d> <c-d>zz
-nnoremap <c-u> <c-u>zz
-xnoremap <leader>p <+p>
-nnoremap <leader>y <+y>
-nnoremap <leader>dd "_dd
-imap kj <ESC>
-
-"move between splits"
-nmap <c-h> <c-w>h
-nmap <c-l> <c-w>l
-
-nmap j jzz
-nmap k kzz
-nnoremap n nzz
-nnoremap n nzz
-nnoremap N Nzz
-
-"keep selection after indent/outdent"
+" Keep selection after visual indent
 vnoremap < <gv
 vnoremap > >gv
+
+" Control binds
+vnoremap <C-j> <ESC>
+map <C-d> <C-d>zz
+map <C-u> <C-u>zz
+
+" Tabs
+map <C-1> 1gt
+map <C-2> 2gt
+map <C-3> 3gt
+map <C-4> 4gt
+map <C-5> 5gt
+map <C-6> 6gt
+map <C-7> 7gt
+
+function! Praise(name)
+  echo a:name . " is good"
+endfunction
+
+nmap <leader>; :call Praise("Vim")<CR>

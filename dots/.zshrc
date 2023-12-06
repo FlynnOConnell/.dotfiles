@@ -1,6 +1,6 @@
 echo "Reading .zshrc file..."
-source ~/.exports
 source ~/.aliases
+source ~/.zsh_profile
 
 
 bindkey -s ^f "tmux-sessionizer\n"

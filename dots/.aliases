@@ -1,7 +1,7 @@
 echo "Sourcing aliases..."
 alias VIM="nvim"
 alias PERSONAL=$XDG_CONFIG_HOME/personal
-
+alias sudoedit='function _sudoedit(){sudo -e "$1";};_sudoedit'
 # - Navigation -
 alias ..="cd .."
 alias ...="cd ../.."
