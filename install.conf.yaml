@@ -1,8 +1,7 @@
 - shell:
   -
-    command: uname && scripts/install
+    command: echo "Running dotfiles configuration OS \n" && uname && scripts/install
     stdout: true
-    quiet: true
 
 - defaults:
     link:

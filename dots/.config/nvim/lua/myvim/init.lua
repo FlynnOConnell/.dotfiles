@@ -2,8 +2,8 @@ require("myvim.set")
 require("myvim.remap")
 require("mason").setup()
 require("mason-lspconfig").setup()
+
 require'lspconfig'.rust_analyzer.setup({
-    -- other settings...
     settings = {
         ["rust-analyzer"] = {
             assist = {

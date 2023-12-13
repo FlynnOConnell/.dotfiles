@@ -9,9 +9,6 @@ if [ -n "$BASH_VERSION" ]; then
         . ~/.bash_profile
     fi
 
-
-    export PATH="$HOME/miniconda3/bin:$PATH"
-    export TERM=xterm-color
     unset MAILCHECK
 
     HISTCONTROL=ignoreboth
@@ -53,13 +50,3 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-
-if [ -f ~/.env ]; then
-    . ~/.env
-fi
-
-if [ -f ~/.aliases ]; then
-    . ~/.aliases
-fi
-
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash

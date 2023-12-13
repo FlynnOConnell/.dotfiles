@@ -130,6 +130,9 @@ assign [class="^slack$"] $ws6
 assign [class="^spotify$"] $ws7
 assign [class="^zoom$"] $ws7
 
+assign [class="^Matplotlib$"] $ws6
+assign [class="^Tk$"] $ws6
+
 for_window [class="firefox"] move to workspace $ws1
 for_window [class="kitty"] move to workspace $ws2
 for_window [class="jetbrains-pycharm"] move to workspace $ws3
@@ -147,6 +150,8 @@ for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom Meeting"] floa
 set $STICKY floating enable, sticky enable
 set $FLOAT floating enable
 
+
+for_window [class="Matplotlib"] $FLOAT
 for_window [class="Blueman-manager"] $FLOAT
 for_window [class="Firefox" window_role="GtkFileChooserDialog"] $FLOAT
 for_window [class="octopi"] $FLOAT

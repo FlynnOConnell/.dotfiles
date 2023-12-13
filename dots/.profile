@@ -57,5 +57,3 @@ alias gd="git diff"
 
 # - Other ---------
 alias hf='history | fzf -e'
-
-alias lsa='ls -la'
