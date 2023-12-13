@@ -1,15 +1,23 @@
 echo "Sourcing aliases..."
+
+alias copy='xclip -sel clip'
+alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
+
+# - Lists ----
+alias lsa='ls -la'
+
 alias VIM="nvim"
 alias PERSONAL=$XDG_CONFIG_HOME/personal
 alias sudoedit='function _sudoedit(){sudo -e "$1";};_sudoedit'
+
 # - Navigation -
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias ~="cd ~"
-
 alias cdz="cd ~/.zshrc"
 alias cdt="cd ~/.config/tmux/tmux.conf"
+alias cdr="cd ~/.config/tmux/tmux.conf"
 alias cddot="cd ~/repos/.dotfiles/"
 alias cdi3="cd ~/.config/i3/config"
 alias cdn="cd ~/.config/nvim/"
@@ -27,13 +35,11 @@ alias got="nvim ~/.config/tmux/tmux.conf"
 alias gos="nvim ~/.config/skhd/skhdrc"
 alias gok="nvim ~/.config/kitty/kitty.conf"
 alias goy="nvim ~/.config/yabai/yabairc"
-alias godot="nvim ~/repos/.dotfiles/"
+alias god="nvim ~/repos/.dotfiles/"
 alias goi3="nvim ~/.config/i3/config"
 alias gon="nvim ~/.config/nvim/"
-alias gonr="nvim ~/.config/nvim/lua/flynnvim/remap.lua"
-alias gonw="nvim ~/.config/nvim/lua/flynnvim/maps.lua"
-alias gonp="nvim ~/.config/nvim/lua/flynnvim/packer.lua"
-alias gons="nvim ~/.config/nvim/lua/flynnvim/set.lua"
+alias gonr="nvim ~/.config/nvim/lua/myvim/remap.lua"
+alias gonp="nvim ~/.config/nvim/lua/myvim/packer.lua"
 alias gona="nvim ~/.config/nvim/after/plugin"
 
 # - Source --------
@@ -49,6 +55,7 @@ alias gb="git branch"
 alias gc="git commit"
 alias gd="git diff"
 
-alias pushconfig='f() { cd ~/repos/.dotfiles; git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
+# - Other ---------
+alias hf='history | fzf -e'
 
-alias push='f() { git add .; echo "Enter commit message: "; read message; git commit -m "$message"; git push; unset -f f; }; f'
+alias lsa='ls -la'

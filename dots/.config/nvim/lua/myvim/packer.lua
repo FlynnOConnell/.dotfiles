@@ -3,6 +3,25 @@ vim.cmd.packadd('packer.nvim')
 return require('packer').startup(function(use)
 
     use {
+        "nvim-neorg/neorg",
+        run = ":Neorg sync-parsers",
+        config = function()
+            require('neorg').setup {
+                load = {
+                    ["core.defaults"] = {},
+                    ["core.dirman"] = {
+                        config = {
+                            workspaces = {
+                                work = "~/repos/notes/work",
+                                home = "~/repos/notes/home",
+                            }
+                        }
+                    }
+                }
+            }
+        end,
+    }
+    use {
         'rust-lang/rust.vim',
         event = 'FileType rust',
         config = function()
@@ -307,6 +326,7 @@ use {
             ensure_installed = {
                 "bashls",
                 "pyright",
+                "pylsp",
                 "cssls",
                 "eslint",
                 "html",

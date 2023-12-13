@@ -1,0 +1,33 @@
+
+Command Editing Shortcuts
+-------------------------
+Ctrl+a  - Go to the start
+Ctrl+e  - Go to the end
+Ctrl+k  - Delete from cursor to the end
+Ctrl+u  - Delete from cursor to the start
+Ctrl+w  - Delete from cursor to start of word (delete backwards one word)
+Ctrl+y  - Paste word or text that was cut using one of the deletion shortcuts
+Ctrl+xx - Move between start of command line and current cursor position (and back again)
+Alt+b   - Move backward one word (or go to start of word the cursor is currently on)
+Alt+f   - Move forward one word (or go to end of word the cursor is currently on)
+Alt+d   - Delete to end of word starting at cursor (whole word if cursor is at the beginning of word)
+Alt+c   - Capitalize to end of word starting at cursor (whole word if cursor is at the beginning of word)
+Alt+u   - Make uppercase from cursor to end of word
+Alt+l   - Make lowercase from cursor to end of word
+Alt+t   - Swap current word with previous
+Ctrl+f  - Move forward one character
+Ctrl+b  - Move backward one character
+Ctrl+d  - Delete character under the cursor
+Ctrl+h  - Delete character before the cursor
+Ctrl+t  - Swap character under cursor with the previous one
+
+Command Recall Shortcuts
+------------------------
+
+Ctrl+r  - Search the history backwards
+Ctrl+g  - Escape from history searching mode
+Ctrl+p  - Previous command in history (walk back through the command history)
+Ctrl+n  - Next command in history (walk forward through the command history)
+Alt+.   - Use the last word of the previous command
+
+Ctrl+z  - Suspend/stop the command

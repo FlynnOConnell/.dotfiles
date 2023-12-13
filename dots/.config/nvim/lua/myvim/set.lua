@@ -1,3 +1,6 @@
+local vim = vim
+local opt = vim.opt
+
 vim.g.mapleader = " "
 vim.opt.nu = true
 vim.opt.relativenumber = true
@@ -16,7 +19,7 @@ vim.opt.incsearch = true
 
 vim.opt.termguicolors = true
 
-vim.opt.scrolloff = 8
+vim.opt.scrolloff = 20
 vim.opt.signcolumn = "yes"
 vim.opt.isfname:append("@-@")
 
@@ -37,5 +40,10 @@ vim.opt.shortmess = vim.opt.shortmess + "c"
 -- this removes the jitter when warnings/errors flow in
 vim.wo.signcolumn = "yes"
 
-vim.g.python_host_prog = '~/.local/bin/nvim-dockerizer'
-vim.g.python3_host_prog = '~/.local/bin/nvim-dockerizer'
+vim.g.python_host_prog = '~/miniconda3/bin/python'
+vim.g.python3_host_prog = '~/miniconda3/bin/python3'
+
+
+opt.foldmethod = "expr"
+opt.foldexpr = "nvim_treesitter#foldexpr()"
+

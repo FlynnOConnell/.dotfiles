@@ -27,16 +27,11 @@ set ignorecase
 set smartcase
 set scrolloff=5
 set wildignore+=*/target/*,*/.idea/*,*/.git/*,*/.svn/*,*/.hg/*,*/build/*
-set ideastatusicon=gray
 set ideamarks " Sync marks and idea bookmarks
 set ideajoin
-set clipboard^=ideaput
 
-nmap <leader>; :call Praise("IdeaVim")<CR>
-
-function! Praise(name)
-  echo a:name .. " is good"
-endfunction
+set ideaput
+set clipboard+=unnamedplus
 
 """ Window / Split Management ---------------
 noremap <C-L> <C-W><C-L>
@@ -49,28 +44,25 @@ map <c-a-/> <Action>(SplitHorizontally)
 map <c-a-x> <Action>(Unsplit)
 map <c-a-z> <Action>(UnsplitAll)
 
-nnoremap <c-a-m> :action MoveEditorToOppositeTabGroup<CR>
-nnoremap <c-a-n> :action EditSourceInNewWindow<CR>
+map <c-a-m> :action MoveEditorToOppositeTabGroup<CR>
+map <c-a-n> :action EditSourceInNewWindow<CR>
 
-"""nnoremap <c-a-f> :action GoToFile<CR>
-"""map <leader>ff <action>(GotoFile)
 map <c-a-f> <Action>(GotoFile)
-nnoremap <c-a-o> :action GoToSymbol<CR>
-nnoremap <c-a-p> :action SearchEverywhere<CR>
+map <c-a-o> :action GoToSymbol<CR>
+map <c-a-p> :action SearchEverywhere<CR>
 
-nnoremap <c-a-1> :action ActivateDebugToolWindow<CR>
-nnoremap <c-a-2> :action ActivateRunToolWindow<CR>
-nnoremap <c-a-3> :action ActivatePythonConsoleToolWindow<CR>
-nnoremap <c-a-4> :action ActivateSciViewToolWindow<CR>
-nnoremap <c-a-5> :action ActivateServicesToolWindow<CR>
+map <c-a-1> :action ActivateDebugToolWindow<CR>
+map <c-a-2> :action ActivateRunToolWindow<CR>
+map <c-a-3> :action ActivatePythonConsoleToolWindow<CR>
+map <c-a-4> :action ActivateSciViewToolWindow<CR>
+map <c-a-5> :action ActivateStructureToolWindow<CR>
 
-nnoremap <c-a-6> :action ActivateCommitToolWindow<CR>
-nnoremap <c-a-7> :action ActivateBookmarksToolWindow<CR>
+map <c-a-6> :action XDebugger.AttachToProcess<CR>
+map <c-a-7> :action ActivateBookmarksToolWindow<CR>
 
-nnoremap <c-a-q> :action HideAllWindows<CR>
-nnoremap <c-a-w> :action HideActiveWindow<CR>
-nnoremap <c-a-;> :action JumpToLastWindow<CR>
-
+map <c-a-q> :action HideAllWindows<CR>
+map <c-a-w> :action HideActiveWindow<CR>
+map <c-a-;> :action JumpToLastWindow<CR>
 
 """ Mappings --------------------------------
 nnoremap \ :NERDTree<CR>
@@ -79,12 +71,13 @@ map n nzzzv
 map N Nzzzv
 map j jzz
 map k kzz
+map <C-d> <C-d>zz
+map <C-u> <C-u>zz
 
-""" keep selection after visual indent
 vnoremap < <gv
 vnoremap > >gv
 
-""" control binds
+""" C-X -------------------------------------
 vnoremap <C-j> <ESC>
 map <C-k> :action SmartTypeCompletion<CR>
 map <C-d> <C-d>zz
@@ -101,10 +94,10 @@ map <C-5> 5gt
 map <C-6> 6gt
 map <C-7> 7gt
 
-map <c-n> <Action>(NextTab)
-map <c-p> <Action>(PreviousTab)<CR>
+map <c-PageDown> <Action>(NextTab)<CR>
+map <c-PageUp> <Action>(PreviousTab)<CR>
 
-""" gx LSP -----------------------------
+""" LSP -----------------------------
 map gn <Action>(GotoNextError)
 map gp <Action>(GotoPreviousError)
 map gh <Action>(ShowErrorDescription)
@@ -118,8 +111,10 @@ map gr <Action>(RenameElement)
 map gs <Action>(ShowUsages)
 map gf <Action>(Back)
 
+map gc <Action>(EditorContextInfo)
+
 """ Leader Key Mappings ----------------------
-map <leader><leader> <Action>(ExecuteInPyConsoleAction)
+
 vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
 
 map <leader>o <Action>(OptimizeImports)
@@ -132,9 +127,9 @@ map <leader>zm <Action>(CollapseRegion)
 
 map <leader>fr <action>(RecentFiles)
 map <leader>fc <action>(FindInPath)
+map <leader>fR <action>(ReplaceInPath)
 
 map <leader>ev :e ~/.ideavimrc<CR>
-
 
 """ Run/Debug --------------------------------
 map ,r <Action>(Run)
@@ -145,7 +140,14 @@ map ,n <Action>(MuteBreakpoints)
 
 map ,a <Action>(ViewBreakpoints)
 map ,s <Action>(StepOver)
-map ,i <Action>(StepInto)
+map ,i <Action>(StepIntoMyCode)
 map ,o <Action>(StepOut)
 map ,c <Action>(Resume)
 map ,d <Action>(Debug)
+
+""" Functions
+nmap <leader>; :call Praise("IdeaVim")<CR>
+
+function! Praise(name)
+  echo a:name .. " is good"
+endfunction

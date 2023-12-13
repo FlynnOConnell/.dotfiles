@@ -1,7 +1,14 @@
 echo "Reading .zshrc file..."
-source ~/.aliases
-source ~/.zsh_profile
 
+[[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
+
+export CLICOLOR=1
+export LSCOLORS=gxFxCxDxBxegedabagaced
+
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+eval "$(dircolors)"
+
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 bindkey -s ^f "tmux-sessionizer\n"
 echo "cntrl-f to open tmux sessionizer"
@@ -10,10 +17,7 @@ echo "cntrl-f to open tmux sessionizer"
 # User-Setup -----------------------------------------------------------------------
 # ----------------------------------------------------------------------------------
 
-mkdir -p "$HOME/.local/bin"
-
 ZSH_THEME="steeef"
-
 setopt NO_BEEP
 
 # ---------------------------------------------------------------------------------
@@ -50,21 +54,8 @@ zstyle ':omz:update' frequency 13
 ZSH="${ZSH:-$HOME/.oh-my-zsh}"
 ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
 
-# Clone zsh-vi-mode plugin if it doesn't exist
-if [ ! -d "$ZSH_CUSTOM/plugins/zsh-vi-mode" ]; then
-    git clone https://github.com/jeffreytse/zsh-vi-mode "$ZSH_CUSTOM/plugins/zsh-vi-mode"
-    source "$ZSH_CUSTOM/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh"
-fi
-
-# Add zsh-vi-mode to plugins array
-plugins=(zsh-vi-mode)
-
 # Source Oh My Zsh and custom configurations
 source "$ZSH/oh-my-zsh.sh"
-source "$ZSH_CUSTOM/custom.zsh"
-
-# Configure ZVM_VI_ESCAPE_BINDKEY
-echo "ZVM_VI_ESCAPE_BINDKEY=kj" >> "$ZSH_CUSTOM/custom.zsh"
 
 # ---------------------------------------------------------------------------------
 # Node/NPM ------------------------------------------------------------------------
@@ -138,3 +129,4 @@ unset __conda_setup
 
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
