@@ -1,13 +1,9 @@
 echo "Reading .zshrc file..."
 
-[[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
-
 export CLICOLOR=1
 export LSCOLORS=gxFxCxDxBxegedabagaced
 
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 eval "$(dircolors)"
-
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 bindkey -s ^f "tmux-sessionizer\n"
@@ -127,6 +123,8 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+[[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
+
+source ~/.aliases
