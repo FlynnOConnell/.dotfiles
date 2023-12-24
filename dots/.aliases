@@ -3,12 +3,12 @@ echo "Sourcing aliases..."
 alias copy='xclip -sel clip'
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 
-# - Lists ----
-alias lsa='ls -la'
-
 alias VIM="nvim"
 alias PERSONAL=$XDG_CONFIG_HOME/personal
 alias sudoedit='function _sudoedit(){sudo -e "$1";};_sudoedit'
+
+# - Lists ----
+alias lsa='ls -la'
 
 # - Navigation -
 alias ..="cd .."
@@ -58,4 +58,8 @@ alias gd="git diff"
 # - Other ---------
 alias hf='history | fzf -e'
 
-alias lsa='ls -la'
+eval $(thefuck --alias fuck)
+eval $(thefuck --alias fk)
+eval $(thefuck --alias FUCK)
+
+alias lg="lazygit"

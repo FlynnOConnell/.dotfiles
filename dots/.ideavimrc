@@ -1,48 +1,15 @@
-let mapleader=" "
+source ~/.intellig/intellig.vim
 
-imap kj <Esc>
+let g:WhichKeyDesc_commentary_gc = "gc Comment (commentary)"
+let g:WhichKeyDesc_commentary_gcc = "gcc Comment entire line (commentary)"
+let g:WhichKeyDesc_commentary_gcu = "gcu Undo Comment (commentary)"
 
-""" Plugins  --------------------------------
-Plug 'tpope/vim-surround'
+map <c-s-=> <Action>(ZoomInIdeAction)
+map <c-s--> <Action>(ZoomOutIdeAction)
+
 Plug 'preservim/nerdtree'
-Plug 'tpope/vim-commentary'
-Plug 'machakann/vim-highlightedyank'
-Plug 'dbakker/vim-paragraph-motion'
 
-"Hello" "*world!"
-
-""" Handlers --------------------------------
-sethandler <c-c> v-i:ide n:vim
-sethandler <c-v> v-i:ide n:vim
-sethandler <c-a-;> n:vim
-sethandler <c-a-n> n:vim
-sethandler <c-a-m> n:vim
-sethandler <c-a-f> n:vim
-sethandler <c-a-F> n:vim
-sethandler <c-a-p> n:vim
-sethandler <c-a-o> n:vim
-sethandler <c-a-d> n:vim
-sethandler <c-a-s> n:vim
-sethandler <c-a--> n:vim
-sethandler <c-a-=> n:vim
-sethandler <c-a-Left> n:vim
-sethandler <c-a-Right> n:vim
-
-set so=20  " Keep 20 lines above/below cursor
-set nu
-set relativenumber
-set sneak
-set ignorecase
-set smartcase
-set scrolloff=5
-set wildignore+=*/target/*,*/.idea/*,*/.git/*,*/.svn/*,*/.hg/*,*/build/*
-
-set ideamarks " Sync marks and idea bookmarks
-set ideajoin
-set ideaput
-set clipboard+=unnamedplus
-
-""" Window / Split Management ---------------
+"""" Window / Split Management ---------------
 noremap <C-L> <C-W><C-L>
 noremap <C-H> <C-W><C-H>
 noremap <C-K> <C-W><C-K>
@@ -52,7 +19,7 @@ map <c-w> <Action>(CloseContent)
 map gn <Action>(GotoNextError)
 map gp <Action>(GotoPreviousError)
 
-""" REMEMBER
+"""" REMEMBER
 map gi <Action>(GotoImplementation)
 map gI <Action>(QuickImplementations)
 
@@ -98,8 +65,6 @@ map <c-a-q> :action HideAllWindows<CR>
 map <c-a-w> :action HideActiveWindow<CR>
 map <c-a-;> :action JumpToLastWindow<CR>
 
-map <c-s-=> <Action>(ZoomInIdeAction)
-map <c-s--> <Action>(ZoomOutIdeAction)
 
 """""""""""""""""""""""""""""""""""""""""""""
 """ Movement --------------------------------
@@ -115,10 +80,10 @@ map <C-u> <C-u>zz
 vnoremap < <gv
 vnoremap > >gv
 
-map <leader>zo <Action>(ExpandAllRegions)
-map <leader>zc <Action>(CollapseAllRegions)
-map zo <Action>(ExpandRegion)
-map zc <Action>(CollapseRegion)
+"map <leader>zo <Action>(ExpandAllRegions)
+"map <leader>zc <Action>(CollapseAllRegions)
+"map zo <Action>(ExpandRegion)
+"map zc <Action>(CollapseRegion)
 
 vnoremap <C-j> <ESC>
 map <C-d> <C-d>zz
@@ -135,10 +100,10 @@ map <C-5> 5gt
 map <C-6> 6gt
 map <C-7> 7gt
 
-map <c-PageDown> <Action>(NextTab)<CR>
-map <c-PageUp> <Action>(PreviousTab)<CR>
+"map <c-PageDown> <Action>(NextTab)<CR>
+"map <c-PageUp> <Action>(PreviousTab)<CR>
 
-""" Run/Debug --------------------------------
+"""" Run/Debug --------------------------------
 map ,r <Action>(Rerun)
 map ,q <Action>(Stop)
 map ,b <Action>(ToggleLineBreakpoint)
@@ -151,13 +116,13 @@ map ,o <Action>(StepOut)
 map ,c <Action>(Resume)
 map ,d <Action>(Debug)
 
-""" Functions
-nmap <leader>; :call Praise("IdeaVim")<CR>
+"""" Functions
+"nmap <leader>; :call Praise("IdeaVim")<CR>
 
-function! Praise(name)
-  echo a:name .. " is good"
-endfunction
+"function! Praise(name)
+"  echo a:name .. " is good"
+"endfunction
 
 
-vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
-map <leader>ev :e ~/.ideavimrc<CR>
+"vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
+"map <leader>ev :e ~/.ideavimrc<CR>
