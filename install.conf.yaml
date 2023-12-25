@@ -14,10 +14,7 @@
     ~/.config:
       recursive: true
 - link:
-    ~/obsidian:
-      path: obsidian/
-      force: true
-      create: true
+
     ~/.local/bin:
       path: dots/.local/bin
     ~/.bashrc:
@@ -26,6 +23,7 @@
       path: dots/.ideavimrc
     ~/.zshrc:
       path: dots/.zshrc
+
     ~/.aliases:
       path: dots/.aliases
     ~/.zsh_profile:
