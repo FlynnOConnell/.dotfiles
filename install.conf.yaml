@@ -26,14 +26,8 @@
 
     ~/.aliases:
       path: dots/.aliases
-    ~/.zsh_profile:
-      path: dots/.zsh_profile
     ~/.vimrc:
       path: dots/.config/vim/.vimrc
-
-    ~/.config/github-copilot:
-      path: dots/.config/github-copilot
-      exclude: [ dots/.config/github-copilot/share ]
 
     ~/.config/lazygit:
       path: dots/.config/lazygit
@@ -54,17 +48,6 @@
     ~/.config/tmux:
       path: dots/.config/tmux
 
-    # macOS configs ---
-    ~/.config/yabai:
-      path: dots/.config/yabai
-      if: '[ `uname` = Darwin ]'
-    ~/.config/sketchybar:
-      path: dots/.config/sketchybar
-      if: '[ `uname` = Darwin ]'
-    ~/.config/skhd:
-      path: dots/.config/skhd
-      if: '[ `uname` = Darwin ]'
-
     # Windows Configs ---
     ~/.config/komorebi:
       path: dots/.config/komorebi
@@ -79,6 +62,12 @@
       if: '[ `uname` = Linux ] '
     ~/.xsettingsd:
       path: dots/.xsettingsd
+      if: '[ `uname` = Linux ] '
+    ~/.Xmodmap:
+      path: dots/.Xmodmap
+      if: '[ `uname` = Linux ] '
+    ~/.xinitrc:
+      path: dots/.xinitrc
       if: '[ `uname` = Linux ] '
     ~/.config/gtk-2.0:
       path: dots/.config/gtk-2.0
