@@ -10,6 +10,10 @@ gaps inner 13
 gaps outer 6
 smart_borders on
 
+focus_on_window_activation smart
+popup_during_fullscreen smart
+
+
 font pango:Jetbrains Mono 10
 
 # Autostart
@@ -20,10 +24,9 @@ exec_always --no-startup-id /home/$USER/.config/polybar/scripts/polybarstart.sh
 exec_always --no-startup-id nitrogen --restore
 exec_always --no-startup-id dwall -s firewatch
 exec_always --no-startup-id /home/$USER/.xinitrc
-
+exec_always --no-startup-id xrandr --output eDP-1 --off --output HDMI-1 --auto
 exec --no-startup-id xrdb -merge ~/.Xresources
 exec --no-startup-id nm-applet
-exec_always --no-startup-id blueman-applet
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -44,14 +47,13 @@ bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
-bindsym $mod+Shift+p exec --no-startup-id flameshot gui -c -s
-bindsym $mod+Shift+f exec firefox-dev
+bindsym $mod+Shift+f exec firefox
 bindsym $mod+Shift+t exec --no-startup-id kitty @ new-window || kitty
 
 bindsym $mod+space exec "rofi -modi drun -show drun"
 
-bindsym $mod+bar split v
-bindsym $mod+minus split h
+bindsym $mod+Shift+v split vertical
+bindsym $mod+Shift+' split horizontal
 bindsym $mod+f fullscreen toggle
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
@@ -61,12 +63,16 @@ bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
+bindsym $mod+a focus parent
 bindsym $mod+m floating toggle
 bindsym $mod+n move workspace to output left
 bindsym $mod+Left focus left
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
 bindsym $mod+Right focus right
+
+bindsym $mod+s exec --no-startup-id /home/$USER/.config/i3/scripts/float_slack.sh
+bindsym $mod+s [class="Slack"] floating toggle
 
 set $ws1 "1"
 set $ws2 "2"
@@ -78,7 +84,6 @@ set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
-
 
 # switch to workspace
 bindsym $mod+1 workspace number $ws1
@@ -107,45 +112,7 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 for_window [class="^.*"] border pixel 1
 for_window [class="^.*"] client.focused
 
-set $MONITORA DP-4
-set $MONITORB DP-0
-
-# Start applications on specific workspaces
-workspace "1" output $MONITORA
-workspace "2" output $MONITORA
-workspace "3" output $MONITORA
-workspace "4" output $MONITORA
-workspace "5" output $MONITORA
-
-workspace "6" output $MONITORB
-workspace "7" output $MONITORB
-workspace "8" output $MONITORB
-workspace "9" output $MONITORB
-# Monitor 1
-assign [class="^firefox$"] $ws1
-assign [class="^kitty$"] $ws2
-assign [class="^jetbrains-pycharm$"] $ws3
-assign [class="^obsidian$"] $ws5
-
-# Monitor 2
-assign [class="^discord$"] $ws6
-assign [class="^slack$"] $ws6
-assign [class="^spotify$"] $ws7
-assign [class="^zoom$"] $ws7
-
-assign [class="^Matplotlib$"] $ws6
-assign [class="^Tk$"] $ws6
-
-for_window [class="firefox"] move to workspace $ws1
-for_window [class="kitty"] move to workspace $ws2
-for_window [class="jetbrains-pycharm"] move to workspace $ws3
-for_window [class="obsidian"] move to workspace $ws5
-
-for_window [class="slack"] move to workspace $ws6
-for_window [class="discord"] move to workspace $ws6
-for_window [class="spotify"] move to workspace $ws7
-for_window [class="zoom"] move to workspace $ws7
-
+for_window [class="*Slack*"] floating disable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom - Licensed Account"] floating disable
 for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom Meeting"] floating disable
 
@@ -153,8 +120,9 @@ for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom Meeting"] floa
 set $STICKY floating enable, sticky enable
 set $FLOAT floating enable
 
+bindsym $mod+Shift+p exec --no-startup-id flameshot gui -c -s
 
-for_window [class="Matplotlib"] $FLOAT
+for_window [class="Tk"] floating enable, move position center, resize set 1280x768
 for_window [class="Blueman-manager"] $FLOAT
 for_window [class="Firefox" window_role="GtkFileChooserDialog"] $FLOAT
 for_window [class="octopi"] $FLOAT
@@ -164,7 +132,6 @@ for_window [class="pritunl"] $FLOAT
 
 for_window [class="Evolution-alarm-notify"] $STICKY
 for_window [class="Gnome-screenshot"] $STICKY
-for_window [class="Slack"] $STICKY
 for_window [class="zoom"] $STICKY
 for_window [title="1Password"] $STICKY
 for_window [title="Telegram*"] $STICKY
@@ -172,7 +139,6 @@ for_window [window_role="PictureInPicture"] $STICKY
 for_window [class="Xfce4-display-settings"] $STICKY
 for_window [class="Xfce4-settings-manager"] $STICKY
 for_window [class="Xfce4-appfinder"] $STICKY
-for_window [class="Manjaro Settings Manager"] $STICKY
 for_window [class="Xfce4-mime-settings"] $STICKY
 for_window [class="Nitrogen"] $STICKY
 
@@ -180,7 +146,6 @@ for_window [urgent=latest] focus
 
 mode "resize" {
         # These bindings trigger as soon as you enter the resize mode
-
         bindsym h resize shrink width 10 px or 10 ppt
         bindsym k resize grow height 10 px or 10 ppt
         bindsym j resize shrink height 10 px or 10 ppt

@@ -1,8 +1,4 @@
-source ~/.intellig/intellig.vim
-
-let g:WhichKeyDesc_commentary_gc = "gc Comment (commentary)"
-let g:WhichKeyDesc_commentary_gcc = "gcc Comment entire line (commentary)"
-let g:WhichKeyDesc_commentary_gcu = "gcu Undo Comment (commentary)"
+imap kj <ESC>
 
 map <c-s-=> <Action>(ZoomInIdeAction)
 map <c-s--> <Action>(ZoomOutIdeAction)
@@ -80,10 +76,10 @@ map <C-u> <C-u>zz
 vnoremap < <gv
 vnoremap > >gv
 
-"map <leader>zo <Action>(ExpandAllRegions)
-"map <leader>zc <Action>(CollapseAllRegions)
-"map zo <Action>(ExpandRegion)
-"map zc <Action>(CollapseRegion)
+map <leader>zo <Action>(ExpandAllRegions)
+map <leader>zc <Action>(CollapseAllRegions)
+map zo <Action>(ExpandRegion)
+map zc <Action>(CollapseRegion)
 
 vnoremap <C-j> <ESC>
 map <C-d> <C-d>zz
@@ -100,8 +96,8 @@ map <C-5> 5gt
 map <C-6> 6gt
 map <C-7> 7gt
 
-"map <c-PageDown> <Action>(NextTab)<CR>
-"map <c-PageUp> <Action>(PreviousTab)<CR>
+map <c-PageDown> <Action>(NextTab)<CR>
+map <c-PageUp> <Action>(PreviousTab)<CR>
 
 """" Run/Debug --------------------------------
 map ,r <Action>(Rerun)
