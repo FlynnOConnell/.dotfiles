@@ -2,6 +2,8 @@ echo "Sourcing aliases..."
 
 alias copy='xclip -sel clip'
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
+alias path='sed 's/:/\n/g' <<< "$PATH"'
+
 
 alias VIM="nvim"
 alias PERSONAL=$XDG_CONFIG_HOME/personal
@@ -55,11 +57,5 @@ alias gb="git branch"
 alias gc="git commit"
 alias gd="git diff"
 
-# - Other ---------
-alias hf='history | fzf -e'
-
-eval $(thefuck --alias fuck)
-eval $(thefuck --alias fk)
-eval $(thefuck --alias FUCK)
-
+alias hf="history | fzf -e"
 alias lg="lazygit"
