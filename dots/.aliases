@@ -9,6 +9,12 @@ alias VIM="nvim"
 alias PERSONAL=$XDG_CONFIG_HOME/personal
 alias sudoedit='function _sudoedit(){sudo -e "$1";};_sudoedit'
 
+
+# - AwesomeWM ----
+alias awrc='$EDITOR $HOME/.config/awesome/rc.lua'
+alias awtheme='$EDITOR $HOME/.config/awesome/themes/copland/theme-personal.lua'
+alias awdir='cd $HOME/.config/awesome'
+
 # - Lists ----
 alias lsa='ls -la'
 

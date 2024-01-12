@@ -42,32 +42,20 @@
     ~/.config/micro:
       path: dots/.config/micro
 
-    # Non-Windows Configs ---
     ~/.config/nvim:
       path: dots/.config/nvim
     ~/.config/tmux:
       path: dots/.config/tmux
 
-    # Windows Configs ---
-    ~/.config/komorebi:
-      path: dots/.config/komorebi
-    ~/.config/wkhdrc:
-      path: dots/.config/whkd/whkdrc
-    ~/AppData/local/nvim:
-      path: dots/.config/nvim
-
     # Linux configs ---
     ~/.icons:
       path: dots/.icons
       if: '[ `uname` = Linux ] '
-    ~/.xsettingsd:
-      path: dots/.xsettingsd
-      if: '[ `uname` = Linux ] '
-    ~/.Xmodmap:
-      path: dots/.Xmodmap
-      if: '[ `uname` = Linux ] '
     ~/.xinitrc:
       path: dots/.xinitrc
+      if: '[ `uname` = Linux ] '
+    ~/.config/awesome:
+      path: dots/.config/awesome
       if: '[ `uname` = Linux ] '
     ~/.config/gtk-2.0:
       path: dots/.config/gtk-2.0
