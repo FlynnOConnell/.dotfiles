@@ -2,6 +2,7 @@ echo "Reading .zshrc file..."
 
 export CLICOLOR=1
 export LSCOLORS=gxFxCxDxBxegedabagaced
+export NVIM_DIR=~/repos/.dotfiles/dots/.config/nvim
 
 eval "$(dircolors)"
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
