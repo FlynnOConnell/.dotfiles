@@ -2,6 +2,7 @@ echo "Sourcing aliases..."
 
 alias copy='xclip -sel clip'
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
+alias keys='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 alias path='sed 's/:/\n/g' <<< "$PATH"'
 
 
@@ -11,9 +12,10 @@ alias sudoedit='function _sudoedit(){sudo -e "$1";};_sudoedit'
 
 
 # - AwesomeWM ----
-alias awrc='$EDITOR $HOME/.config/awesome/rc.lua'
-alias awtheme='$EDITOR $HOME/.config/awesome/themes/copland/theme-personal.lua'
-alias awdir='cd $HOME/.config/awesome'
+alias awrc='$EDITOR $XDG_CONFIG_HOME/awesome/rc.lua'
+alias awtheme='$XDG_CONFIG_HOME/awesome/themes/copland/theme-personal.lua'
+alias awdir='cd $XDG_CONFIG_HOME/awesome'
+alias goaw="nvim ~/.config/awesome/"
 
 # - Lists ----
 alias lsa='ls -la'
