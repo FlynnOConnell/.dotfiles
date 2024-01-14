@@ -27,8 +27,11 @@ require('lazy').setup({
   'tpope/vim-rhubarb',
   'tpope/vim-surround',
   'tpope/vim-commentary',
-  'theprimeagen/harpoon',
-
+  -- {
+  --     "ThePrimeagen/harpoon",
+  --     branch = "harpoon2",
+  --     dependencies = { "nvim-lua/plenary.nvim" }
+  -- },
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
@@ -225,7 +228,7 @@ require('lazy').setup({
   --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-   { import = 'custom.plugins' },
+   -- { import = 'custom.plugins.harpoon2' },
 }, {})
 
 -- [[ Options ]] ---------------------------------------------------------------------------------------- OPTIONS
