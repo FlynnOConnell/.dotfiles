@@ -17,7 +17,6 @@ imap kj <Esc>
 set surround
 set commentary
 set NERDTree
-set highlightedyank
 
 " Window / Split Management
 noremap <C-L> <C-W><C-L>
@@ -49,9 +48,3 @@ map <C-4> 4gt
 map <C-5> 5gt
 map <C-6> 6gt
 map <C-7> 7gt
-
-function! Praise(name)
-  echo a:name . " is good"
-endfunction
-
-nmap <leader>; :call Praise("Vim")<CR>
