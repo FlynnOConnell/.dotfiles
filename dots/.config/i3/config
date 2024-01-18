@@ -3,7 +3,7 @@
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 #
 exec --no-startup-id "setxkbmap -option ctrl:nocaps"
-set $mod Mod1
+set $mod Mod4
 
 for_window [class=".*"] border pixel 0
 gaps inner 13
@@ -22,7 +22,7 @@ exec_always --no-startup-id picom --config /home/$USER/.config/picom/picom.conf
 exec_always --no-startup-id /home/$USER/.config/polybar/scripts/polybarstart.sh
 exec_always --no-startup-id nitrogen --restore
 exec_always --no-startup-id dwall -s firewatch
-#exec_always --no-startup-id /home/$USER/.xinitrc
+exec_always --no-startup-id /home/$USER/.xinitrc
 
 exec --no-startup-id xrdb -merge ~/.Xresources
 exec --no-startup-id nm-applet
