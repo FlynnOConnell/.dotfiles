@@ -33,8 +33,18 @@
       path: dots/.config/lazygit
       exclude: [ dots/.config/lazygit/share ]
 
+    ~/.config/autostart:
+      path: dots/.config/autostart
     ~/.config/neofetch:
       path: dots/.config/neofetch
+    ~/.config/htop:
+      path: dots/.config/htop
+    ~/.config/nitrogen:
+      path: dots/.config/nitrogen
+    ~/.config/xmenu:
+      path: dots/.config/xmenu
+    ~/.config/alacritty:
+      path: dots/.config/alacritty
     ~/.config/kitty:
       path: dots/.config/kitty
     ~/.config/btop:

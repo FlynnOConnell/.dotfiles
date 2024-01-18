@@ -4,6 +4,9 @@ export CLICOLOR=1
 export LSCOLORS=gxFxCxDxBxegedabagaced
 export NVIM_DIR=~/repos/.dotfiles/dots/.config/nvim
 
+path+=('/home/flynn/.local/bin:/home/flynn/bin')
+export PATH
+
 eval "$(dircolors)"
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
@@ -106,7 +109,6 @@ if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
     git clone https://github.com/tmux-plugins/tpm.git ~/.tmux/plugins/tpm
 fi
 
-
 [ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
 
 # >>> conda initialize >>>
@@ -125,7 +127,5 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-[[ -e ~/.profile ]] && emulate sh -c 'source ~/.profile'
 
 source ~/.aliases

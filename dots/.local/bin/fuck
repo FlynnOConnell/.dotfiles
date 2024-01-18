@@ -1,4 +1,4 @@
-#!/home/thom/miniconda3/bin/python
+#!/home/flynn/miniconda3/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
