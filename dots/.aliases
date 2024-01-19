@@ -3,7 +3,8 @@ echo "Sourcing aliases..."
 alias copy='xclip -sel clip'
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 alias keys='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
-alias path='sed 's/:/\n/g' <<< "$PATH"'
+alias path='tr ":" "\n" <<< "$PATH"'
+alias vpn='sudo openconnect --juniper --no-dtls vpn.rockefeller.edu'
 
 
 alias VIM="nvim"
