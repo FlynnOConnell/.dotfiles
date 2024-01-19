@@ -14,7 +14,6 @@
     ~/.config:
       recursive: true
 - link:
-
     ~/.local/bin:
       path: dots/.local/bin
     ~/.bashrc:
@@ -23,7 +22,8 @@
       path: dots/.ideavimrc
     ~/.zshrc:
       path: dots/.zshrc
-
+    ~/wallpapers:
+      path: dots/wallpapers
     ~/.aliases:
       path: dots/.aliases
     ~/.vimrc:
@@ -49,7 +49,6 @@
       path: dots/.config/btop
     ~/.config/micro:
       path: dots/.config/micro
-
     ~/.config/nvim:
       path: dots/.config/nvim
     ~/.config/tmux:
