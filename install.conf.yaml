@@ -28,11 +28,9 @@
       path: dots/.aliases
     ~/.vimrc:
       path: dots/.config/vim/.vimrc
-
     ~/.config/lazygit:
       path: dots/.config/lazygit
       exclude: [ dots/.config/lazygit/share ]
-
     ~/.config/autostart:
       path: dots/.config/autostart
     ~/.config/neofetch:
@@ -60,9 +58,6 @@
     # Linux configs ---
     ~/.icons:
       path: dots/.icons
-      if: '[ `uname` = Linux ] '
-    ~/.xinitrc:
-      path: dots/.xinitrc
       if: '[ `uname` = Linux ] '
     ~/.config/awesome:
       path: dots/.config/awesome
