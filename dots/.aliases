@@ -16,6 +16,7 @@ alias awrc='$EDITOR $XDG_CONFIG_HOME/awesome/rc.lua'
 alias awtheme='$XDG_CONFIG_HOME/awesome/themes/copland/theme-personal.lua'
 alias awdir='cd $XDG_CONFIG_HOME/awesome'
 alias goaw="nvim ~/.config/awesome/"
+alias cdaw="cd ~/.config/awesome/"
 
 # - Lists ----
 alias lsa='ls -la'
@@ -25,10 +26,10 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias ~="cd ~"
-alias cdr="cd ~/repos/.dotfiles/"
-alias cdt="cd ~/.config/tmux/tmux.conf"
+alias cdr="cd ~/repos"
 alias cdd="cd ~/repos/.dotfiles/"
 alias cdi3="cd ~/.config/i3/config"
+alias cdt="cd ~/.config/tmux/tmux.conf"
 alias cdn="cd ~/.config/nvim/"
 
 # - Nvim To File ----
@@ -37,7 +38,6 @@ alias goz="nvim ~/.zshrc"
 alias got="nvim ~/repos/.dotfiles/dots/.config/tmux/tmux.conf"
 alias gos="nvim ~/repos/.dotfiles/dots/.config/skhd/skhdrc"
 alias gok="nvim ~/repos/.dotfiles/dots/.config/kitty/kitty.conf"
-alias goy="nvim ~/repos/.dotfiles/dots/.config/yabai/yabairc"
 alias god="nvim ~/repos/.dotfiles/"
 alias goi3="nvim ~/.config/i3/config"
 alias gon="nvim ~/.config/nvim/"
