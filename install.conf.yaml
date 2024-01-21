@@ -22,8 +22,8 @@
       path: dots/.ideavimrc
     ~/.zshrc:
       path: dots/.zshrc
-    ~/wallpapers:
-      path: dots/wallpapers
+    ~/.wallpapers:
+      path: dots/.wallpapers
     ~/.aliases:
       path: dots/.aliases
     ~/.vimrc:
