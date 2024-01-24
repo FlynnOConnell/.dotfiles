@@ -4,6 +4,7 @@
 #
 exec --no-startup-id "setxkbmap -option ctrl:nocaps"
 set $mod Mod4
+set $alt Mod1
 
 for_window [class=".*"] border pixel 0
 gaps inner 13
@@ -23,6 +24,8 @@ exec_always --no-startup-id /home/$USER/.config/polybar/scripts/polybarstart.sh
 exec_always --no-startup-id nitrogen --restore
 exec_always --no-startup-id dwall -s firewatch
 exec_always --no-startup-id /home/$USER/.xinitrc
+exec_always --no-startup-id xrandr --output eDP-1
+
 
 exec --no-startup-id xrdb -merge ~/.Xresources
 exec --no-startup-id nm-applet
@@ -50,7 +53,7 @@ bindsym $mod+Shift+Right move right
 bindsym $mod+Shift+f exec firefox
 bindsym $mod+Shift+t exec --no-startup-id kitty @ new-window || kitty
 
-bindsym $mod+space exec "rofi -modi drun -show drun"
+bindsym $alt+space exec "rofi -modi drun -show drun"
 
 bindsym $mod+Shift+v split vertical
 bindsym $mod+Shift+' split horizontal
@@ -138,6 +141,7 @@ for_window [class="Xfce4-settings-manager"] $STICKY
 for_window [class="Xfce4-appfinder"] $STICKY
 for_window [class="Xfce4-mime-settings"] $STICKY
 for_window [class="Nitrogen"] $STICKY
+for_window [class="nxplayer.bin"] $FLOAT
 
 for_window [urgent=latest] focus
 

@@ -12,9 +12,6 @@ alias PERSONAL=$XDG_CONFIG_HOME/personal
 alias sudoedit='function _sudoedit(){sudo -e "$1";};_sudoedit'
 
 # - AwesomeWM ----
-alias awrc='$EDITOR $XDG_CONFIG_HOME/awesome/rc.lua'
-alias awtheme='$XDG_CONFIG_HOME/awesome/themes/copland/theme-personal.lua'
-alias awdir='cd $XDG_CONFIG_HOME/awesome'
 alias goaw="nvim ~/.config/awesome/"
 alias cdaw="cd ~/.config/awesome/"
 
@@ -34,6 +31,7 @@ alias cdn="cd ~/.config/nvim/"
 
 # - Nvim To File ----
 alias goa="nvim ~/.aliases"
+alias gow="nvim ~/.config/nitrogen"
 alias goz="nvim ~/.zshrc"
 alias got="nvim ~/repos/.dotfiles/dots/.config/tmux/tmux.conf"
 alias gos="nvim ~/repos/.dotfiles/dots/.config/skhd/skhdrc"
