@@ -7,7 +7,6 @@ set clipboard+=unnamed
 set ignorecase
 set smartcase
 set scrolloff=5
-set wildignore+=*/target/*,*/.idea/*,*/.git/*,*/.svn/*,*/.hg/*,*/build/*
 
 " Mappings
 let mapleader=" "
@@ -18,14 +17,27 @@ set surround
 set commentary
 set NERDTree
 
+nnoremap \ :NERDTree<CR>
+
 " Window / Split Management
 noremap <C-L> <C-W><C-L>
 noremap <C-H> <C-W><C-H>
 noremap <C-K> <C-W><C-K>
 noremap <C-J> <C-W><C-J>
 
+vnoremap  <leader>y  "+y
+nnoremap  <leader>Y  "+yg_
+nnoremap  <leader>y  "+y
+nnoremap  <leader>yy  "+yy
+
+" " Paste from clipboard
+nnoremap <leader>p "+p
+nnoremap <leader>P "+P
+vnoremap <leader>p "+p
+vnoremap <leader>P "+P
+
+
 " Mappings
-nnoremap \ :NERDTree<CR>
 map n nzzzv
 map N Nzzzv
 map j jzz
