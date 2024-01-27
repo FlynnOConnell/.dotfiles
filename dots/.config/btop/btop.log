@@ -3,3 +3,11 @@
 2023/12/06 (10:41:36) | INFO: Logger set to INFO
 2023/12/06 (10:41:36) | INFO: Logger set to DEBUG
 2023/12/06 (10:41:37) | INFO: Logger set to INFO
+
+2024/01/25 (14:25:54) | ===> btop++ v.1.2.3
+2024/01/25 (14:25:54) | ERROR: No tty detected!
+btop++ needs an interactive shell to run.
+
+2024/01/25 (14:26:08) | ===> btop++ v.1.2.3
+2024/01/25 (14:26:08) | ERROR: No tty detected!
+btop++ needs an interactive shell to run.

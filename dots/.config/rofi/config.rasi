@@ -1,6 +1,6 @@
 configuration {
 	modi: "drun, run";
-	show-icons: false;
+	show-icons: true;
 	terminal: "kitty";
 }
 @theme "~/.config/rofi/theme.rasi"

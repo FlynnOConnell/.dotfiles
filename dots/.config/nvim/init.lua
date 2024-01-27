@@ -263,6 +263,7 @@ vim.o.smartcase = true
 
 -- Keep signcolumn on by default
 vim.wo.signcolumn = 'yes'
+vim.g.netrw_keepdir = 0
 
 -- Decrease update time
 vim.o.updatetime = 250
