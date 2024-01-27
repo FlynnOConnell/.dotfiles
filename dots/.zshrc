@@ -4,11 +4,8 @@ export CLICOLOR=1
 export LSCOLORS=gxFxCxDxBxegedabagaced
 export NVIM_DIR=~/repos/.dotfiles/dots/.config/nvim
 
-path+=('/home/flynn/.local/bin:/home/flynn/bin')
+path+=('/home/flynn/.local/bin:/home/flynn/bin:/home/flynn/repos/pycharm_2023.3.2/bin')
 export PATH
-
-eval "$(dircolors)"
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 bindkey -s ^f "tmux-sessionizer\n"
 echo "cntrl-f to open tmux sessionizer"

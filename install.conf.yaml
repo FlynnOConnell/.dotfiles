@@ -24,6 +24,8 @@
       path: dots/.zshrc
     ~/.wallpapers:
       path: dots/.wallpapers
+    ~/.icons:
+      path: dots/.icons
     ~/.aliases:
       path: dots/.aliases
     ~/.vimrc:
@@ -54,10 +56,6 @@
     ~/.config/tmux:
       path: dots/.config/tmux
 
-    # Linux configs ---
-    ~/.icons:
-      path: dots/.icons
-      if: '[ `uname` = Linux ] '
     ~/.config/awesome:
       path: dots/.config/awesome
       if: '[ `uname` = Linux ] '
