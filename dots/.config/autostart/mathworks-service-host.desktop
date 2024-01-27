@@ -1,5 +1,5 @@
 [Desktop Entry]
 Type=Application
 Name=Mathworks Service Host
-Exec=/home/flynn/.MathWorks/ServiceHost/pop-os/v2023.12.0.2/bin/glnxa64/MathWorksServiceHost service --realm-id companion@prod@production
+Exec=/home/flynn/.MathWorks/ServiceHost/pop-os/v2024.1.0.3/bin/glnxa64/MathWorksServiceHost service --realm-id companion@prod@production
 Terminal=false
