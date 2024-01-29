@@ -2,7 +2,6 @@
 set so=20  " Keep 20 lines above/below cursor
 set nu
 set relativenumber
-set sneak
 set clipboard+=unnamed
 set ignorecase
 set smartcase
@@ -15,7 +14,6 @@ imap kj <Esc>
 " Plugins
 set surround
 set commentary
-set NERDTree
 
 nnoremap \ :NERDTree<CR>
 
