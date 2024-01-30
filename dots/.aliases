@@ -1,12 +1,17 @@
 echo "Sourcing aliases..."
 
+alias vgpu2='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina'
+alias vgpu='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina'
+alias gpu2='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina'
+alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina'
+
 alias copy='xclip -sel clip'
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 alias keys='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 alias path='tr ":" "\n" <<< "$PATH"'
 alias vpn='sudo openconnect --juniper --no-dtls vpn.rockefeller.edu'
 alias rmf='rm -rf'
-alias reboot='sudo service gdm restart'
+alias logout='sudo service gdm restart'
 alias cppw='xsel --clipboard < ~/.password.txt'
 alias goicon='nvim ~/.icons/'
 
