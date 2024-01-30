@@ -260,6 +260,9 @@ vim.o.undofile = true
 -- Case-insensitive searching UNLESS \C or capital in search
 vim.o.ignorecase = true
 vim.o.smartcase = true
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.signcolumn = "number"
 
 -- Keep signcolumn on by default
 vim.wo.signcolumn = 'yes'
@@ -282,6 +285,8 @@ vim.o.termguicolors = true
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set({ 'n' }, 'j', 'jzz', { silent = true })
 vim.keymap.set({ 'n' }, 'k', 'kzz', { silent = true })
+vim.keymap.set({ 'n' }, '<c-o>', '<c-o>zz', { silent = true })
+vim.keymap.set({ 'n' }, '<c-i>', '<c-i>zz', { silent = true })
 
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
