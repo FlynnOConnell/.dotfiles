@@ -124,6 +124,7 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+eval `dircolors ~/.local/opt/bliss-dircolors-master/bliss.dircolors`
 
 source ~/.aliases
 

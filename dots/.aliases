@@ -1,9 +1,9 @@
 echo "Sourcing aliases..."
 
-alias vgpu2='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina'
-alias vgpu='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina'
-alias gpu2='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina'
-alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina'
+alias vgpu2='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
+alias vgpu='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
+alias gpu2='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
+alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
 
 alias copy='xclip -sel clip'
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
@@ -21,6 +21,7 @@ alias sudoedit='function _sudoedit(){sudo -e "$1";};_sudoedit'
 
 # - AwesomeWM ----
 alias goaw="nvim ~/.config/awesome/"
+alias goat="nvim ~/.config/awesome/theme/theme.lua"
 alias cdaw="cd ~/.config/awesome/"
 
 # - Lists ----
