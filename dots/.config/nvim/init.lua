@@ -281,7 +281,9 @@ vim.o.termguicolors = true
 -- [[ Basic Keymaps ]] ---------------------------------------------------------------------------------------- KEYMAPS
 
 -- Keymaps for better default experience
--- See `:help vim.keymap.set()`
+--
+vim.keymap.set("n", "<leader><space>", vim.cmd.Ex)
+
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set({ 'n' }, 'j', 'jzz', { silent = true })
 vim.keymap.set({ 'n' }, 'k', 'kzz', { silent = true })
@@ -415,10 +417,8 @@ local function live_grep_git_root()
 end
 
 vim.api.nvim_create_user_command('LiveGrepGitRoot', live_grep_git_root, {})
-
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
 vim.keymap.set('n', '<leader>/', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
