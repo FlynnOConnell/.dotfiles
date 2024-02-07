@@ -4,6 +4,7 @@ alias vgpu2='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29
 alias vgpu='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
 alias gpu2='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
 alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
+alias jupyterremote='jupyter notebook --no-browser --port=8888'
 
 alias copy='xclip -sel clip'
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
