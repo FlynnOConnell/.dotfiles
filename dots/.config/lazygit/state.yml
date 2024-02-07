@@ -1,6 +1,7 @@
 lastupdatecheck: 0
 recentrepos:
 - /home/flynn/repos/.dotfiles
+- /home/flynn/repos/meso-processing
 - /home/flynn/repos/rbo-lbm
 - /home/flynn/repos/cpl_pipeline
 startuppopupversion: 5
