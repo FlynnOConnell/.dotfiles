@@ -2,13 +2,13 @@
 #
 # Please see https://i3wm.org/docs/userguide.html for a complete reference!
 #
-#exec --no-startup-id "setxkbmap -option ctrl:nocaps"
+exec --no-startup-id "setxkbmap -option ctrl:nocaps"
 set $mod Mod4
 set $alt Mod1
 
 for_window [class=".*"] border pixel 0
-# gaps inner 13
-# gaps outer 6
+gaps inner 13
+gaps outer 6
 
 font pango:Jetbrains Mono 10
 
