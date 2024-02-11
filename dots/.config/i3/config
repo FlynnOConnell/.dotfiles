@@ -9,6 +9,7 @@ set $alt Mod1
 for_window [class=".*"] border pixel 0
 # gaps inner 13
 # gaps outer 6
+smart_borders on
 
 font pango:Jetbrains Mono 10
 
