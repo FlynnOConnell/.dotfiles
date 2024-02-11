@@ -22,6 +22,8 @@
       path: dots/.ideavimrc
     ~/.zshrc:
       path: dots/.zshrc
+    ~/.xinitrc:
+      path: dots/.xinitrc
     ~/.wallpapers:
       path: dots/.wallpapers
     ~/.icons:
