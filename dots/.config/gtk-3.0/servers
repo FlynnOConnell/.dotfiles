@@ -3,12 +3,12 @@
       xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks"
       xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info"
 >
-  <bookmark href="smb://v-storage2.rockefeller.edu/v-data2/" added="2024-01-19T15:55:02.070941Z" modified="2024-01-19T15:55:02.070947Z" visited="2024-01-19T15:55:02.070943Z">
+  <bookmark href="smb://v-storage2.rockefeller.edu/v-data2/" added="2024-01-19T15:55:02.070941Z" modified="2024-02-11T04:38:45.291536Z" visited="2024-02-11T04:38:45.291534Z">
     <title>v-data2 on v-storage2.rockefeller.edu</title>
     <info>
       <metadata owner="http://freedesktop.org">
         <bookmark:applications>
-          <bookmark:application name="org.gnome.Nautilus" exec="&apos;org.gnome.Nautilus %u&apos;" modified="2024-01-19T15:55:02.070945Z" count="1"/>
+          <bookmark:application name="org.gnome.Nautilus" exec="&apos;org.gnome.Nautilus %u&apos;" modified="2024-02-11T04:38:45.291535Z" count="2"/>
         </bookmark:applications>
       </metadata>
     </info>
