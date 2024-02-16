@@ -1,66 +1,32 @@
-set number                        " line numbers
+let mapleader=" "
+imap kj <Esc>
 
-set hlsearch                      " highlight search occurrences
-set ignorecase                    " ignore case in search patterns
-set smartcase                     " no ignore case when pattern is uppercase
-set incsearch                     " show search results while typing
-set wrapscan                      " searches wrap around the end of the file
-
-set gdefault                      " substitute all occurrences in line per default
-set history=10000                 " keep x lines of command line history
-set scrolloff=5 sidescrolloff=10  " keep some lines before and after the cursor visible
-set clipboard=unnamedplus,unnamed,ideaput " integrate with system clipboard
-
-" https://github.com/JetBrains/ideavim/wiki/%22set%22-commands
-set multiple-cursors
+""" Plugins  --------------------------------
+set surround
 set commentary
-set surround                      " emulate vim-surround plugin
+set NERDTree
+
+set so=20  " Keep 20 lines above/below cursor
+set nu
+set relativenumber
+set sneak
+set ignorecase
+set smartcase
+set scrolloff=5
+set ideamarks " Sync marks and idea bookmarks
 set ideajoin
-set ideastatusicon=disabled
 
-" set <leader> to <space>
-let mapleader = " "
+set ideaput
+set clipboard+=unnamedplus
 
-imap kj <ESC>
-
-map <c-s-=> <Action>(ZoomInIdeAction)
-map <c-s--> <Action>(ZoomOutIdeAction)
-
-Plug 'preservim/nerdtree'
-Plug 't-pope/surround'
-Plug 't-pope/commentary'
-
-"""" Window / Split Management ---------------
+""" Window / Split Management ---------------
 noremap <C-L> <C-W><C-L>
 noremap <C-H> <C-W><C-H>
 noremap <C-K> <C-W><C-K>
 noremap <C-J> <C-W><C-J>
-map <c-w> <Action>(CloseContent)
-
-map gn <Action>(GotoNextError)
-map gp <Action>(GotoPreviousError)
-
-"""" REMEMBER
-map gi <Action>(GotoImplementation)
-map gI <Action>(QuickImplementations)
-
-map gd <Action>(GotoDeclaration)
-map gr <Action>(RenameElement)
-
-map K <Action>(ShowIntentionActions)
-map gs <Action>(ShowUsages)
-map ga :action Refactorings.QuickListPopupAction<CR>
-map gh <Action>(ShowHoverInfo)
-
-map <leader>h :action CallHierarchy<CR>
-
-map <leader>r <Action>(ReformatCode)
 
 map <c-a-\> <Action>(SplitVertically)
 map <c-a-/> <Action>(SplitHorizontally)
-map <c-a-Left> <Action>(StretchSplitToLeft)
-map <c-a-Right> <Action>(StretchSplitToRight)
-
 map <c-a-x> <Action>(Unsplit)
 map <c-a-z> <Action>(UnsplitAll)
 
@@ -68,10 +34,7 @@ map <c-a-m> :action MoveEditorToOppositeTabGroup<CR>
 map <c-a-n> :action EditSourceInNewWindow<CR>
 
 map <c-a-f> <Action>(GotoFile)
-map <c-a-p> :action ShowSettings<CR>
-map <c-a-o> :action editRunConfigurations<CR>
-
-"""map <c-a-s> :action <CR>
+map <c-a-p> :action SearchEverywhere<CR>
 
 map <c-a-1> :action ActivateDebugToolWindow<CR>
 map <c-a-2> :action ActivateRunToolWindow<CR>
@@ -86,10 +49,11 @@ map <c-a-q> :action HideAllWindows<CR>
 map <c-a-w> :action HideActiveWindow<CR>
 map <c-a-;> :action JumpToLastWindow<CR>
 
-
-"""""""""""""""""""""""""""""""""""""""""""""
-""" Movement --------------------------------
+""" Mappings --------------------------------
 nnoremap \ :NERDTree<CR>
+
+vnoremap <C-j> <ESC>
+map <c-w> <Action>(CloseContent)
 
 map n nzzzv
 map N Nzzzv
@@ -101,16 +65,6 @@ map <C-u> <C-u>zz
 vnoremap < <gv
 vnoremap > >gv
 
-map <leader>zo <Action>(ExpandAllRegions)
-map <leader>zc <Action>(CollapseAllRegions)
-map zo <Action>(ExpandRegion)
-map zc <Action>(CollapseRegion)
-
-vnoremap <C-j> <ESC>
-map <C-d> <C-d>zz
-map <C-u> <C-u>zz
-
-map <S><CR> o<Esc>
 
 """ Tabs ------------------------------------
 map <C-1> 1gt
@@ -124,8 +78,44 @@ map <C-7> 7gt
 map <c-PageDown> <Action>(NextTab)<CR>
 map <c-PageUp> <Action>(PreviousTab)<CR>
 
-"""" Run/Debug --------------------------------
-map ,r <Action>(Rerun)
+""" LSP -----------------------------
+map gn <Action>(GotoNextError)
+map gp <Action>(GotoPreviousError)
+map gh <Action>(ShowErrorDescription)
+map gk <Action>(ShowIntentionActions)
+map ge <Action>(EvaluateExpression)
+
+map gi <Action>(GotoImplementation)
+map gd <Action>(GotoDeclaration)
+map gr <Action>(RenameElement)
+
+map gs <Action>(ShowUsages)
+map gf <Action>(Back)
+
+map gc <Action>(EditorContextInfo)
+
+""" Leader Key Mappings ----------------------
+
+vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
+
+map <leader>o <Action>(OptimizeImports)
+map <leader>r <Action>(ReformatCode)
+
+map <leader>zo <Action>(ExpandAllRegions)
+map <leader>zc <Action>(CollapseAllRegions)
+map <leader>zr <Action>(ExpandRegion)
+map <leader>zm <Action>(CollapseRegion)
+
+map <leader>fr <action>(RecentFiles)
+map <leader>fc <action>(FindInPath)
+map <leader>fR <action>(ReplaceInPath)
+
+map <leader>ev :e ~/.ideavimrc<CR>
+map <leader>es :source ~/.ideavimrc<CR>
+
+""" Run/Debug --------------------------------
+map ,r <Action>(Run)
+map ,R <Action>(Rerun)
 map ,q <Action>(Stop)
 map ,b <Action>(ToggleLineBreakpoint)
 map ,n <Action>(MuteBreakpoints)
@@ -137,13 +127,9 @@ map ,o <Action>(StepOut)
 map ,c <Action>(Resume)
 map ,d <Action>(Debug)
 
-"""" Functions
-"nmap <leader>; :call Praise("IdeaVim")<CR>
+""" Functions
+nmap <leader>; :call Praise("IdeaVim")<CR>
 
-"function! Praise(name)
-"  echo a:name .. " is good"
-"endfunction
-
-
-"vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
-"map <leader>ev :e ~/.ideavimrc<CR>
+function! Praise(name)
+  echo a:name .. " is good"
+endfunction
