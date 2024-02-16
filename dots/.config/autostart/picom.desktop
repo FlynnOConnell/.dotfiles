@@ -1,6 +1,13 @@
 [Desktop Entry]
-Name=picom
-Exec=start_process picom --no-frame-pacing --config /home/flynn/.config/picom/picom.conf
-Comment=a compositor for X11
+Version=1.0
 Type=Application
-OnlyShowIn=Awesome;
+NoDisplay=false
+Name=picom
+GenericName=X compositor
+Comment=An X compositor
+Categories=Utility;
+Keywords=compositor;composite manager;window effects;transparency;opacity;
+TryExec=picom
+Exec=picom
+# Thanks to quequotion for providing this file!
+Icon=picom
