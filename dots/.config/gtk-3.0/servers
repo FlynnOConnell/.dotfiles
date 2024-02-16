@@ -3,12 +3,22 @@
       xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks"
       xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info"
 >
-  <bookmark href="smb://v-storage2.rockefeller.edu/v-data2/" added="2024-01-19T15:55:02.070941Z" modified="2024-02-11T13:34:42.634259Z" visited="2024-02-11T13:34:42.634252Z">
+  <bookmark href="smb://v-storage2.rockefeller.edu/v-data2/" added="2024-01-19T15:55:02.070941Z" modified="2024-02-16T04:20:50.918707Z" visited="2024-02-16T04:20:50.918699Z">
     <title>v-data2 on v-storage2.rockefeller.edu</title>
     <info>
       <metadata owner="http://freedesktop.org">
         <bookmark:applications>
-          <bookmark:application name="org.gnome.Nautilus" exec="&apos;org.gnome.Nautilus %u&apos;" modified="2024-02-11T13:34:42.634256Z" count="3"/>
+          <bookmark:application name="org.gnome.Nautilus" exec="&apos;org.gnome.Nautilus %u&apos;" modified="2024-02-16T04:20:50.918703Z" count="7"/>
+        </bookmark:applications>
+      </metadata>
+    </info>
+  </bookmark>
+  <bookmark href="smb://v-storage2.rockefeller.edu/v-data4/" added="2024-02-16T04:24:55.587243Z" modified="2024-02-16T04:24:55.587254Z" visited="2024-02-16T04:24:55.587247Z">
+    <title>v-data4 on v-storage2.rockefeller.edu</title>
+    <info>
+      <metadata owner="http://freedesktop.org">
+        <bookmark:applications>
+          <bookmark:application name="org.gnome.Nautilus" exec="&apos;org.gnome.Nautilus %u&apos;" modified="2024-02-16T04:24:55.587250Z" count="1"/>
         </bookmark:applications>
       </metadata>
     </info>
