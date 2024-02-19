@@ -3,9 +3,9 @@ echo "Sourcing aliases..."
 alias dark='gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark \
 && gsettings set org.gnome.desktop.interface color-scheme prefer-dark'
 
-alias vgpu2='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+
 alias vgpu='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
-alias gpu2='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
 alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
 alias jupyterremote='jupyter notebook --no-browser --port=8888'
 alias auto="nvim ~/.config/autostart"
