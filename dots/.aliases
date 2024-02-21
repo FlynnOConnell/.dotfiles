@@ -4,6 +4,7 @@ alias dark='gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark \
 && gsettings set org.gnome.desktop.interface color-scheme prefer-dark'
 
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias fd='fdfind'
 
 alias vgpu='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
 alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
@@ -14,7 +15,7 @@ alias copy='xclip -sel clip'
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 alias keys='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 alias path='tr ":" "\n" <<< "$PATH"'
-alias vpn='sudo openconnect --juniper --no-dtls vpn.rockefeller.edu'
+alias vpn='sudo openconnect --juniper --no-dtls vpn.rockefeller.edu --user=foconnell'
 alias rmf='rm -rf'
 alias logout='sudo service gdm restart'
 alias cppw='xsel --clipboard < ~/.password.txt'
@@ -39,6 +40,7 @@ alias ....="cd ../../.."
 alias ~="cd ~"
 alias cdr="cd ~/repos"
 alias cdd="cd ~/repos/.dotfiles/"
+alias cdow="cd ~/Downloads/"
 alias cdot="cd ~/repos/.dotfiles/dots/"
 alias cdi3="cd ~/.config/i3/config"
 alias cdt="cd ~/.config/tmux/tmux.conf"
