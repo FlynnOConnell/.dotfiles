@@ -4,7 +4,7 @@ export CLICOLOR=1
 export LSCOLORS=gxFxCxDxBxegedabagaced
 export NVIM_DIR=~/repos/.dotfiles/dots/.config/nvim
 
-path+=('/home/flynn/.local/bin:/home/flynn/bin:/home/flynn/repos/pycharm_2023.3.2/bin')
+path+=('/home/flynn/.local/bin:/opt/firefox:')
 export PATH
 
 bindkey -s ^f "tmux-sessionizer\n"

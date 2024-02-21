@@ -1,0 +1,225 @@
+{
+  "main": {
+    "id": "1ef24095a57954ab",
+    "type": "split",
+    "children": [
+      {
+        "id": "34568f5878a22896",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "88465f28af161215",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Personal/Fix.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "d133b5b579d03afd",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Personal/Untitled.md",
+                "mode": "source",
+                "backlinks": true,
+                "source": false
+              }
+            }
+          }
+        ],
+        "stacked": true
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "4b1babd8577cf037",
+    "type": "split",
+    "children": [
+      {
+        "id": "513f2da160eb9086",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "14125dd70c08b3b7",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "78d02b6129259a17",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "6ad317a3fbb6681d",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "ee958b2e4ef485bc",
+    "type": "split",
+    "children": [
+      {
+        "id": "a05b77aad8523565",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c55f75a9fb3288bf",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Personal/Fix.md",
+                "linksCollapsed": true,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "287c50cceaae5688",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "f9a27e65fc6a2cfb",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Personal/Fix.md"
+              }
+            }
+          },
+          {
+            "id": "374ab715bc4ec7b0",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Personal/Fix.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "0df9e7f9249e3708",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": true,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "obsidian-excalidraw-plugin:Create new drawing": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false
+    }
+  },
+  "active": "88465f28af161215",
+  "lastOpenFiles": [
+    "Personal/Untitled.md",
+    "Personal/Fix.md",
+    "README.md",
+    "README.md.md",
+    "Scratchpad.md",
+    "Untitled.md",
+    "Cornell/LFP.md",
+    "RBO/Data Server.md",
+    "Personal/CommandLine.md",
+    "RBO/Code Base.md",
+    "Config/Master.md",
+    "Untitled 1.md",
+    "Personal",
+    "Cornell/AON 2023.md",
+    "RBO",
+    "Cornell/AON Context 2020.md",
+    "RBO/LBM.md",
+    "RBO/Presentation.md",
+    "RBO/Meetings.md",
+    "Cornell/OB Sig-Transformations 2020.md",
+    "LFM Technical/Data Exploration.md",
+    "LFM Technical/General.md",
+    "LFM Technical/Segmentation.md",
+    "LFM Technical/Preprocessing.md",
+    "LFM Technical/Cell Extraction.md",
+    "LFM Technical/img/inputzero.png",
+    "LFM Technical/code",
+    "RBO/VAZIRI_Fig1-resize-scaled.webp",
+    "Volumes, Planes, Frames.canvas",
+    "Pasted image 20230831002508.png",
+    "Pasted image 20230831001653.png",
+    "Pasted image 20230831001645.png",
+    "Pasted image 20230831002425.png",
+    "Pasted image 20230831001213.png",
+    "LFM Technical/snippets/Collate frames for each tiff.md",
+    "LFM Technical/snippets/Process each plane.md",
+    "LFM Technical/img/mc.png",
+    "LFM Technical/img/assemble_frames.png",
+    "LFM Technical/img/carbon.png",
+    "LFM Technical/img",
+    "LFM Technical/New folder",
+    "LFM Technical/Motion Correction.md",
+    "LFM Technical/snippets",
+    "LFM Technical/LFM Technical",
+    "LFM Technical",
+    "New folder",
+    "RBO/LBM-sample/Code/Pre_Processing_Executable"
+  ]
+}
