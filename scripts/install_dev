@@ -59,6 +59,17 @@ install_node() {
     fi
 }
 
+
+install_expect() {
+    if ! command -v expect &> /dev/null; then
+        echo "Expect not installed (for ssh automation), installing..."
+        sudo apt-get update
+        sudo apt-get install -y expect
+    else
+        echo "Expect already installed. Skipping installation"
+    fi
+}
+
 install_tpm() {
     if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
         echo "Cloning tmux plugin manager (tpm)..."
@@ -75,6 +86,7 @@ install_fzf
 install_kitty
 install_node
 install_tpm
+install_expect
 
 chmod +x $HOME/.local/bin/*
 chmod +x $HOME/.local/opt/*

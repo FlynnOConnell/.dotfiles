@@ -2,6 +2,13 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+if vim.g.vscode then
+  local vscode = require('vscode-neovim')
+  print("hi")
+else
+  print("by")
+end
+
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
