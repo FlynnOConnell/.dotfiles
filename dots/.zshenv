@@ -9,8 +9,12 @@ export GIT_EDITOR='nvim'
 # Paths
 export DOTS_DIR="$HOME/repos/.dotfiles/"
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-export PATH="$PATH:/opt/local/bin:/opt/local/sbin:$HOME/.local/share/pnpm::$HOME/.cargo/bin:$HOME/.local/bin:$HOME/.local/opt/"
+export NVIM_DIR="$HOME/repos/.dotfiles/dots/.config/nvim"
+export PATH="$PATH:/opt/local/bin:/opt/local/sbin:$HOME/.local/share/pnpm:$HOME/.cargo/bin:$HOME/.local/bin:$HOME/.local/opt/:"
 PATH="$(perl -e 'print join(":", grep { not $seen{$_}++ } split(/:/, $ENV{PATH}))')"
+
+export CLICOLOR=1
+export LSCOLORS=gxFxCxDxBxegedabagaced
 
 # Load cargo environment
 if [[ -f ~/.cargo/env ]]; then
