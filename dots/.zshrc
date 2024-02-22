@@ -1,14 +1,10 @@
 echo "Reading .zshrc file..."
 
-export CLICOLOR=1
-export LSCOLORS=gxFxCxDxBxegedabagaced
-export NVIM_DIR=~/repos/.dotfiles/dots/.config/nvim
-
-path+=('/home/flynn/.local/bin:/opt/firefox:')
-export PATH
-
 bindkey -s ^f "tmux-sessionizer\n"
 echo "cntrl-f to open tmux sessionizer"
+
+source ~/.aliases
+source ~/.zshenv
 
 # ----------------------------------------------------------------------------------
 # User-Setup -----------------------------------------------------------------------
@@ -124,8 +120,5 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-eval `dircolors ~/.local/opt/bliss-dircolors-master/bliss.dircolors`
-
-source ~/.aliases
 
 fastfetch 
