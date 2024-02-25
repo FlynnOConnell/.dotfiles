@@ -1,29 +1,72 @@
 let mapleader=" "
 imap kj <Esc>
 
-""" Plugins  --------------------------------
-set surround
-set commentary
-set NERDTree
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
+Plug 'machakann/vim-highlightedyank'
+Plug 'preservim/nerdtree'
 
-set so=20  " Keep 20 lines above/below cursor
+" set so=20  " Keep 20 lines above/below curs
+set showmode
+set showcmd
 set nu
+set ic
 set relativenumber
-set sneak
-set ignorecase
-set smartcase
-set scrolloff=5
-set ideamarks " Sync marks and idea bookmarks
 set ideajoin
-
 set ideaput
-set clipboard+=unnamedplus
+set cb=unnamedplus
+
+""" Handlers ---------------
+
+sethandler <C-C> a:ide
+sethandler <C-V> a:ide
+sethandler <C-Z> a:ide
+
+sethandler <C-a> a:vim
+sethandler <C-a> a:vim
+sethandler <C-c> a:vim
+sethandler <C-d> a:vim
+sethandler <C-e> a:vim
+sethandler <C-e> a:vim
+sethandler <C-f> a:vim
+sethandler <C-1> a:vim
+sethandler <C-2> a:vim
+sethandler <C-3> a:vim
+sethandler <C-4> a:vim
+sethandler <C-5> a:vim
+sethandler <C-6> a:vim
+sethandler <C-7> a:vim
+sethandler <C-8> a:vim
+sethandler <C-9> a:vim
+sethandler <C-0> a:vim
+sethandler <C-/> a:vim
+sethandler F1 a:vim
+sethandler F2 a:vim
+sethandler F3 a:vim
+sethandler F4 a:vim
+sethandler F5 a:vim
+sethandler F6 a:vim
+sethandler F7 a:vim
+sethandler F8 a:vim
+sethandler F9 a:vim
+sethandler F11 a:vim
 
 """ Window / Split Management ---------------
 noremap <C-L> <C-W><C-L>
 noremap <C-H> <C-W><C-H>
 noremap <C-K> <C-W><C-K>
 noremap <C-J> <C-W><C-J>
+
+map g; <Action>(JumpToLastChange)
+map g, <Action>(JumpToNextChange)
+map <Leader>R <Action>(Refactorings.QuickListPopupAction)
+map <Leader>e <Action>(ShowErrorDescription)
+
+" map s <Action>(SelectIn)
+map <Leader>s <Action>(FileStructurePopup)
+map <Leader>i <Action>(GotoImplementation)
+map <Leader>f <Action>(FindUsages)
+map <Leader>F <Action>(HighlightUsagesInFile)
 
 map <c-a-\> <Action>(SplitVertically)
 map <c-a-/> <Action>(SplitHorizontally)
@@ -65,7 +108,6 @@ map <C-u> <C-u>zz
 vnoremap < <gv
 vnoremap > >gv
 
-
 """ Tabs ------------------------------------
 map <C-1> 1gt
 map <C-2> 2gt
@@ -81,34 +123,29 @@ map <c-PageUp> <Action>(PreviousTab)<CR>
 """ LSP -----------------------------
 map gn <Action>(GotoNextError)
 map gp <Action>(GotoPreviousError)
-map gh <Action>(ShowErrorDescription)
-map gk <Action>(ShowIntentionActions)
-map ge <Action>(EvaluateExpression)
+map gk <Action>(ShowErrorDescription)
+map gh <Action>(ShowIntentionActions)
 
 map gi <Action>(GotoImplementation)
 map gd <Action>(GotoDeclaration)
 map gr <Action>(RenameElement)
-
-map gs <Action>(ShowUsages)
-map gf <Action>(Back)
-
-map gc <Action>(EditorContextInfo)
+map gu <Action>(ShowUsages)
 
 """ Leader Key Mappings ----------------------
 
 vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
 
-map <leader>o <Action>(OptimizeImports)
-map <leader>r <Action>(ReformatCode)
-
-map <leader>zo <Action>(ExpandAllRegions)
-map <leader>zc <Action>(CollapseAllRegions)
-map <leader>zr <Action>(ExpandRegion)
-map <leader>zm <Action>(CollapseRegion)
-
-map <leader>fr <action>(RecentFiles)
-map <leader>fc <action>(FindInPath)
-map <leader>fR <action>(ReplaceInPath)
+" map <leader>o <Action>(OptimizeImports)
+" map <leader>r <Action>(ReformatCode)
+"
+" map <leader>zo <Action>(ExpandAllRegions)
+" map <leader>zc <Action>(CollapseAllRegions)
+" map <leader>zr <Action>(ExpandRegion)
+" map <leader>zm <Action>(CollapseRegion)
+"
+" map <leader>fr <action>(RecentFiles)
+" map <leader>fc <action>(FindInPath)
+" map <leader>fR <action>(ReplaceInPath)
 
 map <leader>ev :e ~/.ideavimrc<CR>
 map <leader>es :source ~/.ideavimrc<CR>

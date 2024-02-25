@@ -1,17 +1,12 @@
 #!/bin/bash
 #
+echo "Sourcing aliases..."
 #
 export REPOS=~/repos/
 export DOTS=$REPOS/.dotfiles/
 
-
-alias xxx='cd $DOTS'
-alias mount='sudo mount -t cifs //v-storage2.rockefeller.edu/v-data2 /mnt/vdata2 -o credentials=/root/.smbcredentials_vgpu &> /dev/null'
-
-echo "Sourcing aliases..."
-
-alias dark='gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark \
-&& gsettings set org.gnome.desktop.interface color-scheme prefer-dark'
+alias mount2='sudo mount -t cifs //v-storage2.rockefeller.edu/v-data2 /mnt/vdata2 -o credentials=/root/.smbcredentials_vgpu &> /dev/null'
+alias mount4='sudo mount -t cifs //v-storage2.rockefeller.edu/v-data4 /mnt/vdata4 credentials=/root/.smbcredentials_vgpu &> /dev/null'
 
 alias fd='fdfind'
 
@@ -24,21 +19,18 @@ alias copy='xclip -sel clip'
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 alias keys='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 alias path='tr ":" "\n" <<< "$PATH"'
-alias vpn='sudo openconnect --juniper --no-dtls vpn.rockefeller.edu --user=foconnell'
-alias vpn2='echo -e 'VWQ3prv/!chu2ech8dcu' | sudo openconnect --juniper --no-dtls vpn.rockefeller.edu --user=foconnell --passwd-on-stdin'
+alias vpn='echo  VWQ3prv\!chu2ech8dcu | sudo openconnect --juniper --no-dtls vpn.rockefeller.edu --user=foconnell --passwd-on-stdin'
 alias rmf='rm -rf'
 alias logout='sudo service gdm restart'
 alias cppw='xsel --clipboard < ~/.password.txt'
-alias goicon='nvim ~/.icons/'
-
 alias VIM="nvim"
-alias PERSONAL=$XDG_CONFIG_HOME/personal
-alias sudoedit='function _sudoedit(){sudo -e "$1";};_sudoedit'
 
 # - AwesomeWM ----
 alias goaw="nvim ~/.config/awesome/"
-alias goat="nvim ~/.config/awesome/theme/theme.lua"
 alias cdaw="cd ~/.config/awesome/"
+
+alias goicon='nvim ~/.icons/'
+alias goiv='nvim ~/.ideavimrc'
 
 # - Lists ----
 alias lsa='ls -la'
@@ -61,6 +53,7 @@ alias cds="cd ~/repos/.dotfiles/scripts"
 alias goa="nvim ~/.aliases"
 alias gow="nvim ~/.config/nitrogen"
 alias goz="nvim ~/.zshrc"
+alias gov="nvim ~/.vimrc"
 alias got="nvim ~/repos/.dotfiles/dots/.config/tmux/tmux.conf"
 alias gos="nvim ~/repos/.dotfiles/scripts/install_dev"
 alias gok="nvim ~/repos/.dotfiles/dots/.config/kitty/kitty.conf"
