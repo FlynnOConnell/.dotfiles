@@ -150,18 +150,18 @@ Keywords[uk]=Internet;WWW;Browser;Web;Explorer;Інтернет;мережа;п�
 Keywords[vi]=Internet;WWW;Browser;Web;Explorer;Trình duyệt;Trang web
 Keywords[zh_CN]=Internet;WWW;Browser;Web;Explorer;网页;浏览;上网;火狐;Firefox;ff;互联网;网站;
 Keywords[zh_TW]=Internet;WWW;Browser;Web;Explorer;網際網路;網路;瀏覽器;上網;網頁;火狐
-Exec=firefox %u
+Exec=firefox
 Terminal=false
 X-MultipleArgs=false
 Type=Application
-Icon=/opt/firefox
+Icon=/opt/firefox/browser/chrome/icons/default/default128.png
 Categories=GNOME;GTK;Network;WebBrowser;
 MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;x-scheme-handler/chrome;video/webm;application/x-xpinstall;
 StartupNotify=true
 Actions=new-window;new-private-window;
 
 [Desktop Action new-window]
-Name=Open a New Window
+Name=Firefox-New
 Name[ar]=افتح نافذة جديدة
 Name[ast]=Abrir una ventana nueva
 Name[bn]=Abrir una ventana nueva
@@ -198,6 +198,11 @@ Name[vi]=Mở cửa sổ mới
 Name[zh_CN]=新建窗口
 Name[zh_TW]=開啟新視窗
 Exec=firefox -new-window
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=/opt/firefox/browser/chrome/icons/default/default128.png
+Categories=GNOME;GTK;Network;WebBrowser;
 
 [Desktop Action new-private-window]
 Name=Open a New Private Window

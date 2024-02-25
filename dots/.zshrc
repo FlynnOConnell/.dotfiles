@@ -1,10 +1,12 @@
 echo "Reading .zshrc file..."
 
-bindkey -s ^f "tmux-sessionizer\n"
-echo "cntrl-f to open tmux sessionizer"
-
 source ~/.aliases
 source ~/.zshenv
+bindkey -s ^f "tmux-sessionizer\n"
+bindkey -s ^h "hf\n"
+
+echo "Keybind: cntrl-f - Tmux Sessionizer"
+echo "Keybind: cntrl-h -  Command History"
 
 # ----------------------------------------------------------------------------------
 # User-Setup -----------------------------------------------------------------------

@@ -1,6 +1,7 @@
 lastupdatecheck: 0
 recentrepos:
 - /home/flynn/repos/.dotfiles
+- /home/flynn/repos/rbo-lbm
 startuppopupversion: 5
 customcommandshistory: []
 hidecommandlog: false
