@@ -1,0 +1,13 @@
+#!/bin/bash
+nameregex='^fzf-\d[\d.]+?\d?-linux_amd64\.tar\.gz$'
+wget -q "$(curl -s https://api.github.com/repos/junegunn/fzf/releases/latest | jq -r '.assets[] | select(.name|test($name)).browser_download_url' --arg name "${nameregex}")"
+tar --wildcards -C /usr/local/bin -xf fzf-*-linux_amd64.tar.gz
+rm fzf-*-linux_amd64.tar.gz
+wget https://github.com/junegunn/fzf/raw/master/man/man1/fzf.1 -O /usr/local/share/man/man1/fzf.1
+gzip -f /usr/local/share/man/man1/fzf.1
+wget https://github.com/junegunn/fzf/raw/master/man/man1/fzf-tmux.1 -O /usr/local/share/man/man1/fzf-tmux.1
+gzip -f /usr/local/share/man/man1/fzf-tmux.1
+wget https://github.com/junegunn/fzf/raw/master/bin/fzf-tmux -O /usr/local/bin/fzf-tmux
+chmod +x /usr/local/bin/fzf-tmux
+wget https://github.com/junegunn/fzf/raw/master/shell/completion.bash -O /etc/bash_completion.d/fzf-completions.bash
+wget https://github.com/junegunn/fzf/raw/master/shell/key-bindings.bash -O /etc/bash_completion.d/fzf-keybindings.bash    
