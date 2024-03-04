@@ -1,0 +1,1 @@
+/home/foconnell/.fzf/bin/fzf-preview.sh
