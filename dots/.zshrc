@@ -1,12 +1,5 @@
 echo "Reading .zshrc file..."
 
-source ~/.aliases
-source ~/.zshenv
-bindkey -s ^f "tmux-sessionizer\n"
-bindkey -s ^h "hf\n"
-
-echo "Keybind: cntrl-f - Tmux Sessionizer"
-echo "Keybind: cntrl-h -  Command History"
 
 # ----------------------------------------------------------------------------------
 # User-Setup -----------------------------------------------------------------------
@@ -106,6 +99,11 @@ fi
 
 [ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+source ~/.aliases
+source ~/.zshenv
+
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/home/flynn/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
@@ -121,6 +119,10 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+bindkey -s ^f "tmux-sessionizer\n"
+bindkey -s ^h "hf\n"
+
+echo "Keybind: cntrl-f - Tmux Sessionizer"
+echo "Keybind: cntrl-h -  Command History"
 
 fastfetch 
