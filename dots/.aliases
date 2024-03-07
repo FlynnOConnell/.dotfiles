@@ -25,12 +25,6 @@ alias logout='sudo service gdm restart'
 alias cppw='xsel --clipboard < ~/.password.txt'
 alias VIM="nvim"
 
-# - AwesomeWM ----
-alias goaw="nvim ~/.config/awesome/"
-alias cdaw="cd ~/.config/awesome/"
-
-alias goicon='nvim ~/.icons/'
-alias goiv='nvim ~/.ideavimrc'
 
 # - Lists ----
 alias lsa='ls -la'
@@ -40,26 +34,33 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias ~="cd ~"
+alias cdaw="cd ~/.config/awesome"
 alias cdr="cd ~/repos"
-alias cdd="cd ~/repos/.dotfiles/"
+alias cdd="cd ~/repos/.dotfiles"
 alias cdow="cd ~/Downloads/"
-alias cdot="cd ~/repos/.dotfiles/dots/"
+alias cdot="cd ~/repos/.dotfiles/dots"
 alias cdi3="cd ~/.config/i3/config"
 alias cdt="cd ~/.config/tmux/tmux.conf"
 alias cdn="cd ~/.config/nvim/"
 alias cds="cd ~/repos/.dotfiles/scripts"
+alias cdm="cd /mnt/vdata4/foconnell"
+alias cdmc="cd /mnt/vdata4/foconnell/code"
+alias cdmd="cd /mnt/vdata4/foconnell/data"
 
 # - Nvim To File ----
 alias goa="nvim ~/.aliases"
 alias gow="nvim ~/.config/nitrogen"
 alias goz="nvim ~/.zshrc"
 alias gov="nvim ~/.vimrc"
+alias goi='nvim ~/.ideavimrc'
 alias got="nvim ~/repos/.dotfiles/dots/.config/tmux/tmux.conf"
 alias gos="nvim ~/repos/.dotfiles/scripts/install_dev"
 alias gok="nvim ~/repos/.dotfiles/dots/.config/kitty/kitty.conf"
 alias god="nvim ~/repos/.dotfiles/"
 alias goi3="nvim ~/.config/i3/config"
 alias gon="nvim ~/.config/nvim/"
+alias goicon='nvim ~/.icons/'
+alias goaw="nvim ~/.config/awesome/"
 
 # - Source --------
 alias sz="source ~/.zshrc"
@@ -74,3 +75,7 @@ alias gd="git diff"
 
 alias hf="history | fzf -e"
 alias lg="lazygit"
+
+alias go4="nvim /mnt/vdata4/foconnell/code/rbo-lbm/"
+alias cd4="cd /mnt/vdata4/foconnell/"
+alias cd2="cd /mnt/vdata2/foconnell/"

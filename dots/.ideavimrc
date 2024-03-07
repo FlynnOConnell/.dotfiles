@@ -1,5 +1,3 @@
-let mapleader=" "
-imap kj <Esc>
 
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
@@ -13,43 +11,16 @@ set nu
 set ic
 set relativenumber
 set ideajoin
-set ideaput
-set cb=unnamedplus
+set clipboard+=unnamed
+set clipboard+=ideaput
 
-""" Handlers ---------------
+let mapleader=" "
 
-sethandler <C-C> a:ide
-sethandler <C-V> a:ide
-sethandler <C-Z> a:ide
+nnoremap \e :e ~/.ideavimrc<CR>
+nnoremap \r :action IdeaVim.ReloadVimRc.reload<CR>
+map <C-c> <Esc>
+imap kj <Esc>
 
-sethandler <C-a> a:vim
-sethandler <C-a> a:vim
-sethandler <C-c> a:vim
-sethandler <C-d> a:vim
-sethandler <C-e> a:vim
-sethandler <C-e> a:vim
-sethandler <C-f> a:vim
-sethandler <C-1> a:vim
-sethandler <C-2> a:vim
-sethandler <C-3> a:vim
-sethandler <C-4> a:vim
-sethandler <C-5> a:vim
-sethandler <C-6> a:vim
-sethandler <C-7> a:vim
-sethandler <C-8> a:vim
-sethandler <C-9> a:vim
-sethandler <C-0> a:vim
-sethandler <C-/> a:vim
-sethandler F1 a:vim
-sethandler F2 a:vim
-sethandler F3 a:vim
-sethandler F4 a:vim
-sethandler F5 a:vim
-sethandler F6 a:vim
-sethandler F7 a:vim
-sethandler F8 a:vim
-sethandler F9 a:vim
-sethandler F11 a:vim
 
 """ Window / Split Management ---------------
 noremap <C-L> <C-W><C-L>
@@ -57,16 +28,10 @@ noremap <C-H> <C-W><C-H>
 noremap <C-K> <C-W><C-K>
 noremap <C-J> <C-W><C-J>
 
-map g; <Action>(JumpToLastChange)
-map g, <Action>(JumpToNextChange)
 map <Leader>R <Action>(Refactorings.QuickListPopupAction)
-map <Leader>e <Action>(ShowErrorDescription)
-
-" map s <Action>(SelectIn)
+map <Leader>h <Action>(ShowErrorDescription)
 map <Leader>s <Action>(FileStructurePopup)
-map <Leader>i <Action>(GotoImplementation)
 map <Leader>f <Action>(FindUsages)
-map <Leader>F <Action>(HighlightUsagesInFile)
 
 map <c-a-\> <Action>(SplitVertically)
 map <c-a-/> <Action>(SplitHorizontally)
@@ -84,9 +49,8 @@ map <c-a-2> :action ActivateRunToolWindow<CR>
 map <c-a-3> :action ActivatePythonConsoleToolWindow<CR>
 map <c-a-4> :action ActivateSciViewToolWindow<CR>
 map <c-a-5> :action ActivateStructureToolWindow<CR>
-
-map <c-a-6> :action XDebugger.AttachToProcess<CR>
-map <c-a-7> :action ActivateBookmarksToolWindow<CR>
+map <c-a-6> :action ActivateBookmarksToolWindow<CR>
+map <c-a-7> :action XDebugger.AttachToProcess<CR>
 
 map <c-a-q> :action HideAllWindows<CR>
 map <c-a-w> :action HideActiveWindow<CR>
@@ -100,10 +64,6 @@ map <c-w> <Action>(CloseContent)
 
 map n nzzzv
 map N Nzzzv
-map j jzz
-map k kzz
-map <C-d> <C-d>zz
-map <C-u> <C-u>zz
 
 vnoremap < <gv
 vnoremap > >gv
@@ -135,20 +95,10 @@ map gu <Action>(ShowUsages)
 
 vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
 
-" map <leader>o <Action>(OptimizeImports)
-" map <leader>r <Action>(ReformatCode)
-"
-" map <leader>zo <Action>(ExpandAllRegions)
-" map <leader>zc <Action>(CollapseAllRegions)
-" map <leader>zr <Action>(ExpandRegion)
-" map <leader>zm <Action>(CollapseRegion)
-"
-" map <leader>fr <action>(RecentFiles)
-" map <leader>fc <action>(FindInPath)
-" map <leader>fR <action>(ReplaceInPath)
-
-map <leader>ev :e ~/.ideavimrc<CR>
-map <leader>es :source ~/.ideavimrc<CR>
+map <leader>zo <Action>(ExpandAllRegions)
+map <leader>zc <Action>(CollapseAllRegions)
+map <leader>zr <Action>(ExpandRegion)
+map <leader>zm <Action>(CollapseRegion)
 
 """ Run/Debug --------------------------------
 map ,r <Action>(Run)
@@ -164,9 +114,30 @@ map ,o <Action>(StepOut)
 map ,c <Action>(Resume)
 map ,d <Action>(Debug)
 
-""" Functions
-nmap <leader>; :call Praise("IdeaVim")<CR>
+""" Handlers ---------------
 
-function! Praise(name)
-  echo a:name .. " is good"
-endfunction
+sethandler <C-j> a:vim
+sethandler <C-k> a:vim
+sethandler <C-f> a:vim
+sethandler <C-u> a:vim
+sethandler <C-d> a:vim
+sethandler <C-i> a:vim
+sethandler <C-r> a:vim
+sethandler <C-p> a:vim
+sethandler <C-b> a:vim
+sethandler <C-n> a:vim
+sethandler <C-m> a:vim
+sethandler <C-q> a:vim
+sethandler <C-w> a:vim
+
+sethandler <C-1> a:vim
+sethandler <C-2> a:vim
+sethandler <C-3> a:vim
+sethandler <C-4> a:vim
+sethandler <C-5> a:vim
+sethandler <C-6> a:vim
+sethandler <C-7> a:vim
+sethandler <C-8> a:vim
+sethandler <C-9> a:vim
+sethandler <C-0> a:vim
+sethandler <C-/> a:vim
