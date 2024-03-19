@@ -12,19 +12,14 @@ alias fd='fdfind'
 
 alias vgpu='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
 alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
-alias jupyterremote='jupyter notebook --no-browser --port=8888'
 alias auto="nvim ~/.config/autostart"
 
-alias copy='xclip -sel clip'
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 alias keys='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 alias path='tr ":" "\n" <<< "$PATH"'
-alias vpn='echo  VWQ3prv\!chu2ech8dcu | sudo openconnect --juniper --no-dtls vpn.rockefeller.edu --user=foconnell --passwd-on-stdin'
-alias rmf='rm -rf'
 alias logout='sudo service gdm restart'
 alias cppw='xsel --clipboard < ~/.password.txt'
 alias VIM="nvim"
-
 
 # - Lists ----
 alias lsa='ls -la'
