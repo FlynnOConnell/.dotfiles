@@ -1,39 +1,11 @@
 echo "Reading .zshrc file..."
 
-
 # ----------------------------------------------------------------------------------
 # User-Setup -----------------------------------------------------------------------
 # ----------------------------------------------------------------------------------
 
 ZSH_THEME="steeef"
 setopt NO_BEEP
-
-# ---------------------------------------------------------------------------------
-# Helper Functions ----------------------------------------------------------------
-# ---------------------------------------------------------------------------------
-
-function myip() {
-    ifconfig lo0 | grep 'inet ' | sed -e 's/:/ /' | awk '{print "lo0       : " $2}'
-	ifconfig en0 | grep 'inet ' | sed -e 's/:/ /' | awk '{print "en0 (IPv4): " $2 " " $3 " " $4 " " $5 " " $6}'
-	ifconfig en0 | grep 'inet6 ' | sed -e 's/ / /' | awk '{print "en0 (IPv6): " $2 " " $3 " " $4 " " $5 " " $6}'
-	ifconfig en1 | grep 'inet ' | sed -e 's/:/ /' | awk '{print "en1 (IPv4): " $2 " " $3 " " $4 " " $5 " " $6}'
-	ifconfig en1 | grep 'inet6 ' | sed -e 's/ / /' | awk '{print "en1 (IPv6): " $2 " " $3 " " $4 " " $5 " " $6}'
-}
-
-get_os() {
-  case "$(uname -s)" in
-    Linux*)     echo "linux";;
-    Darwin*)    echo "macos";;
-    CYGWIN*)    echo "windows";;
-    MINGW*)     echo "windows";;
-    MSYS*)      echo "windows";;
-    *)          echo "unknown"
-  esac
-}
-
-# ---------------------------------------------------------------------------------
-# Oh My Zsh Configuration ---------------------------------------------------------
-# ---------------------------------------------------------------------------------
 
 zstyle ':omz:update' mode auto      # update automatically without asking
 zstyle ':omz:update' frequency 13
@@ -106,14 +78,14 @@ source ~/.zshenv
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/flynn/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('/home/foconnell/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/home/flynn/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/flynn/miniconda3/etc/profile.d/conda.sh"
+    if [ -f "/home/foconnell/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/foconnell/miniconda3/etc/profile.d/conda.sh"
     else
-        export PATH="/home/flynn/miniconda3/bin:$PATH"
+        export PATH="/home/foconnell/miniconda3/bin:$PATH"
     fi
 fi
 unset __conda_setup
@@ -124,5 +96,3 @@ bindkey -s ^h "hf\n"
 
 echo "Keybind: cntrl-f - Tmux Sessionizer"
 echo "Keybind: cntrl-h -  Command History"
-
-fastfetch 
