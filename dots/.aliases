@@ -7,6 +7,9 @@ export DOTS=$REPOS/.dotfiles/
 
 alias mount2='sudo mount -t cifs //v-storage2.rockefeller.edu/v-data2 /mnt/vdata2 -o credentials=/root/.smbcredentials_vgpu &> /dev/null'
 alias mount4='sudo mount -t cifs //v-storage2.rockefeller.edu/v-data4 /mnt/vdata4 credentials=/root/.smbcredentials_vgpu &> /dev/null'
+alias go4='cd /v-data4/foconnell/code/'
+alias gobash='exec bash -l'
+alias gozsh= 'exec ~/bin/zsh'
 
 alias fd='fdfind'
 
