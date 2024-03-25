@@ -10,7 +10,7 @@ export GIT_EDITOR='nvim'
 export DOTS_DIR="$HOME/repos/.dotfiles/"
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
 export NVIM_DIR="$HOME/repos/.dotfiles/dots/.config/nvim"
-export PATH="$PATH:/opt/:/opt/local/bin:/opt/local/sbin:$HOME/.local/share/pnpm:$HOME/.cargo/bin:$HOME/.local/bin:$HOME/.local/opt/:$HOME/bin/"
+export PATH="$PATH:/opt/:/opt/local/bin:/opt/local/sbin:$HOME/.local/share/pnpm:$HOME/.cargo/bin:$HOME/.local/bin:$HOME/.local/opt/:$HOME/bin/:/v-data4/foconnell/.local/"
 
 export CLICOLOR=1
 export LSCOLORS=gxFxCxDxBxegedabagaced

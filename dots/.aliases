@@ -49,6 +49,7 @@ alias cdmd="cd /mnt/vdata4/foconnell/data"
 alias goa="nvim ~/.aliases"
 alias gow="nvim ~/.config/nitrogen"
 alias goz="nvim ~/.zshrc"
+alias goe="nvim ~/.zshenv"
 alias gov="nvim ~/.vimrc"
 alias goi='nvim ~/.ideavimrc'
 alias got="nvim ~/repos/.dotfiles/dots/.config/tmux/tmux.conf"

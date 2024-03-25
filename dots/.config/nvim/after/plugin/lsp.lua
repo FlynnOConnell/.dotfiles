@@ -1,18 +1,10 @@
 local nvim_lsp = require('lspconfig')
 local servers = {
     "bashls",
-    "cssls",
-    "pylsp",
     "pyright",
-    "yamlls",
-    "eslint",
-    "html",
     "jsonls",
     "lua_ls",
     "rust_analyzer",
-    "tsserver",
-    'docker_compose_language_service',
-    'dockerls',
 }
 
 local on_attach = function(_, bufnr)
