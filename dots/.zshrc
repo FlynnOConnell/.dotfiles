@@ -96,3 +96,4 @@ bindkey -s ^h "hf\n"
 
 echo "Keybind: cntrl-f - Tmux Sessionizer"
 echo "Keybind: cntrl-h -  Command History"
+fpath+=${ZDOTDIR:-~}/.zsh_functions
