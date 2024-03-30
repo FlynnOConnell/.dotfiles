@@ -50,6 +50,7 @@ vim.keymap.set('n', '<leader>_', ':split<CR>', { noremap = true, silent = true }
 
 vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
+vim.keymap.set("n", "<leader><leader>", "<cmd>:Ex<CR>")
 
 -- QUICK ROUTING TO DIRS -------
 vim.keymap.set("n", "<leader>Gon", "<cmd>e ~/.config/nvim/<CR>"); -- go nvim
@@ -62,33 +63,12 @@ wk.register({
     ["<leader>"] = {
         s = { "replace-all" },
         F = { "Lsp-Format" },
-        G = {
-            name = "+GoTo",
-            o = {
-                name = "+open",
-                n = { "Go to Neovim Config" },
-                r = { "Go to Repos" },
-                t = { "Go to Tmux Config" },
-                N = {
-                    name = "+nvim-dirs",
-                    Nw = { "Go to keymaps" },
-                    Nl = { "Go to lua dir" },
-                    Np = { "Go to plugin dir" },
-                },
-                R = {
-                    name = "+repo-dirs",
-                    Rf = { "Go to Repos: Fluke" },
-                    Rd = { "Go to Repos: .dotfiles" },
-                },
-            },
-        },
         f = {
             name = "+findFiles",
             f = { "Find Files" },
-            g = { "Grep String" },
+            s = { "Grep String" },
             b = { "Find Buffers" },
             h = { "Find Help Tags" },
         },
-        u = { "Undo-Tree" },
     },
 })

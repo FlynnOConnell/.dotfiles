@@ -10,7 +10,6 @@ vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.smartindent = true
 vim.opt.wrap = false
-vim.opt.clipboard = "unnamedplus"
 vim.opt.swapfile = false
 vim.opt.backup = false
 
@@ -25,6 +24,13 @@ vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
 vim.opt.timeoutlen = 300
+
+vim.g.netrw_browse_split = 0
+vim.g.netrw_banner = 0
+vim.g.netrw_winsize = 25
+vim.o.background = "dark"
+
+vim.cmd([[colorscheme gruvbox]])
 
 -- Set completeopt to have a better completion experience
 -- :help completeopt
@@ -42,8 +48,4 @@ vim.wo.signcolumn = "yes"
 
 vim.g.python_host_prog = '~/miniconda3/bin/python'
 vim.g.python3_host_prog = '~/miniconda3/bin/python3'
-
-
-opt.foldmethod = "expr"
-opt.foldexpr = "nvim_treesitter#foldexpr()"
 

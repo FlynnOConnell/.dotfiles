@@ -1,4 +1,3 @@
-# Exports
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 export VISUAL="nvim"
@@ -12,8 +11,8 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 export NVIM_DIR="$HOME/repos/.dotfiles/dots/.config/nvim"
 export PATH="$PATH:/opt/:/opt/local/bin:/opt/local/sbin:$HOME/.local/share/pnpm:$HOME/.cargo/bin:$HOME/.local/bin:$HOME/.local/opt/:$HOME/bin/:/v-data4/foconnell/.local/"
 
-export CLICOLOR=1
-export LSCOLORS=gxFxCxDxBxegedabagaced
+# export CLICOLOR=1
+# export LSCOLORS=gxFxCxDxBxegedabagaced
 
 # Load cargo environment
 if [[ -f ~/.cargo/env ]]; then
