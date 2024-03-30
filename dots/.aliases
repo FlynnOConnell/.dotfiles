@@ -5,29 +5,24 @@ echo "Sourcing aliases..."
 export REPOS=~/repos/
 export DOTS=$REPOS/.dotfiles/
 
+alias VIM="nvim"
+
+# - Remote ----
 alias mount2='sudo mount -t cifs //v-storage2.rockefeller.edu/v-data2 /mnt/vdata2 -o credentials=/root/.smbcredentials_vgpu &> /dev/null'
 alias mount4='sudo mount -t cifs //v-storage2.rockefeller.edu/v-data4 /mnt/vdata4 credentials=/root/.smbcredentials_vgpu &> /dev/null'
-alias go4='cd /v-data4/foconnell/code/'
-alias gobash='exec bash -l'
-alias gozsh= 'exec ~/bin/zsh'
-
-alias fd='fdfind'
+alias go4='nvim /v-data4/foconnell/code/'
+alias go2='nvim /data2/fpo/'
+alias cd4='cd /v-data4/foconnell/code/'
+alias cd2='cd /data2/fpo/'
 
 alias vgpu='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
 alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
-alias auto="nvim ~/.config/autostart"
 
-alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
-alias keys='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
-alias path='tr ":" "\n" <<< "$PATH"'
-alias logout='sudo service gdm restart'
+# - Copy ----
 alias cppw='xsel --clipboard < ~/.password.txt'
-alias VIM="nvim"
-
-# - Lists ----
-alias lsa='ls -la'
 
 # - Navigation -
+alias lsa='ls -la'
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
@@ -72,9 +67,14 @@ alias gb="git branch"
 alias gc="git commit"
 alias gd="git diff"
 
+# - Tools ---------
 alias hf="history | fzf -e"
 alias lg="lazygit"
+alias fd='fdfind'
 
-alias go4="nvim /mnt/vdata4/foconnell/code/rbo-lbm/"
-alias cd4="cd /mnt/vdata4/foconnell/"
-alias cd2="cd /mnt/vdata2/foconnell/"
+# - Helpers ---------
+alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
+alias keys='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
+alias path='tr ":" "\n" <<< "$PATH"'
+alias logout='sudo service gdm restart'
+

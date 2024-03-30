@@ -3,31 +3,6 @@ require("myvim.remap")
 require("mason").setup()
 require("mason-lspconfig").setup()
 
-require'lspconfig'.rust_analyzer.setup({
-    settings = {
-        ["rust-analyzer"] = {
-            assist = {
-                importMergeBehavior = "last",
-                importPrefix = "by_self",
-            },
-            cargo = {
-                loadOutDirsFromCheck = true
-            },
-            procMacro = {
-                enable = true
-            },
-            checkOnSave = {
-                enable = true,
-                command = "clippy"
-            },
-            -- Ensure this is set for formatting
-            rustfmt = {
-                overrideCommand = { "rustfmt", "--edition=2018", "--emit=stdout" },
-            }
-        },
-    },
-})
-
 vim.api.nvim_set_keymap('n', '<Leader>cf', ':lua vim.lsp.buf.formatting()<CR>', { noremap = true, silent = true })
 
 local augroup = vim.api.nvim_create_augroup
@@ -59,10 +34,6 @@ autocmd({"BufWritePre"}, {
     command = [[%s/\s\+$//e]],
 })
 
-vim.g.netrw_browse_split = 0
-vim.g.netrw_banner = 0
-vim.g.netrw_winsize = 25
-vim.cmd.colorscheme "catppuccin"
 
 local system_name
 if os.getenv("OS") == "Windows_NT" then

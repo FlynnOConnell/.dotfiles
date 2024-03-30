@@ -1,5 +1,5 @@
 [Desktop Entry]
 Type=Application
 Name=Mathworks Service Host
-Exec=/home/foconnell/.MathWorks/ServiceHost/v-gpu2/v2024.3.0.3/bin/glnxa64/MathWorksServiceHost service --realm-id companion@prod@production
+Exec=/home/foconnell/.MathWorks/ServiceHost/v-gpu2/v2024.3.1.1/bin/glnxa64/MathWorksServiceHost service --realm-id companion@prod@production
 Terminal=false

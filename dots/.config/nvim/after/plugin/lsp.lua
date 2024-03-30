@@ -4,7 +4,9 @@ local servers = {
     "pyright",
     "jsonls",
     "lua_ls",
-    "rust_analyzer",
+    "matlab_ls",
+    "markdown_oxide",
+    "dockerls"
 }
 
 local on_attach = function(_, bufnr)
@@ -33,20 +35,6 @@ end
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-require('rust-tools').setup({
-    server = {
-        on_attach = on_attach,
-        capabilities = capabilities,
-        settings = {
-            ["rust-analyzer"] = {
-                checkOnSave = {
-                    command = "clippy"
-                }
-            }
-        }
-    }
-})
-
 for _, server in ipairs(servers) do
     nvim_lsp[server].setup {
         on_attach = on_attach,
@@ -55,18 +43,6 @@ for _, server in ipairs(servers) do
         settings = {
             Lua = {
                 diagnostics = { globals = {'vim'} }
-            },
-            pylsp = {
-                plugins = {
-
-                    maxLineLength = 250,
-                    jedi_completion = {
-                        include_class_objects = true,
-                        include_function_objects = true
-                    },
-                    jedi = { environment = os.getenv("VENV_PATH_PYLSP") }
-                },
-
             },
         },
         handlers = {
