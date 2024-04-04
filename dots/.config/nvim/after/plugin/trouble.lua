@@ -17,8 +17,8 @@ vim.keymap.set("n", ",r", "<cmd>TroubleToggle lsp_references<cr>",
   {silent = true, noremap = true}
 )
 
-vim.keymap.set("n", "<leader>k", function() require("trouble").next({skip_groups = true, jump = true}) end)
-vim.keymap.set("n", "<leader>j", function() require("trouble").previous({skip_groups = true, jump = true}) end)
+vim.keymap.set("n", "<leader>j", function() require("trouble").next({skip_groups = true, jump = true}) end)
+vim.keymap.set("n", "<leader>k", function() require("trouble").previous({skip_groups = true, jump = true}) end)
 
 local wk = require("which-key")
 wk.setup {}

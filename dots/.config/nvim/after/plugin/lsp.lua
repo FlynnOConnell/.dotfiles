@@ -5,7 +5,6 @@ local servers = {
     "jsonls",
     "lua_ls",
     "matlab_ls",
-    "markdown_oxide",
     "dockerls"
 }
 
