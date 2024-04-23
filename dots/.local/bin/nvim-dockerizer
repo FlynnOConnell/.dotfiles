@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-CONTAINER_NAME="testcontainer"
-PYTHON_COMMAND="python"
-
-# Execute the Python command inside the Docker container
-docker exec -it $CONTAINER_NAME $PYTHON_COMMAND "$@"

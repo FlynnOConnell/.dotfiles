@@ -5,7 +5,6 @@ local servers = {
     "jsonls",
     "lua_ls",
     "matlab_ls",
-    "dockerls"
 }
 
 local on_attach = function(_, bufnr)

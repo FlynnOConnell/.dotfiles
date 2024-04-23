@@ -17,6 +17,7 @@ vim.opt.hlsearch = false
 vim.opt.incsearch = true
 
 vim.opt.termguicolors = true
+vim.g.clipboard="unnamedplus"
 
 vim.opt.scrolloff = 20
 vim.opt.signcolumn = "yes"
