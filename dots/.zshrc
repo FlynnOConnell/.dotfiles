@@ -13,6 +13,7 @@ zstyle ':omz:update' frequency 13
 # Ensure ZSH and ZSH_CUSTOM are properly set with home directory expansion
 ZSH="${ZSH:-$HOME/.oh-my-zsh}"
 ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
+plugins=(git ssh-agent)
 
 # Source Oh My Zsh and custom configurations
 source "$ZSH/oh-my-zsh.sh"
