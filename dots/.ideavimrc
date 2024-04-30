@@ -102,6 +102,7 @@ map <leader>zm <Action>(CollapseRegion)
 
 """ Run/Debug --------------------------------
 map ,r <Action>(Run)
+map ,, <Action>(ExecuteInPyConsoleAction)
 map ,R <Action>(Rerun)
 map ,q <Action>(Stop)
 map ,b <Action>(ToggleLineBreakpoint)
