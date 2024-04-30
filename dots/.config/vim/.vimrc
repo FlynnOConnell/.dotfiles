@@ -48,10 +48,10 @@ set cursorline
 " http://superuser.com/questions/271023/vim-can-i-disable-continuation-of-comments-to-the-next-line
 set formatoptions-=cro
 
-" shows status bar even with one window. 
+" shows status bar even with one window.
 " useful for the vim-airline plugin.
-set laststatus=2 
-                  
+set laststatus=2
+
 set relativenumber
 set number
 set showmatch
@@ -153,8 +153,8 @@ nnoremap <script> <silent> <unique> <BS> <C-^>
 " It is a bad idea to remap TAB, which is the same as ctrl-i.
 " noremap <script> <silent> <unique> <TAB> gt
 
-" other possible remaps: tab, space, backspace, return, 
-"                        ctrl-m, ctrl-h, ctrl-j, ctrl-k, ctrl-n, ctrl-p, 
+" other possible remaps: tab, space, backspace, return,
+"                        ctrl-m, ctrl-h, ctrl-j, ctrl-k, ctrl-n, ctrl-p,
 "                        perhaps s (when not taken by vim-sneak)
 "                        much stuff starting with [, in particular [f and ]f which are deprecated.
 
@@ -188,3 +188,16 @@ endif
 if has("win32") || has("win64")
    set directory=$TMP
 end
+
+
+let &t_SI .= "\<Esc>[?2004h"
+let &t_EI .= "\<Esc>[?2004l"
+
+inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+
+" https://stackoverflow.com/questions/2514445/turning-off-auto-indent-when-pasting-text-into-vim/38258720#38258720
+function! XTermPasteBegin()
+  set pastetoggle=<Esc>[201~
+  set paste
+  return ""
+endfunction
