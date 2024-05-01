@@ -2,7 +2,9 @@ lastupdatecheck: 0
 recentrepos:
 - /home/flynn/repos/.dotfiles
 - /home/flynn/repos/rbo-lbm
+- /home/flynn/repos/scanreader
 startuppopupversion: 5
-customcommandshistory: []
+customcommandshistory:
+- q
 hidecommandlog: false
 ignorewhitespaceindiffview: false
