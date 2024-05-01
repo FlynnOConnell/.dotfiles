@@ -13,8 +13,8 @@ end
 local packer_bootstrap = ensure_packer()
 
 return require('packer').startup(function(use)
-
     use 'lewis6991/gitsigns.nvim'
+    use 'matveyt/neoclip'
     use 'romgrk/barbar.nvim'
     -- install without yarn or npm
     use({
