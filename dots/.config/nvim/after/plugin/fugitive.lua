@@ -33,8 +33,6 @@ local wk = require("which-key")
 
 wk.register({
     ["<leader>"] = {
-        s = { "replace-all" },
-        F = { "Lsp-Format" },
         h = {
             name = "+git",
             s = { "Run Git" },
