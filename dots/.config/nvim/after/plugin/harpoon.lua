@@ -2,7 +2,7 @@ local mark = require("harpoon.mark")
 local ui = require("harpoon.ui")
 local wk = require("which-key")
 
-vim.keymap.set("n", "<leader>a", mark.add_file)
+vim.keymap.set("n", "<C-a>", mark.add_file)
 vim.keymap.set("n", "<C-e>", ui.toggle_quick_menu)
 
 vim.keymap.set("n", "<leader>1", function() ui.nav_file(1) end)
@@ -18,5 +18,7 @@ wk.register({
         ["2"] = { nav_file_2, "Mark 2" },
         ["3"] = { nav_file_3, "Mark 3" },
         ["4"] = { nav_file_4, "Mark 4" },
+        ["5"] = { nav_file_5, "Mark 5" },
+        ["6"] = { nav_file_6, "Mark 6" }
     },
 })
