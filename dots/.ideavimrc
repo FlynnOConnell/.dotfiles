@@ -1,26 +1,39 @@
 
+map <c-a-m> :action MoveEditorToOppositeTabGroup<CR>
+map <c-a-n> :action EditSourceInNewWindow<CR>
+map <c-f> <Action>(GotoFile)
+map <c-a-p> :action SearchEverywhere<CR>
+
+map <Leader>R <Action>(Refactorings.QuickListPopupAction)
+map <Leader>h <Action>(ShowErrorDescription)
+map <Leader>s <Action>(FileStructurePopup)
+map <Leader>f <Action>(FindUsages)
+
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'machakann/vim-highlightedyank'
 Plug 'preservim/nerdtree'
 
 " set so=20  " Keep 20 lines above/below curs
-set showmode
 set showcmd
 set nu
 set ic
 set relativenumber
 set ideajoin
-set clipboard+=unnamed
-set clipboard+=ideaput
+set ideamarks
 
 let mapleader=" "
 
+map <'>1 <Action>(GoTo)
+
 nnoremap \e :e ~/.ideavimrc<CR>
 nnoremap \r :action IdeaVim.ReloadVimRc.reload<CR>
+
+nnoremap <C--> :action EditorDecreaseFontSizeGlobal<CR>
+nnoremap <C-S-=> :action EditorIncreaseFontSizeGlobal<CR>
+
 map <C-c> <Esc>
 imap kj <Esc>
-
 
 """ Window / Split Management ---------------
 noremap <C-L> <C-W><C-L>
@@ -28,29 +41,10 @@ noremap <C-H> <C-W><C-H>
 noremap <C-K> <C-W><C-K>
 noremap <C-J> <C-W><C-J>
 
-map <Leader>R <Action>(Refactorings.QuickListPopupAction)
-map <Leader>h <Action>(ShowErrorDescription)
-map <Leader>s <Action>(FileStructurePopup)
-map <Leader>f <Action>(FindUsages)
-
 map <c-a-\> <Action>(SplitVertically)
 map <c-a-/> <Action>(SplitHorizontally)
 map <c-a-x> <Action>(Unsplit)
 map <c-a-z> <Action>(UnsplitAll)
-
-map <c-a-m> :action MoveEditorToOppositeTabGroup<CR>
-map <c-a-n> :action EditSourceInNewWindow<CR>
-
-map <c-a-f> <Action>(GotoFile)
-map <c-a-p> :action SearchEverywhere<CR>
-
-map <c-a-1> :action ActivateDebugToolWindow<CR>
-map <c-a-2> :action ActivateRunToolWindow<CR>
-map <c-a-3> :action ActivatePythonConsoleToolWindow<CR>
-map <c-a-4> :action ActivateSciViewToolWindow<CR>
-map <c-a-5> :action ActivateStructureToolWindow<CR>
-map <c-a-6> :action ActivateBookmarksToolWindow<CR>
-map <c-a-7> :action XDebugger.AttachToProcess<CR>
 
 map <c-a-q> :action HideAllWindows<CR>
 map <c-a-w> :action HideActiveWindow<CR>
@@ -62,6 +56,8 @@ nnoremap \ :NERDTree<CR>
 vnoremap <C-j> <ESC>
 map <c-w> <Action>(CloseContent)
 
+nnoremap k kzz
+nnoremap j jzz
 map n nzzzv
 map N Nzzzv
 
@@ -90,9 +86,9 @@ map gi <Action>(GotoImplementation)
 map gd <Action>(GotoDeclaration)
 map gr <Action>(RenameElement)
 map gu <Action>(ShowUsages)
+map gz <Action>(ToggleZenMode)
 
 """ Leader Key Mappings ----------------------
-
 vnoremap <leader>s y:%s/<C-r>"//gIc<Left><Left><Left><Left>
 
 map <leader>zo <Action>(ExpandAllRegions)
@@ -102,18 +98,17 @@ map <leader>zm <Action>(CollapseRegion)
 
 """ Run/Debug --------------------------------
 map ,r <Action>(Run)
-map ,, <Action>(ExecuteInPyConsoleAction)
-map ,R <Action>(Rerun)
-map ,q <Action>(Stop)
 map ,b <Action>(ToggleLineBreakpoint)
-map ,n <Action>(MuteBreakpoints)
 
+map ,e <Action>(ChooseDebugConfiguration)
 map ,a <Action>(ViewBreakpoints)
 map ,s <Action>(StepOver)
-map ,i <Action>(StepIntoMyCode)
+map ,i <Action>(StepInto)
+map ,m <Action>(StepIntoMyCode)
 map ,o <Action>(StepOut)
 map ,c <Action>(Resume)
 map ,d <Action>(Debug)
+map ,f <Action>(Debugger.PopFrame)
 
 """ Handlers ---------------
 
@@ -124,6 +119,7 @@ sethandler <C-u> a:vim
 sethandler <C-d> a:vim
 sethandler <C-i> a:vim
 sethandler <C-r> a:vim
+sethandler <C-o> a:vim
 sethandler <C-p> a:vim
 sethandler <C-b> a:vim
 sethandler <C-n> a:vim
@@ -140,5 +136,3 @@ sethandler <C-6> a:vim
 sethandler <C-7> a:vim
 sethandler <C-8> a:vim
 sethandler <C-9> a:vim
-sethandler <C-0> a:vim
-sethandler <C-/> a:vim
