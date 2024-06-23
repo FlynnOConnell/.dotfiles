@@ -51,8 +51,8 @@ $RECYCLE.BIN/
 .Trash-*
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
-$ Neovim
-nvim/.config/nvim/plugin/packer_compiled.lua
-*.log
-*/lazygit/state.yml*
 
+# Neovim
+*.log
+nvim/.config/nvim/plugin/packer_compiled.lua
+dots/.config/lazygit/state.yml
