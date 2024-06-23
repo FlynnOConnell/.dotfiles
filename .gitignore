@@ -54,3 +54,9 @@ $RECYCLE.BIN/
 $ Neovim
 nvim/.config/nvim/plugin/packer_compiled.lua
 *.log
+<<<<<<< HEAD
+=======
+*/lazygit/state.yml*
+
+
+>>>>>>> 45e4a6b (ignore lazygit/state.yml)
