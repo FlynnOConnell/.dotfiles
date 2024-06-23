@@ -6,6 +6,8 @@ export REPOS=~/repos/
 export DOTS=$REPOS/.dotfiles/
 
 alias VIM="nvim"
+alias mysudo='sudo -E env "PATH=$PATH"'
+alias mm="~/micromamba"
 
 # - Remote ----
 alias mount2='sudo mount -t cifs //v-storage2.rockefeller.edu/v-data2 /mnt/vdata2 -o credentials=/root/.smbcredentials_vgpu &> /dev/null'
