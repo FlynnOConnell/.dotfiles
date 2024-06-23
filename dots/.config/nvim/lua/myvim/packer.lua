@@ -15,10 +15,9 @@ local packer_bootstrap = ensure_packer()
 return require('packer').startup(function(use)
     use 'lewis6991/gitsigns.nvim'
     use 'matveyt/neoclip'
-    use({
-        "iamcco/markdown-preview.nvim",
-        run = function() vim.fn["mkdp#util#install"]() end,
-    })
+    use {'neoclide/coc.nvim', branch = 'release'}
+    use 'lewis6991/gitsigns.nvim'
+    -- install without yarn or npm
 
     use 'wbthomason/packer.nvim'
     use 'nvim-tree/nvim-web-devicons'
