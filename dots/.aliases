@@ -82,3 +82,9 @@ alias logout='sudo service gdm restart'
 
 # - Python / Conda
 alias mm='micromamba'
+
+navialias() {
+    navi --query ":: $1" --best-match
+}
+
+alias ng="navialias git"
