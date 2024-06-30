@@ -88,3 +88,4 @@ navialias() {
 }
 
 alias ng="navialias git"
+alias n=nvim -c 'Telescope oldfiles'
