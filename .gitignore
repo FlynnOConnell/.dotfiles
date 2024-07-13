@@ -56,3 +56,5 @@ $RECYCLE.BIN/
 *.log
 nvim/.config/nvim/plugin/packer_compiled.lua
 dots/.config/lazygit/state.yml
+dots/.config/flameshot/flameshot.ini
+dots/.config/gtk-3.0/bookmarks
