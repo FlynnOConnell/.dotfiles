@@ -1,26 +1,39 @@
 #!/usr/bin/env bash
+# Positional args:
+DIRECTORY_TO_SEARCH_FROM=$1
 
-# From: https://github.com/ThePrimeagen/.dotfiles/blob/master/bin/.local/scripts/tmux-sessionizer
-if [[ $# -eq 1 ]]; then
-    selected=$1
-else
-    selected=$(find ~/repos/work ~/repos -mindepth 1 -maxdepth 1 -type d | fzf)
+# If no target directory was passed to script, exit with error.
+if [[ -z $DIRECTORY_TO_SEARCH_FROM ]]; then
+  echo "error: expected to receive directory argument"
+  exit 1
 fi
 
+# Launch fzf to select a directory to open in tmux.
+selected=$(find $DIRECTORY_TO_SEARCH_FROM -mindepth 1 -maxdepth 1 -type d | sort | fzf --reverse --header 'Select project:')
+
+# Extract the base directory name from selected path.
+selected_name=$(basename "$selected")
+
+# If Ctrl-C received (exited in fzf selection), simply exit with success code.
 if [[ -z $selected ]]; then
-    exit 0
+	exit 0
 fi
 
-selected_name=$(basename "$selected" | tr . _)
-tmux_running=$(pgrep tmux)
-
-if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-    tmux new-session -s $selected_name -c $selected
-    exit 0
+# Start new tmux server with selected session when tmux isn't running.
+if [[ -z $TMUX ]] && [[ -z $(pgrep tmux) ]]; then
+	tmux new-session -s $selected_name -c $selected
+	exit 0
 fi
 
-if ! tmux has-session -t=$selected_name 2> /dev/null; then
-    tmux new-session -ds $selected_name -c $selected
+# If the selected name is not a running session, add new session to tmux server.
+if ! tmux has-session -t "=${selected_name}" 2>/dev/null; then
+	tmux new-session -ds $selected_name -c $selected
 fi
 
-tmux switch-client -t $selected_name
+# If not in tmux session, attach to already running session with selected name.
+if [[ -z $TMUX ]]; then
+	tmux attach-session -t $selected_name
+# If already in tmux session, switch to session with selected name.
+else
+	tmux switch-client -t $selected_name
+fi

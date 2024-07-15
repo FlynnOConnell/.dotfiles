@@ -89,3 +89,6 @@ navialias() {
 
 alias ng="navialias git"
 alias n=nvim -c 'Telescope oldfiles'
+
+
+alias e='fzf -m --bind ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all --print0 --preview "bat --theme Dracula --color=always {}" | xargs -0 -o $EDITOR'
