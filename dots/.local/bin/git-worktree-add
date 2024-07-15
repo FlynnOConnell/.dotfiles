@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [[ $# -eq 1 ]]; then
+    branch=$1
+else
+    branch=$(git branch --list | rg "([*|+].*$)" -v --trim | fzy)
+fi
+
+while [ "$(git rev-parse --is-bare-repository)" != "true" ]
+do
+    cd ..
+done
+if [[ "$branch" != "" ]]; then
+    git worktree add $branch
+    tmux new-window -n $branch -c "$(pwd)/$branch"
+    project=$(basename $(pwd))
+    cd $branch
+    if [[ -f "Cargo.toml" ]]; then
+        tmux split-window -h -t $project:$branch
+        tmux send-keys -t $project:$branch.1 "cargo build" Enter
+    fi
+else
+    echo "No selection made"
+fi
