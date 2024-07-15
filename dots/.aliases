@@ -44,6 +44,7 @@ alias cdmd="cd /mnt/vdata4/foconnell/data"
 
 # - Nvim To File ----
 alias goa="nvim ~/.aliases"
+
 alias gow="nvim ~/.config/nitrogen"
 alias goz="nvim ~/.zshrc"
 alias goe="nvim ~/.zshenv"
@@ -72,7 +73,6 @@ alias gd="git diff"
 # - Tools ---------
 alias hf="history | fzf -e"
 alias lg="lazygit"
-alias fd='fdfind'
 
 # - Helpers ---------
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
@@ -89,6 +89,7 @@ navialias() {
 
 alias ng="navialias git"
 alias n=nvim -c 'Telescope oldfiles'
+alias e='fzf -m --bind ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all --print0 --preview "bat --theme catppuccin --color=always {}" | xargs -0 -o $EDITOR'
 
-
-alias e='fzf -m --bind ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all --print0 --preview "bat --theme Dracula --color=always {}" | xargs -0 -o $EDITOR'
+# tmux quick session
+alias td="tms ~/repos/.dotfiles/"

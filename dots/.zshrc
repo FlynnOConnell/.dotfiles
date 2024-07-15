@@ -1,20 +1,57 @@
 echo "Reading .zshrc file..."
 export LC_ALL="en_US.utf-8"
 
+export VISUAL="nvim"
+export EDITOR="$VISUAL"
+export MICRO_TRUECOLOR="1"
+export GIT_EDITOR='nvim'
+
+export DOTS_DIR="$HOME/repos/.dotfiles/"
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+export NVIM_DIR="$HOME/repos/.dotfiles/dots/.config/nvim"
+
+export PATH="$PATH:$HOME/.local/bin:"
+export PATH="$PATH:$HOME/.cargo/bin/"
+export PATH="$PATH:$HOME/.local/share/pnpm/"
+export PATH="$PATH:$HOME/.local/opt/"
+export PATH="$PATH:$HOME/bin/"
+export PATH="$PATH:/opt/local/bin"
+
+# REMOTE PATHS
+export PATH="$PATH:/v-data4/foconnell/.local/"
+export PATH="$PATH:/home/linuxbrew/.linuxbrew/bin"
+if [[ -f ~/.cargo/env ]]; then
+	. ~/.cargo/env
+fi
+
+if [[ -f /opt/homebrew/bin/brew ]]; then
+	eval "$("/opt/homebrew/bin/brew" shellenv)"
+fi
+
 # ----------------------------------------------------------------------------------
 # User-Setup -----------------------------------------------------------------------
 # ----------------------------------------------------------------------------------
 
-ZSH_THEME="steeef"
 setopt NO_BEEP
 
 zstyle ':omz:update' mode auto      # update automatically without asking
 zstyle ':omz:update' frequency 13
+zstyle ':completion:*' menu select
 
-# Ensure ZSH and ZSH_CUSTOM are properly set with home directory expansion
 ZSH="${ZSH:-$HOME/.oh-my-zsh}"
 ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
-plugins=(git ssh-agent)
+ZSH_THEME="steeef"
+
+fpath+=${ZDOTDIR:-~}/.zsh_functions
+
+source $ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+plugins=(
+	zsh-autosuggestions
+	colored-man-pages
+	colorize
+	git ssh-agent
+)
 
 # Source Oh My Zsh and custom configurations
 source "$ZSH/oh-my-zsh.sh"
@@ -34,34 +71,8 @@ if ! command -v tmux &> /dev/null; then
   echo "tmux not found, installing..."
   if [[ $(get_os) == "linux" ]]; then
     sudo apt-get update && sudo apt-get install -y tmux
-	# connect to tmux session named "main" on startup as base
-	if command -v tmux &> /dev/null; then
-	  # Check if we are already inside a tmux session
-	  if [ -z "$TMUX" ]; then
-	    # Check if the "main" session already exists
-	    if ! tmux has-session -t main &> /dev/null; then
-	      # Create a new session named "main"
-	      tmux new-session -s main -d
-	    fi
-	    # Attach to the "main" session
-	    tmux attach-session -t main
-	  fi
-	fi
   elif [[ $(get_os) == "macos" ]]; then
     brew install tmux
-	# connect to tmux session named "main" on startup as base
-	if command -v tmux &> /dev/null; then
-	  # Check if we are already inside a tmux session
-	  if [ -z "$TMUX" ]; then
-	    # Check if the "main" session already exists
-	    if ! tmux has-session -t main &> /dev/null; then
-	      # Create a new session named "main"
-	      tmux new-session -s main -d
-	    fi
-	    # Attach to the "main" session
-	    tmux attach-session -t main
-	  fi
-	fi
   else
     echo "Unable to install tmux, OS not supported"
   fi
@@ -73,10 +84,29 @@ fi
 
 [ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
 
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_OPTS='--bind=ctrl-u:up,ctrl-d:down'
 
 source ~/.aliases
 source ~/.zshenv
+
+# ----------------------------------------------------------------------------------
+# Keybinds -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------
+
+# Use vim keys in tab complete menu:
+bindkey -M menuselect 'h' vi-backward-char
+bindkey -M menuselect 'k' vi-up-line-or-history
+bindkey -M menuselect 'l' vi-forward-char
+bindkey -M menuselect 'j' vi-down-line-or-history
+
+bindkey -s ^f "tmux-sessionizer ~/repos/work ~/repos/personal ~/repos ~/\n"
+bindkey -s ^h "tms\n"
+
+# ----------------------------------------------------------------------------------
+# conda/mamba ----------------------------------------------------------------------
+# ----------------------------------------------------------------------------------
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -93,12 +123,9 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-bindkey -s ^f "tmux-sessionizer\n"
-bindkey -s ^h "hf\n"
 
 echo "Keybind: cntrl-f - Tmux Sessionizer"
-echo "Keybind: cntrl-h -  Command History"
-fpath+=${ZDOTDIR:-~}/.zsh_functions
+
 
 # >>> mamba initialize >>>
 # !! Contents within this block are managed by 'mamba init' !!
