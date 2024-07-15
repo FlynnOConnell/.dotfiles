@@ -52,3 +52,13 @@ vim.wo.signcolumn = "yes"
 vim.g.python_host_prog = '~/miniconda3/bin/python'
 vim.g.python3_host_prog = '~/miniconda3/bin/python3'
 
+vim.opt.clipboard = "unnamedplus"
+
+if vim.fn.has('wsl')==1 then
+    vim.api.nvim_create_autocmd('TextYankPost', {
+        group = vim.api.nvim_create_augroup('Yank', { clear = true }),
+        callback = function()
+            vim.fn.system('clip.exe', vim.fn.getreg('"'))
+        end,
+    })
+end
