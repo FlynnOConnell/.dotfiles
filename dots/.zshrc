@@ -80,14 +80,14 @@ source ~/.zshenv
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/flynn/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('/home/rbo/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/home/flynn/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/flynn/miniconda3/etc/profile.d/conda.sh"
+    if [ -f "/home/rbo/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/rbo/miniconda3/etc/profile.d/conda.sh"
     else
-        export PATH="/home/flynn/miniconda3/bin:$PATH"
+        export PATH="/home/rbo/miniconda3/bin:$PATH"
     fi
 fi
 unset __conda_setup
@@ -112,3 +112,13 @@ else
 fi
 unset __mamba_setup
 # <<< mamba initialize <<<
+#
+#
+export PATH=$PATH:"/mnt/c/Users/RBO/Program Files/MATLAB/R2023b/bin/"
+export PATH=$PATH:"c/Users/RBO/Program Files/MATLAB/R2023b/bin/"
+export PATH=$PATH:"C://Program Files//MATLAB//R2023b//bin//"
+
+export MATLAB_ROOT="/mnt/c/Program Files/MATLAB/R2023b"
+export PATH=$MATLAB_ROOT/bin:$PATH
+
+

@@ -57,6 +57,7 @@ vim.keymap.set("n", "<leader>Gon", "<cmd>e ~/.config/nvim/<CR>"); -- go nvim
 vim.keymap.set("n", "<leader>Gor", "<cmd>e ~/repos/<CR>");        -- go repos
 vim.keymap.set("n", "<leader>Got", "<cmd>e ~/config/tmux/<CR>");  -- go tmux config
 
+vim.keymap.set("n", "<leader>mk", "<cmd>:! make clean && make html/<CR>");  -- go tmux config
 local wk = require("which-key")
 
 wk.register({
