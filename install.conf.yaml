@@ -55,6 +55,8 @@
       path: dots/.config/nvim-ks
     ~/.config/tmux:
       path: dots/.config/tmux
+    ~/.config/tms:
+      path: dots/.config/tms
 
     ~/.config/awesome:
       path: dots/.config/awesome

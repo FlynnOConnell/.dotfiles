@@ -1,0 +1,11 @@
+[[search_dirs]]
+path = "~/repos/work"
+depth = 1
+
+[[search_dirs]]
+path = "~/repos/"
+depth = 1
+
+[[search_dirs]]
+path = "~"
+depth = 1
