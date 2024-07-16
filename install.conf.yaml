@@ -1,6 +1,6 @@
 - shell:
   -
-    command: echo "Running dotfiles configuration OS \n" && uname && scripts/install
+    command: echo "Running dotfiles configuration OS \n" && scripts/install_essential
     stdout: true
 
 - defaults:
@@ -22,8 +22,6 @@
       path: dots/.ideavimrc
     ~/.zshrc:
       path: dots/.zshrc
-    ~/.zshenv:
-      path: dots/.zshenv
     ~/.xinitrc:
       path: dots/.xinitrc
     ~/.wallpapers:
@@ -37,8 +35,6 @@
     ~/.config/lazygit:
       path: dots/.config/lazygit
       exclude: [ dots/.config/lazygit/share ]
-    ~/.config/autostart:
-      path: dots/.config/autostart
     ~/.config/neofetch:
       path: dots/.config/neofetch
     ~/.config/htop:
@@ -47,8 +43,6 @@
       path: dots/.config/nitrogen
     ~/.config/xmenu:
       path: dots/.config/xmenu
-    ~/.config/alacritty:
-      path: dots/.config/alacritty
     ~/.config/kitty:
       path: dots/.config/kitty
     ~/.config/btop:
@@ -57,6 +51,8 @@
       path: dots/.config/micro
     ~/.config/nvim:
       path: dots/.config/nvim
+    ~/.config/nvim-ks:
+      path: dots/.config/nvim-ks
     ~/.config/tmux:
       path: dots/.config/tmux
 
@@ -68,9 +64,6 @@
       if: '[ `uname` = Linux ]'
     ~/.config/gtk-3.0:
       path: dots/.config/gtk-3.0
-      if: '[ `uname` = Linux ]'
-    ~/.config/i3:
-      path: dots/.config/i3
       if: '[ `uname` = Linux ]'
     ~/.config/bottom:
       path: dots/.config/bottom
