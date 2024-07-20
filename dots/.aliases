@@ -10,12 +10,7 @@ alias mysudo='sudo -E env "PATH=$PATH"'
 alias mm="~/micromamba"
 
 # - Remote ----
-alias mount2='sudo mount -t cifs //v-storage2.rockefeller.edu/v-data2 /mnt/vdata2 -o credentials=/root/.smbcredentials_vgpu &> /dev/null'
-alias mount4='sudo mount -t cifs //v-storage2.rockefeller.edu/v-data4 /mnt/vdata4 credentials=/root/.smbcredentials_vgpu &> /dev/null'
-alias go4='nvim /v-data4/foconnell/code/'
-alias go2='nvim /data2/fpo/'
-alias cd4='cd /v-data4/foconnell/code/'
-alias cd2='cd /data2/fpo/'
+alias cdm='(){ cd /mnt/c/Users/$USER ;}'
 
 alias vgpu='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
 alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
@@ -32,15 +27,9 @@ alias ~="cd ~"
 alias cdaw="cd ~/.config/awesome"
 alias cdr="cd ~/repos"
 alias cdd="cd ~/repos/.dotfiles"
-alias cdow="cd ~/Downloads/"
 alias cdot="cd ~/repos/.dotfiles/dots"
-alias cdi3="cd ~/.config/i3/config"
 alias cdt="cd ~/.config/tmux/tmux.conf"
 alias cdn="cd ~/.config/nvim/"
-alias cds="cd ~/repos/.dotfiles/scripts"
-alias cdm="cd /mnt/vdata4/foconnell"
-alias cdmc="cd /mnt/vdata4/foconnell/code"
-alias cdmd="cd /mnt/vdata4/foconnell/data"
 
 # - Nvim To File ----
 alias goa="nvim ~/.aliases"
