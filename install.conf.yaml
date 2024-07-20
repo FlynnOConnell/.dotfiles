@@ -1,7 +1,19 @@
 - shell:
+  - [chsh -s $(which zsh), Making zsh the default shell]
   -
-    command: echo "Running dotfiles configuration OS \n" && scripts/install_essential
+    command: read var && echo Your variable is $(which zsh)
+    stdin: true
     stdout: true
+    description: Reading and printing variable
+  - 
+    command: git submodule update --init --recursive
+    description: Installing submodules
+    stdout: true
+  - 
+    command: chmod +x ~/.local/bin/*
+    description: Adding binary permissions... 
+    stdout: true
+    quiet: true
 
 - defaults:
     link:
@@ -22,8 +34,6 @@
       path: dots/.ideavimrc
     ~/.zshrc:
       path: dots/.zshrc
-    ~/.xinitrc:
-      path: dots/.xinitrc
     ~/.wallpapers:
       path: dots/.wallpapers
     ~/.icons:
@@ -34,7 +44,6 @@
       path: dots/.config/vim/.vimrc
     ~/.config/lazygit:
       path: dots/.config/lazygit
-      exclude: [ dots/.config/lazygit/share ]
     ~/.config/neofetch:
       path: dots/.config/neofetch
     ~/.config/htop:
@@ -57,33 +66,13 @@
       path: dots/.config/tmux
     ~/.config/tms:
       path: dots/.config/tms
-
     ~/.config/awesome:
       path: dots/.config/awesome
-      if: '[ `uname` = Linux ] '
-    ~/.config/gtk-2.0:
-      path: dots/.config/gtk-2.0
-      if: '[ `uname` = Linux ]'
-    ~/.config/gtk-3.0:
-      path: dots/.config/gtk-3.0
-      if: '[ `uname` = Linux ]'
-    ~/.config/bottom:
-      path: dots/.config/bottom
-      if: '[ `uname` = Linux ]'
-    ~/.config/polybar:
-      path: dots/.config/polybar
-      if: '[ `uname` = Linux ]'
     ~/.config/rofi:
       path: dots/.config/rofi
-      if: '[ `uname` = Linux ]'
     ~/.config/flameshot:
       path: dots/.config/flameshot
-      if: '[ `uname` = Linux ]'
     ~/.config/dunst:
       path: dots/.config/dunst
-      if: '[ `uname` = Linux ]'
     ~/.config/picom:
       path: dots/.config/picom
-      if: '[ `uname` = Linux ]'
-
-

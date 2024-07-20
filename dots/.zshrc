@@ -20,6 +20,9 @@ export PATH="$PATH:/opt/local/bin"
 # REMOTE PATHS
 export PATH="$PATH:/v-data4/foconnell/.local/"
 export PATH="$PATH:/home/linuxbrew/.linuxbrew/bin"
+
+source ~/bin/antigen.sh
+
 if [[ -f ~/.cargo/env ]]; then
 	. ~/.cargo/env
 fi
