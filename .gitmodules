@@ -3,3 +3,6 @@
 	url = https://github.com/anishathalye/dotbot.git
 	ignore = dirty
 
+[submodule "dots/.config/kickstart.nvim"]
+	path = dots/.config/kickstart.nvim
+	url = git@github.com:FlynnOConnell/kickstart.nvim.git
