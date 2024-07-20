@@ -44,15 +44,6 @@ ZSH_THEME="steeef"
 
 fpath+=${ZDOTDIR:-~}/.zsh_functions
 
-source $ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-plugins=(
-	zsh-autosuggestions
-	colored-man-pages
-	colorize
-	git ssh-agent
-)
-
 # Source Oh My Zsh and custom configurations
 source "$ZSH/oh-my-zsh.sh"
 
@@ -101,7 +92,7 @@ bindkey -M menuselect 'k' vi-up-line-or-history
 bindkey -M menuselect 'l' vi-forward-char
 bindkey -M menuselect 'j' vi-down-line-or-history
 
-bindkey -s ^f "tmux-sessionizer ~/repos/work ~/repos/personal ~/repos ~/\n"
+bindkey -s ^f "tmux-sessionizer ~/repos\n"
 bindkey -s ^h "tms\n"
 
 # ----------------------------------------------------------------------------------
