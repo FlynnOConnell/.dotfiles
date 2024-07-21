@@ -34,6 +34,8 @@
       path: dots/.ideavimrc
     ~/.zshrc:
       path: dots/.zshrc
+    ~/.zshenv:
+      path: dots/.zshenv
     ~/.wallpapers:
       path: dots/.wallpapers
     ~/.icons:
