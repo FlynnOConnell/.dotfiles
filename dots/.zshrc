@@ -1,153 +1,104 @@
-echo "Reading .zshrc file..."
-export LC_ALL="en_US.utf-8"
+# If you come from bash you might have to change your $PATH.
+# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
-export VISUAL="nvim"
-export EDITOR="$VISUAL"
-export MICRO_TRUECOLOR="1"
-export GIT_EDITOR='nvim'
+# Path to your Oh My Zsh installation.
+export ZSH=$HOME/.oh-my-zsh
 
-export DOTS_DIR="$HOME/repos/.dotfiles/"
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-export NVIM_DIR="$HOME/repos/.dotfiles/dots/.config/nvim"
+# Set name of the theme to load --- if set to "random", it will
+# load a random theme each time Oh My Zsh is loaded, in which case,
+# to know which specific one was loaded, run: echo $RANDOM_THEME
+# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+ZSH_THEME="robbyrussell"
 
-export PATH="$PATH:$HOME/.local/bin:"
-export PATH="$PATH:$HOME/.cargo/bin/"
-export PATH="$PATH:$HOME/.local/share/pnpm/"
-export PATH="$PATH:$HOME/.local/opt/"
-export PATH="$PATH:$HOME/bin/"
-export PATH="$PATH:/opt/local/bin"
+# Set list of themes to pick from when loading at random
+# Setting this variable when ZSH_THEME=random will cause zsh to load
+# a theme from this variable instead of looking in $ZSH/themes/
+# If set to an empty array, this variable will have no effect.
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
-# REMOTE PATHS
-export PATH="$PATH:/v-data4/foconnell/.local/"
-export PATH="$PATH:/home/linuxbrew/.linuxbrew/bin"
+# Uncomment the following line to use case-sensitive completion.
+# CASE_SENSITIVE="true"
 
-source ~/bin/antigen.sh
+# Uncomment the following line to use hyphen-insensitive completion.
+# Case-sensitive completion must be off. _ and - will be interchangeable.
+# HYPHEN_INSENSITIVE="true"
 
-if [[ -f ~/.cargo/env ]]; then
-	. ~/.cargo/env
-fi
+# Uncomment one of the following lines to change the auto-update behavior
+# zstyle ':omz:update' mode disabled  # disable automatic updates
+# zstyle ':omz:update' mode auto      # update automatically without asking
+# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
-if [[ -f /opt/homebrew/bin/brew ]]; then
-	eval "$("/opt/homebrew/bin/brew" shellenv)"
-fi
+# Uncomment the following line to change how often to auto-update (in days).
+# zstyle ':omz:update' frequency 13
 
-# ----------------------------------------------------------------------------------
-# User-Setup -----------------------------------------------------------------------
-# ----------------------------------------------------------------------------------
+# Uncomment the following line if pasting URLs and other text is messed up.
+# DISABLE_MAGIC_FUNCTIONS="true"
 
-setopt NO_BEEP
+# Uncomment the following line to disable colors in ls.
+# DISABLE_LS_COLORS="true"
 
-zstyle ':omz:update' mode auto      # update automatically without asking
-zstyle ':omz:update' frequency 13
-zstyle ':completion:*' menu select
+# Uncomment the following line to disable auto-setting terminal title.
+# DISABLE_AUTO_TITLE="true"
 
-ZSH="${ZSH:-$HOME/.oh-my-zsh}"
-ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
-ZSH_THEME="steeef"
+# Uncomment the following line to enable command auto-correction.
+# ENABLE_CORRECTION="true"
 
-fpath+=${ZDOTDIR:-~}/.zsh_functions
+# Uncomment the following line to display red dots whilst waiting for completion.
+# You can also set it to another string to have that shown instead of the default red dots.
+# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
+# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
+# COMPLETION_WAITING_DOTS="true"
 
-# Source Oh My Zsh and custom configurations
-source "$ZSH/oh-my-zsh.sh"
+# Uncomment the following line if you want to disable marking untracked files
+# under VCS as dirty. This makes repository status check for large repositories
+# much, much faster.
+# DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-# ---------------------------------------------------------------------------------
-# Node/NPM ------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------
+# Uncomment the following line if you want to change the command execution time
+# stamp shown in the history command output.
+# You can set one of the optional three formats:
+# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# or set a custom format using the strftime function format specifications,
+# see 'man strftime' for details.
+# HIST_STAMPS="mm/dd/yyyy"
 
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# Would you like to use another custom folder than $ZSH/custom?
+# ZSH_CUSTOM=/path/to/new-custom-folder
 
-# ---------------------------------------------------------------------------------
-# Tmux ----------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------
+# Which plugins would you like to load?
+# Standard plugins can be found in $ZSH/plugins/
+# Custom plugins may be added to $ZSH_CUSTOM/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(git)
 
-if ! command -v tmux &> /dev/null; then
-  echo "tmux not found, installing..."
-  if [[ $(get_os) == "linux" ]]; then
-    sudo apt-get update && sudo apt-get install -y tmux
-  elif [[ $(get_os) == "macos" ]]; then
-    brew install tmux
-  else
-    echo "Unable to install tmux, OS not supported"
-  fi
-fi
+source $ZSH/oh-my-zsh.sh
 
-if [[ ! -d "$HOME/.tmux/plugins/tpm" ]]; then
-    git clone https://github.com/tmux-plugins/tpm.git ~/.tmux/plugins/tpm
-fi
+# User configuration
 
-[ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
+# export MANPATH="/usr/local/man:$MANPATH"
 
+# You may need to manually set your language environment
+# export LANG=en_US.UTF-8
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_DEFAULT_OPTS='--bind=ctrl-u:up,ctrl-d:down'
+# Preferred editor for local and remote sessions
+# if [[ -n $SSH_CONNECTION ]]; then
+#   export EDITOR='vim'
+# else
+#   export EDITOR='mvim'
+# fi
 
-source ~/.aliases
-source ~/.zshenv
+# Compilation flags
+# export ARCHFLAGS="-arch x86_64"
 
-# ----------------------------------------------------------------------------------
-# Keybinds -------------------------------------------------------------------------
-# ----------------------------------------------------------------------------------
-
-# Use vim keys in tab complete menu:
-bindkey -M menuselect 'h' vi-backward-char
-bindkey -M menuselect 'k' vi-up-line-or-history
-bindkey -M menuselect 'l' vi-forward-char
-bindkey -M menuselect 'j' vi-down-line-or-history
-
-bindkey -s ^f "tmux-sessionizer ~/repos\n"
-bindkey -s ^h "tms\n"
-
-# ----------------------------------------------------------------------------------
-# conda/mamba ----------------------------------------------------------------------
-# ----------------------------------------------------------------------------------
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
+# Set personal aliases, overriding those provided by Oh My Zsh libs,
+# plugins, and themes. Aliases can be placed here, though Oh My Zsh
+# users are encouraged to define aliases within a top-level file in
+# the $ZSH_CUSTOM folder, with .zsh extension. Examples:
+# - $ZSH_CUSTOM/aliases.zsh
+# - $ZSH_CUSTOM/macos.zsh
+# For a full list of active aliases, run `alias`.
 #
-# __conda_setup="$('/home/foconnell/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-__conda_setup="$('/home/rbo/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    # if [ -f "/home/foconnell/miniconda3/etc/profile.d/conda.sh" ]; then
-    #     . "/home/foconnell/miniconda3/etc/profile.d/conda.sh"
-    # else
-    #     export PATH="/home/foconnell/miniconda3/bin:$PATH"
-    # fi
-    if [ -f "/home/rbo/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/rbo/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/flynn/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
-
-echo "Keybind: cntrl-f - Tmux Sessionizer"
-
-
-# >>> mamba initialize >>>
-# !! Contents within this block are managed by 'mamba init' !!
-export MAMBA_EXE='/home/flynn/repos/.dotfiles/dots/.local/bin/micromamba';
-export MAMBA_ROOT_PREFIX='/home/flynn/micromamba';
-__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__mamba_setup"
-else
-    alias micromamba="$MAMBA_EXE"  # Fallback on help from mamba activate
-fi
-unset __mamba_setup
-# <<< mamba initialize <<<
-#
-#
-export PATH=$PATH:"/mnt/c/Users/RBO/Program Files/MATLAB/R2023b/bin/"
-export PATH=$PATH:"c/Users/RBO/Program Files/MATLAB/R2023b/bin/"
-export PATH=$PATH:"C://Program Files//MATLAB//R2023b//bin//"
-
-export MATLAB_ROOT="/mnt/c/Program Files/MATLAB/R2023b"
-export PATH=$MATLAB_ROOT/bin:$PATH
-
-
+# Example aliases
+# alias zshconfig="mate ~/.zshrc"
+# alias ohmyzsh="mate ~/.oh-my-zsh"
