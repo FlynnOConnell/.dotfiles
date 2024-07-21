@@ -3,11 +3,8 @@
 	url = https://github.com/anishathalye/dotbot.git
 	ignore = dirty
 [submodule "dots/.config/kickstart.nvim"]
-	path = dots/.config/kickstart.nvim
+	path = dots/.config/nvim
 	url = git@github.com:FlynnOConnell/kickstart.nvim.git
 [submodule "obsidian"]
 	path = obsidian
 	url = git@github.com:FlynnOConnell/obsidian.git
-[submodule "ohmyzsh"]
-	path = ohmyzsh
-	url = https://github.com/ohmyzsh/ohmyzsh.git
