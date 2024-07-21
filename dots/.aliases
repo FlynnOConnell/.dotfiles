@@ -61,7 +61,7 @@ alias gd="git diff"
 
 # - Tools ---------
 alias hf="history | fzf -e"
-alias lg="lazygit"
+alias lg="CONFIG_DIR="$HOME/.config/lazygit" lazygit"
 
 # - Helpers ---------
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
