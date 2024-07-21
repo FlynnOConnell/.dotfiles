@@ -15,6 +15,7 @@ export CONFIG_DIR="$DOTS_DIR/.config"
 # CONFIG
 export NVIM_DIR="$CONFIG_DIR/nvim"
 export TMUX_DIR="$CONFIG_DIR/tmux"
+export LAZYGIT_DIR="$CONFIG_DIR/lazygit"
 export AWM_DIR="$CONFIG_DIR/awesome"
 export ZSH="$DOTS_DIR/.oh-my-zsh"
 
