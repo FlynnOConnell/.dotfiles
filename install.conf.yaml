@@ -10,6 +10,8 @@
     ~/.config:
       recursive: true
 - link:
+    ~/.config/nvim:
+      path: kickstart.nvim
     ~/.local/bin:
       path: dots/.local/bin
     ~/.bashrc:
@@ -36,22 +38,18 @@
       path: dots/.config/htop
     ~/.config/nitrogen:
       path: dots/.config/nitrogen
-    ~/.config/xmenu:
-      path: dots/.config/xmenu
     ~/.config/kitty:
       path: dots/.config/kitty
     ~/.config/btop:
       path: dots/.config/btop
     ~/.config/micro:
       path: dots/.config/micro
-    ~/.config/nvim:
-      path: dots/.config/kickstart.nvim
     ~/.config/tmux:
       path: dots/.config/tmux
     ~/.config/tms:
       path: dots/.config/tms
-    ~/.config/awesome:
-      path: dots/.config/awesome
+    # ~/.config/awesome:
+    #   path: dots/.config/awesome
     ~/.config/rofi:
       path: dots/.config/rofi
     ~/.config/dunst:
