@@ -5,6 +5,3 @@
 [submodule "dots/.config/kickstart.nvim"]
 	path = dots/.config/nvim
 	url = git@github.com:FlynnOConnell/kickstart.nvim.git
-[submodule "obsidian"]
-	path = obsidian
-	url = git@github.com:FlynnOConnell/obsidian.git
