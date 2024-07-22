@@ -17,7 +17,7 @@ export NVIM_DIR="$CONFIG_DIR/nvim"
 export TMUX_DIR="$CONFIG_DIR/tmux"
 export LAZYGIT_DIR="$CONFIG_DIR/lazygit"
 export AWM_DIR="$CONFIG_DIR/awesome"
-export ZSH="$DOTS_DIR/.oh-my-zsh"
+export ZSH="$DOTS_ROOT/ohmyzsh"
 
 
 # TODO: https://github.com/Tarrasch/zsh-autoenv
