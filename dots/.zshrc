@@ -34,6 +34,7 @@ export PATH="$PATH:$HOME/.local/bin:"
 export PATH="$PATH:$HOME/.cargo/bin/"
 export PATH="$PATH:$HOME/.local/share/pnpm/"
 export PATH="$PATH:$HOME/.local/opt/"
+export PATH="$PATH:/opt/nvim-linux64/bin"
 export PATH="$PATH:/opt/local/bin"
 export PATH=$PATH:"/mnt/c/Users/RBO/Program Files/MATLAB/R2023b/bin/"
 export PATH=$PATH:"c/Users/RBO/Program Files/MATLAB/R2023b/bin/"
@@ -41,6 +42,8 @@ export PATH=$PATH:"C://Program Files//MATLAB//R2023b//bin//"
 
 export MATLAB_ROOT="/mnt/c/Program Files/MATLAB/R2023b"
 export PATH=$MATLAB_ROOT/bin:$PATH
+
+setxkbmap -option ctrl:nocaps
 
 # source ~/bin/antigen.sh
 
@@ -107,42 +110,26 @@ source ~/.aliases
 
 bindkey -s ^f "tms\n"
 
-# ----------------------------------------------------------------------------------
-# conda/mamba ----------------------------------------------------------------------
-# ----------------------------------------------------------------------------------
+echo "Keybind: cntrl-f - Tmux Sessionizer"
+
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-#
-# __conda_setup="$('/home/foconnell/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-__conda_setup="$('$HOME/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('/home/flynn/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "$HOME/miniconda3/etc/profile.d/conda.sh"
+    if [ -f "/home/flynn/miniforge3/etc/profile.d/conda.sh" ]; then
+        . "/home/flynn/miniforge3/etc/profile.d/conda.sh"
     else
-        export PATH="$HOME/miniconda3/bin:$PATH"
+        export PATH="/home/flynn/miniforge3/bin:$PATH"
     fi
 fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-echo "Keybind: cntrl-f - Tmux Sessionizer"
 
+. "$HOME/.atuin/bin/env"
 
-# >>> mamba initialize >>>
-# !! Contents within this block are managed by 'mamba init' !!
-export MAMBA_EXE="$HOME/.local/bin/micromamba";
-
-export MAMBA_ROOT_PREFIX='$HOME/micromamba';
-__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__mamba_setup"
-else
-    alias micromamba="$MAMBA_EXE"  # Fallback on help from mamba activate
-fi
-unset __mamba_setup
-# <<< mamba initialize <<<
-#
-#
+eval "$(atuin init zsh)"
+export PATH="/home/flynn/.pixi/bin:$PATH"
