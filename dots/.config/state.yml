@@ -1,10 +1,10 @@
 lastupdatecheck: 0
 recentrepos:
+    - /home/flynn/repos/work/suite3d
     - /home/flynn/repos/work/LBM-Suite2p-Python
-    - /home/flynn/repos/work/LBM-CaImAn-Python
     - /home/flynn/repos/work/mbo_utilities
     - /home/flynn/repos/work/fastplotlib
-    - /home/flynn/repos/work/mesmerize-core
+    - /home/flynn/repos/work/LBM-CaImAn-Python
 startuppopupversion: 5
 lastversion: 8ae2c069
 customcommandshistory: []
