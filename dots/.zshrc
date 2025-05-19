@@ -1,5 +1,5 @@
-# If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+
 export LANG=en_US.UTF-8
 export MANPATH="/usr/local/man:$MANPATH"
 export VISUAL="nvim"
@@ -19,29 +19,11 @@ export LAZYGIT_DIR="$CONFIG_DIR/lazygit"
 export AWM_DIR="$CONFIG_DIR/awesome"
 export ZSH="$DOTS_ROOT/ohmyzsh"
 
-
-# TODO: https://github.com/Tarrasch/zsh-autoenv
-# source ~/.zshenv
-
-
-# ZSH_THEME="robbyrussell"
+export PATH=$MATLAB_ROOT/bin:/opt/nvim-linux64/bin:$PATH
+export MATLAB_ROOT="/mnt/c/Program Files/MATLAB/R2023b"
 
 DISABLE_UNTRACKED_FILES_DIRTY="true"
-# source $ZSH/oh-my-zsh.sh
 
-
-export PATH="$PATH:$HOME/.local/bin:"
-export PATH="$PATH:$HOME/.cargo/bin/"
-export PATH="$PATH:$HOME/.local/share/pnpm/"
-export PATH="$PATH:$HOME/.local/opt/"
-export PATH="$PATH:/opt/nvim-linux64/bin"
-export PATH="$PATH:/opt/local/bin"
-export PATH=$PATH:"/mnt/c/Users/RBO/Program Files/MATLAB/R2023b/bin/"
-export PATH=$PATH:"c/Users/RBO/Program Files/MATLAB/R2023b/bin/"
-export PATH=$PATH:"C://Program Files//MATLAB//R2023b//bin//"
-
-export MATLAB_ROOT="/mnt/c/Program Files/MATLAB/R2023b"
-export PATH=$MATLAB_ROOT/bin:$PATH
 
 setxkbmap -option ctrl:nocaps
 
@@ -110,26 +92,11 @@ source ~/.aliases
 
 bindkey -s ^f "tms\n"
 
+# zsh vim mode is buns
+source $HOME/.zsh-vi-mode/zsh-vi-mode.plugin.zsh
+# bindkey -v
+
 echo "Keybind: cntrl-f - Tmux Sessionizer"
 
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/flynn/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/flynn/miniforge3/etc/profile.d/conda.sh" ]; then
-        . "/home/flynn/miniforge3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/flynn/miniforge3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
-
-. "$HOME/.atuin/bin/env"
-
-eval "$(atuin init zsh)"
 export PATH="/home/flynn/.pixi/bin:$PATH"
