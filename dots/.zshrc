@@ -84,19 +84,13 @@ fi
 [ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-source ~/.aliases
 
 # ----------------------------------------------------------------------------------
 # Keybinds -------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------
 
+export PATH="/home/flynn/.pixi/bin:$PATH"
+
 bindkey -s ^f "tms\n"
 
-# zsh vim mode is buns
-source $HOME/.zsh-vi-mode/zsh-vi-mode.plugin.zsh
-# bindkey -v
-
-echo "Keybind: cntrl-f - Tmux Sessionizer"
-
-
-export PATH="/home/flynn/.pixi/bin:$PATH"
+source ~/.aliases
