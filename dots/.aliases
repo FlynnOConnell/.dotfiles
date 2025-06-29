@@ -82,3 +82,5 @@ alias e='fzf -m --bind ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all -
 
 # tmux quick session
 alias td="tms ~/repos/.dotfiles/"
+
+alias pkp="sudo pkill -9 pulsesecure && pkill -9 pulseUI"

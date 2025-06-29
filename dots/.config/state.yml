@@ -1,13 +1,16 @@
 lastupdatecheck: 0
 recentrepos:
-    - /home/flynn/repos/work/suite3d
-    - /home/flynn/repos/work/LBM-Suite2p-Python
     - /home/flynn/repos/work/mbo_utilities
+    - /home/flynn/repos/work/masknmf-toolbox
+    - /home/flynn/repos/work/LBM-Suite2p-Python
     - /home/flynn/repos/work/fastplotlib
+    - /home/flynn/repos/work/tifffile
+    - /home/flynn/repos/work/suite3d
     - /home/flynn/repos/work/LBM-CaImAn-Python
 startuppopupversion: 5
 lastversion: 8ae2c069
-customcommandshistory: []
+customcommandshistory:
+    - q
 hidecommandlog: false
 ignorewhitespaceindiffview: false
 diffcontextsize: 3
