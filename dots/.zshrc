@@ -91,6 +91,10 @@ fi
 
 export PATH="/home/flynn/.pixi/bin:$PATH"
 
+# Azul
+export PATH="$HOME/.local/lib/zulu21.44.17-ca-jdk21.0.8-linux_x64/bin:$PATH"
+export PATH="$HOME/.local/lib/apache-maven-3.9.11/bin:$PATH"
+
 bindkey -s ^f "tms\n"
 
 source ~/.aliases
