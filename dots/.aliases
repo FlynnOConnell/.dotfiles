@@ -17,6 +17,7 @@ alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.r
 
 # - Copy ----
 alias cppw='xsel --clipboard < ~/.password.txt'
+alias cppy='xsel --clipboard < ~/.password_pypi.txt'
 
 # - Navigation -
 alias lsa='ls -la'
