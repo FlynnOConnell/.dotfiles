@@ -59,3 +59,4 @@ dots/.config/lazygit/state.yml
 dots/.config/flameshot/flameshot.ini
 dots/.config/gtk-3.0/bookmarks
 dots/.config/tmux/plugins
+dots/.local/bin/pandoc-crossref
