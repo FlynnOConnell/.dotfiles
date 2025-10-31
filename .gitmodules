@@ -5,6 +5,7 @@
 [submodule "kickstart.nvim"]
 	path = kickstart.nvim
 	url = git@github.com:FlynnOConnell/kickstart.nvim.git
+	ignore = dirty
 [submodule "ohmyzsh"]
 	path = ohmyzsh
 	url = git@github.com:ohmyzsh/ohmyzsh.git
