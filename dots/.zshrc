@@ -66,6 +66,14 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 # Tmux ----------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------
 
+get_os() {
+  case "$(uname -s)" in
+    Linux*)     echo "linux";;
+    Darwin*)    echo "macos";;
+    *)          echo "unknown";;
+  esac
+}
+
 if ! command -v tmux &> /dev/null; then
   echo "tmux not found, installing..."
   if [[ $(get_os) == "linux" ]]; then
