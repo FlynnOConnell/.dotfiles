@@ -2,21 +2,18 @@
 #
 echo "Sourcing aliases..."
 #
-export REPOS=~/repos/
-export DOTS=$REPOS/.dotfiles/
-
 alias VIM="nvim"
 alias mysudo='sudo -E env "PATH=$PATH"'
-alias mm="~/micromamba"
 
 # - Remote ----
-alias cdm='(){ cd /mnt/c/Users/$USER ;}'
+cdm() { cd /mnt/c/Users/$USER ; }
 
 alias vgpu='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
 alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
 
 # - Copy ----
 alias cppw='xsel --clipboard < ~/.password.txt'
+alias cppy='xsel --clipboard < ~/.password_pypi.txt'
 
 # - Navigation -
 alias lsa='ls -la'
@@ -28,7 +25,7 @@ alias cdaw="cd ~/.config/awesome"
 alias cdr="cd ~/repos"
 alias cdd="cd ~/repos/.dotfiles"
 alias cdot="cd ~/repos/.dotfiles/dots"
-alias cdt="cd ~/.config/tmux/tmux.conf"
+alias cdt="cd ~/.config/tmux"
 alias cdn="cd ~/.config/nvim/"
 
 # - Nvim To File ----
@@ -40,7 +37,7 @@ alias goz="nvim ~/.zshrc"
 alias gov="nvim ~/.vimrc"
 alias goi='nvim ~/.ideavimrc'
 alias got="nvim ~/repos/.dotfiles/dots/.config/tmux/tmux.conf"
-alias gos="nvim ~/repos/.dotfiles/scripts/install_dev"
+alias gos="nvim ~/repos/.dotfiles/scripts/install_essentials"
 alias gok="nvim ~/repos/.dotfiles/dots/.config/kitty/kitty.conf"
 alias god="nvim ~/repos/.dotfiles/"
 alias goi3="nvim ~/.config/i3/config"
@@ -77,8 +74,10 @@ navialias() {
 }
 
 alias ng="navialias git"
-alias n=nvim -c 'Telescope oldfiles'
+alias n="nvim -c 'Telescope oldfiles'"
 alias e='fzf -m --bind ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all --print0 --preview "bat --theme catppuccin --color=always {}" | xargs -0 -o $EDITOR'
 
 # tmux quick session
 alias td="tms ~/repos/.dotfiles/"
+
+alias pkp="sudo pkill -9 pulsesecure && pkill -9 pulseUI"

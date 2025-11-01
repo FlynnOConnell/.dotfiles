@@ -1,5 +1,5 @@
-# If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+
 export LANG=en_US.UTF-8
 export MANPATH="/usr/local/man:$MANPATH"
 export VISUAL="nvim"
@@ -24,14 +24,10 @@ export LAZYGIT_DIR="$CONFIG_DIR/lazygit"
 export AWM_DIR="$CONFIG_DIR/awesome"
 export ZSH="$DOTS_ROOT/ohmyzsh"
 
-# TODO: https://github.com/Tarrasch/zsh-autoenv
-# source ~/.zshenv
-
-
-# ZSH_THEME="robbyrussell"
+export PATH=$MATLAB_ROOT/bin:/opt/nvim-linux64/bin:$PATH
+export MATLAB_ROOT="/mnt/c/Program Files/MATLAB/R2023b"
 
 DISABLE_UNTRACKED_FILES_DIRTY="true"
-# source $ZSH/oh-my-zsh.sh
 
 
 export PATH="$PATH:$HOME/.local/bin:"
@@ -89,6 +85,14 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
 # Tmux ----------------------------------------------------------------------------
 # ---------------------------------------------------------------------------------
 
+get_os() {
+  case "$(uname -s)" in
+    Linux*)     echo "linux";;
+    Darwin*)    echo "macos";;
+    *)          echo "unknown";;
+  esac
+}
+
 if ! command -v tmux &> /dev/null; then
   echo "tmux not found, installing..."
   if [[ $(get_os) == "linux" ]]; then
@@ -107,11 +111,16 @@ fi
 [ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-source ~/.aliases
 
 # ----------------------------------------------------------------------------------
 # Keybinds -------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------
+
+export PATH="/home/flynn/.pixi/bin:$PATH"
+
+# Azul
+export PATH="$HOME/.local/lib/zulu21.44.17-ca-jdk21.0.8-linux_x64/bin:$PATH"
+export PATH="$HOME/.local/lib/apache-maven-3.9.11/bin:$PATH"
 
 bindkey -s ^f "tms\n"
 
