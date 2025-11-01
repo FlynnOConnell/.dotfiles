@@ -11,6 +11,11 @@ export GIT_EDITOR='nvim'
 export DOTS_ROOT="$HOME/repos/.dotfiles"
 export DOTS_DIR="$DOTS_ROOT/dots"
 export CONFIG_DIR="$DOTS_DIR/.config"
+export LOCALAPPDATA="/mnt/c/Users/$USER/AppData/Local"
+export PROGRAMFILES="/mnt/c/Program Files/"
+export PROGRAMFILES86="/mnt/c/Program Files (x86)/"
+export PROGRAMDATA="/mnt/c/ProgramData/"
+
 
 # CONFIG
 export NVIM_DIR="$CONFIG_DIR/nvim"
@@ -18,7 +23,6 @@ export TMUX_DIR="$CONFIG_DIR/tmux"
 export LAZYGIT_DIR="$CONFIG_DIR/lazygit"
 export AWM_DIR="$CONFIG_DIR/awesome"
 export ZSH="$DOTS_ROOT/ohmyzsh"
-
 
 # TODO: https://github.com/Tarrasch/zsh-autoenv
 # source ~/.zshenv
@@ -34,10 +38,14 @@ export PATH="$PATH:$HOME/.local/bin:"
 export PATH="$PATH:$HOME/.cargo/bin/"
 export PATH="$PATH:$HOME/.local/share/pnpm/"
 export PATH="$PATH:$HOME/.local/opt/"
+export PATH="$PATH:$LOCALAPPDATA:$PROGRAMFILES:$PROGRAMFILES86"
+export PATH="$PATH:$PROGRAMFILES"
+export PATH="$PATH:$PROGRAMFILES86"
 export PATH="$PATH:/opt/local/bin"
 export PATH=$PATH:"/mnt/c/Users/RBO/Program Files/MATLAB/R2023b/bin/"
 export PATH=$PATH:"c/Users/RBO/Program Files/MATLAB/R2023b/bin/"
-export PATH=$PATH:"C://Program Files//MATLAB//R2023b//bin//"
+export PATH=$PATH:"$PROGRAMFILES//MATLAB//R2023b//bin//"
+export PATH=$PATH:"$PROGRAMFILES/komorebi/bin/"
 
 export MATLAB_ROOT="/mnt/c/Program Files/MATLAB/R2023b"
 export PATH=$MATLAB_ROOT/bin:$PATH
@@ -113,19 +121,21 @@ bindkey -s ^f "tms\n"
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-#
-# __conda_setup="$('/home/foconnell/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-__conda_setup="$('$HOME/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+__conda_setup="$('/home/flynn/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "$HOME/miniconda3/etc/profile.d/conda.sh"
+    if [ -f "/home/flynn/miniforge3/etc/profile.d/conda.sh" ]; then
+        . "/home/flynn/miniforge3/etc/profile.d/conda.sh"
     else
-        export PATH="$HOME/miniconda3/bin:$PATH"
+        export PATH="/home/flynn/miniforge3/bin:$PATH"
     fi
 fi
 unset __conda_setup
+
+if [ -f "/home/flynn/miniforge3/etc/profile.d/mamba.sh" ]; then
+    . "/home/flynn/miniforge3/etc/profile.d/mamba.sh"
+fi
 # <<< conda initialize <<<
 
 echo "Keybind: cntrl-f - Tmux Sessionizer"
@@ -146,3 +156,7 @@ unset __mamba_setup
 # <<< mamba initialize <<<
 #
 #
+export PATH=/home/flynn/.pixi/bin:$PATH
+eval "$(pixi completion --shell zsh)"
+
+alias -g winhome="/mnt/c/Users/flynn"
