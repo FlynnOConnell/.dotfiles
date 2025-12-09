@@ -1,11 +1,12 @@
 # dotfiles
 
-A set of dotfiles and install scripts. I have one primary goal:
-- Uniquitous platform independent installation (Linux, Windows, WSL)
+A set of dotfiles and install scripts with cross-platform support for Linux, Windows, and WSL.
 
-Linux, macOS, and WSL2 can all be ran with the install script. With windows, this led to too much trouble than it was worth so instead these configs can be applied manually through powershell scripts running the install.bat file.
+**Goal:** Platform-independent configuration that works seamlessly across Linux (i3wm) and Windows (komorebi) with matching keybindings.
 
-- [dotbot](https://github.com/anishathalye/dotbot)
+- Uses [dotbot](https://github.com/anishathalye/dotbot) for installation
+- Consistent vim-style keybindings (hjkl) across all platforms
+- Window manager configs that match between i3 and komorebi
 
 ## Linux Only
 - [i3 desktop environment](https://i3wm.org/)
@@ -23,9 +24,53 @@ Linux, macOS, and WSL2 can all be ran with the install script. With windows, thi
 - [neofetch](https://github.com/dylanaraps/neofetch)
   
 ## Windows Only
-- [Powershell 7](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.3)
-- [komorebi](https://github.com/LGUG2Z/komorebi)
-- [wkhd](https://github.com/LGUG2Z/whkd)
+- [PowerShell 7](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.3)
+- [komorebi - Tiling Window Manager](https://github.com/LGUG2Z/komorebi)
+- [whkd - Hotkey Daemon](https://github.com/LGUG2Z/whkd)
+
+### Windows Installation
+
+1. **Install komorebi and whkd** (using Scoop):
+   ```powershell
+   scoop bucket add extras
+   scoop install komorebi whkd
+   ```
+
+2. **Install dotfiles**:
+   ```powershell
+   cd ~\.dotfiles
+   .\install
+   ```
+
+3. **Set up automatic startup**:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File ~\.dotfiles\scripts\setup-windows-startup.ps1
+   ```
+
+4. **Start komorebi**:
+   ```powershell
+   komorebic start --whkd --bar
+   ```
+
+📖 **See:**
+- `dots/.config/komorebi/README-WINDOWS.md` - Detailed Windows setup and troubleshooting
+- `KEYBINDINGS.md` - Complete keybinding reference for both platforms
+
+### Keybinding Philosophy
+
+Keybindings are designed to match between i3 (Linux) and komorebi (Windows):
+- **Windows key** (Super/Mod4) for all window management operations
+- **Alt** for application launchers
+- **Vim-style hjkl** for directional navigation and movement
+- Consistent workspace switching (Win+1-9) across platforms
+
+**Common Keybindings:**
+- `Win+H/J/K/L` - Navigate windows (left/down/up/right)
+- `Win+Shift+H/J/K/L` - Move windows
+- `Win+Q` - Close window
+- `Win+1-9` - Switch workspaces
+- `Win+Shift+1-9` - Move window to workspace
+- `Alt+Space` - Application launcher
 
 Initializing and checking-out the specified submodule versions:
 `git submodule update --init --recursive`

@@ -81,3 +81,33 @@ alias e='fzf -m --bind ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all -
 alias td="tms ~/repos/.dotfiles/"
 
 alias pkp="sudo pkill -9 pulsesecure && pkill -9 pulseUI"
+
+# - Windows Apps (WSL) --------
+alias firefox='/mnt/c/Program Files/Firefox Developer Edition/firefox.exe'
+
+# - Komorebi (Windows) --------
+# Start/Restart komorebi with all configurations
+alias kstart='powershell.exe -ExecutionPolicy Bypass -File "C:\\Users\\flynn\\start-komorebi.ps1"'
+alias krestart='powershell.exe -ExecutionPolicy Bypass -File "C:\\Users\\flynn\\start-komorebi.ps1"'
+
+# Stop komorebi
+alias kstop='powershell.exe -Command "Get-Process | Where-Object { \$_.Name -match '"'"'komorebi|whkd'"'"' } | Stop-Process -Force"'
+
+# Check komorebi status
+alias kstatus='powershell.exe -Command "Get-Process | Where-Object { \$_.Name -match '"'"'komorebi|whkd'"'"' } | Format-Table Name, Id, CPU -AutoSize"'
+
+# Quick gaps configuration (without full restart)
+kgaps() {
+    local gap_size=${1:-10}
+    echo "Setting gaps to ${gap_size}px for all workspaces..."
+    powershell.exe -Command "for (\$m = 0; \$m -lt 2; \$m++) { for (\$w = 0; \$w -lt 10; \$w++) { komorebic.exe workspace-padding \$m \$w $gap_size 2>\$null; komorebic.exe container-padding \$m \$w $gap_size 2>\$null } }; Write-Host 'Gaps set to ${gap_size}px' -ForegroundColor Green"
+}
+
+# Edit komorebi startup script
+alias gokstart='nvim /mnt/c/Users/flynn/start-komorebi.ps1'
+
+# Komorebi state (JSON output)
+alias kstate='powershell.exe -Command "komorebic.exe state"'
+
+# Reload komorebi config
+alias kreload='powershell.exe -Command "komorebic.exe reload-configuration"'
