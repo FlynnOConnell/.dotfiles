@@ -149,6 +149,11 @@ fi
 
 echo "Keybind: cntrl-f - Tmux Sessionizer"
 
+# Source aliases
+if [ -f ~/.aliases ]; then
+    source ~/.aliases
+fi
+
 
 # >>> mamba initialize >>>
 # !! Contents within this block are managed by 'mamba init' !!
