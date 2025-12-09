@@ -1,60 +1,109 @@
 .shell pwsh
 
-# focus windows
-alt + h                 : komorebic focus left
-alt + j                 : komorebic focus down
-alt + k                 : komorebic focus up
-alt + l                 : komorebic focus right
-alt + p                 : komorebic cycle-monitor next
+# Reload whkd configuration
+win + shift + o         : taskkill /f /im whkd.exe; Start-Process whkd -WindowStyle hidden
+win + shift + r         : komorebic reload-configuration
 
-# manipulate windows
-alt + m                 : komorebic toggle-monocle
-# layouts
-alt + x                 : komorebic flip-layout horizontal
-alt + y                 : komorebic flip-layout vertical
-alt + f                 : komorebic promote
+# App shortcuts
+alt + space             : start pwsh -NoProfile -Command "Get-Process | Where-Object {$_.MainWindowTitle -ne ''} | Select-Object ProcessName,MainWindowTitle | Out-GridView -PassThru | ForEach-Object { (New-Object -ComObject WScript.Shell).AppActivate($_.ProcessName) }"
 
-alt + w                 : komorebic minimize
-alt + shift + w         : komorebic close
+# Kill focused window
+win + q                 : komorebic close
+win + shift + q         : komorebic close
 
-alt + shift + m         : komorebic manage
-alt + shift + u         : komorebic unmanage
+# Minimize window
+win + m                 : komorebic minimize
 
-# stack windows
+# Focus windows (matching i3 config)
+win + h                 : komorebic focus left
+win + j                 : komorebic focus down
+win + k                 : komorebic focus up
+win + l                 : komorebic focus right
+
+# Also support arrow keys for focus
+win + left              : komorebic focus left
+win + down              : komorebic focus down
+win + up                : komorebic focus up
+win + right             : komorebic focus right
+
+# Move windows (matching i3 config)
+win + shift + h         : komorebic move left
+win + shift + j         : komorebic move down
+win + shift + k         : komorebic move up
+win + shift + l         : komorebic move right
+
+# Also support arrow keys for moving
+win + shift + left      : komorebic move left
+win + shift + down      : komorebic move down
+win + shift + up        : komorebic move up
+win + shift + right     : komorebic move right
+
+# Promote window to master (like i3's move to top)
+win + return            : komorebic promote
+win + shift + return    : komorebic promote
+
+# Stack windows
 alt + left              : komorebic stack left
 alt + down              : komorebic stack down
 alt + up                : komorebic stack up
 alt + right             : komorebic stack right
 alt + oem_1             : komorebic unstack # oem_1 is ;
-alt + oem_4             : komorebic cycle-stack previous # oem_4 is [
-alt + oem_6             : komorebic cycle-stack next # oem_6 is ]
+win + oem_4             : komorebic cycle-stack previous # oem_4 is [
+win + oem_6             : komorebic cycle-stack next # oem_6 is ]
 
-# workspaces
-alt + 1          : komorebic focus-workspace 0
-alt + 2          : komorebic focus-workspace 1
-alt + 3          : komorebic focus-workspace 2
-alt + 4          : komorebic focus-workspace 3
-alt + 5          : komorebic focus-workspace 4
-alt + 6          : komorebic focus-workspace 5
+# Resize windows (matching i3's resize mode behavior)
+win + oem_plus          : komorebic resize-axis horizontal increase
+win + oem_minus         : komorebic resize-axis horizontal decrease
+win + shift + oem_plus  : komorebic resize-axis vertical increase
+win + shift + oem_minus : komorebic resize-axis vertical decrease
 
-# move windows
-alt + shift + h         : komorebic move left
-alt + shift + j         : komorebic move down
-alt + shift + k         : komorebic move up
-alt + shift + l         : komorebic move right
+# Manipulate windows
+win + t                 : komorebic toggle-float
+win + f                 : komorebic toggle-monocle
+win + shift + f         : komorebic toggle-monocle
 
-alt + shift + b         : komorebic toggle-layout bsp
-alt + shift + s         : komorebic toggle-layout horizontal-stack
-alt + shift + f         : komorebic promote-focus
+# Window manager options
+win + shift + r         : komorebic retile
+win + p                 : komorebic toggle-pause
 
-alt + oem_plus          : komorebic resize-axis horizontal increase
-alt + oem_minus         : komorebic resize-axis horizontal decrease
-alt + shift + oem_plus  : komorebic resize-axis vertical increase
-alt + shift + oem_minus : komorebic resize-axis vertical decrease
+# Layouts (matching i3 layout commands)
+win + e                 : komorebic flip-layout horizontal
+win + shift + e         : komorebic flip-layout vertical
+win + s                 : komorebic toggle-layout horizontal-stack
+win + w                 : komorebic cycle-layout next
 
-# move windows across workspace
-alt + shift + 1        : komorebic move-to-workspace 0
-alt + shift + 2        : komorebic move-to-workspace 1
-alt + shift + 3        : komorebic move-to-workspace 2
-alt + shift + 4        : komorebic move-to-workspace 3
-alt + shift + 5        : komorebic move-to-workspace 4
+# Workspaces (matching i3 config - win+1 through win+9)
+win + 1                 : komorebic focus-workspace 0
+win + 2                 : komorebic focus-workspace 1
+win + 3                 : komorebic focus-workspace 2
+win + 4                 : komorebic focus-workspace 3
+win + 5                 : komorebic focus-workspace 4
+win + 6                 : komorebic focus-workspace 5
+win + 7                 : komorebic focus-workspace 6
+win + 8                 : komorebic focus-workspace 7
+win + 9                 : komorebic focus-workspace 8
+
+# Move windows across workspaces (matching i3 config)
+win + shift + 1         : komorebic move-to-workspace 0
+win + shift + 2         : komorebic move-to-workspace 1
+win + shift + 3         : komorebic move-to-workspace 2
+win + shift + 4         : komorebic move-to-workspace 3
+win + shift + 5         : komorebic move-to-workspace 4
+win + shift + 6         : komorebic move-to-workspace 5
+win + shift + 7         : komorebic move-to-workspace 6
+win + shift + 8         : komorebic move-to-workspace 7
+win + shift + 9         : komorebic move-to-workspace 8
+
+# Cycle between monitors (matching i3's move workspace to output)
+win + n                 : komorebic cycle-monitor next
+win + shift + n         : komorebic cycle-monitor previous
+
+# App launchers (matching i3 config)
+win + shift + t         : start wt
+win + shift + b         : start firefox
+
+# Focus parent (like i3's focus parent)
+win + a                 : komorebic focus-stack-window up
+
+# Manage/Unmanage windows
+win + shift + m         : komorebic toggle-tiling

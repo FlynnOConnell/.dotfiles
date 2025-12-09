@@ -1,0 +1,86 @@
+[
+  {
+    "kind": "Exe",
+    "id": "explorer.exe",
+    "matching_strategy": "Equals",
+    "comment": "Float file picker dialogs"
+  },
+  {
+    "kind": "Title",
+    "id": "Open",
+    "matching_strategy": "Contains",
+    "comment": "Float Open dialogs"
+  },
+  {
+    "kind": "Title",
+    "id": "Save As",
+    "matching_strategy": "Contains",
+    "comment": "Float Save As dialogs"
+  },
+  {
+    "kind": "Title",
+    "id": "Properties",
+    "matching_strategy": "Contains",
+    "comment": "Float Properties windows"
+  },
+  {
+    "kind": "Exe",
+    "id": "1Password.exe",
+    "matching_strategy": "Equals",
+    "comment": "Float 1Password (matching i3 sticky behavior)"
+  },
+  {
+    "kind": "Exe",
+    "id": "Telegram.exe",
+    "matching_strategy": "Equals",
+    "comment": "Float Telegram (matching i3 sticky behavior)"
+  },
+  {
+    "kind": "Class",
+    "id": "Chrome_RenderWidgetHostHWND",
+    "matching_strategy": "Equals",
+    "comment": "Float Picture-in-Picture windows"
+  },
+  {
+    "kind": "Exe",
+    "id": "Zoom.exe",
+    "matching_strategy": "Equals",
+    "comment": "Float small Zoom windows"
+  },
+  {
+    "kind": "Exe",
+    "id": "ApplicationFrameHost.exe",
+    "matching_strategy": "Equals",
+    "comment": "Float Windows Store apps that don't tile well"
+  },
+  {
+    "kind": "Exe",
+    "id": "Taskmgr.exe",
+    "matching_strategy": "Equals",
+    "comment": "Float Task Manager"
+  },
+  {
+    "kind": "Exe",
+    "id": "SnippingTool.exe",
+    "matching_strategy": "Equals",
+    "comment": "Float Snipping Tool (matching i3 screenshot behavior)"
+  },
+  {
+    "kind": "Exe",
+    "id": "Notepad.exe",
+    "matching_strategy": "Equals",
+    "comment": "Float Notepad"
+  },
+  {
+    "kind": "Exe",
+    "id": "calc.exe",
+    "matching_strategy": "Equals",
+    "comment": "Float Calculator"
+  },
+  {
+    "kind": "Title",
+    "id": "Settings",
+    "matching_strategy": "Contains",
+    "comment": "Float Settings windows"
+  }
+]

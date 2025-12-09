@@ -1,0 +1,85 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LGUG2Z/komorebi/v0.1.38/schema.json",
+  "app_specific_configuration_path": "$Env:USERPROFILE/.config/komorebi/applications.json",
+  "window_hiding_behaviour": "Cloak",
+  "cross_monitor_move_behaviour": "Insert",
+  "default_workspace_padding": 10,
+  "default_container_padding": 10,
+  "border": true,
+  "border_width": 8,
+  "border_offset": -1,
+  "border_colours": {
+    "single": {
+      "r": 109,
+      "g": 152,
+      "b": 232
+    },
+    "stack": {
+      "r": 131,
+      "g": 125,
+      "b": 215
+    },
+    "monocle": {
+      "r": 217,
+      "g": 81,
+      "b": 119
+    }
+  },
+  "theme": {
+    "palette": "Base16",
+    "name": "Ashes",
+    "unfocused_border": "Base03",
+    "bar_accent": "Base0D"
+  },
+  "monitors": [
+    {
+      "workspaces": [
+        {
+          "name": "1",
+          "layout": "BSP"
+        },
+        {
+          "name": "2",
+          "layout": "BSP"
+        },
+        {
+          "name": "3",
+          "layout": "BSP"
+        },
+        {
+          "name": "4",
+          "layout": "BSP"
+        },
+        {
+          "name": "5",
+          "layout": "BSP"
+        },
+        {
+          "name": "6",
+          "layout": "BSP"
+        },
+        {
+          "name": "7",
+          "layout": "BSP"
+        },
+        {
+          "name": "8",
+          "layout": "BSP"
+        },
+        {
+          "name": "9",
+          "layout": "VerticalStack"
+        }
+      ]
+    }
+  ],
+  "focus_follows_mouse": "Komorebi",
+  "mouse_follows_focus": false,
+  "alt_focus_hack": true,
+  "invisible_borders": {
+    "left": 7,
+    "top": 0,
+    "right": 10,
+    "bottom": 7
+  }
+}
