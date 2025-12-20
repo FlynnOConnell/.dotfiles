@@ -56,7 +56,9 @@
       path: dots/.config/dunst
     ~/.config/picom:
       path: dots/.config/picom
-      
+    ~/.config/cheatsheets:
+      path: dots/.config/cheatsheets
+
 - shell:
   - 
     command: git submodule update --init --recursive

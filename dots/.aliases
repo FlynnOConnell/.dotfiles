@@ -12,7 +12,7 @@ alias vgpu='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.
 alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
 
 # - Copy ----
-alias cppw='xsel --clipboard < ~/.password.txt'
+alias cpw='xsel --clipboard < ~/.password.txt'
 alias cppy='xsel --clipboard < ~/.password_pypi.txt'
 
 # - Navigation -
