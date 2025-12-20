@@ -1,0 +1,32 @@
+#!/bin/bash
+# Rofi-based cheatsheet viewer
+# Usage: cheatsheet [app_name]
+# If no app_name provided, shows a list of available cheatsheets
+
+CHEATSHEET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/cheatsheets"
+
+# If no argument, show list of available cheatsheets
+if [ -z "$1" ]; then
+    # List all .txt files in cheatsheets dir
+    selection=$(find "$CHEATSHEET_DIR" -name "*.txt" -exec basename {} .txt \; 2>/dev/null | sort | rofi -dmenu -i -p "Cheatsheet" -theme-str 'window {width: 300px;}')
+    [ -z "$selection" ] && exit 0
+    app="$selection"
+else
+    app="$1"
+fi
+
+cheatfile="$CHEATSHEET_DIR/${app}.txt"
+
+if [ ! -f "$cheatfile" ]; then
+    rofi -e "Cheatsheet not found: $app"
+    exit 1
+fi
+
+# Display cheatsheet in rofi
+# Each line is shown as a menu item, selecting copies to clipboard
+selected=$(rofi -dmenu -i -p "$app" -mesg "Select to copy • Esc to close" -theme-str 'window {width: 800px; height: 600px;} listview {lines: 25;}' < "$cheatfile")
+
+if [ -n "$selected" ]; then
+    # Copy the keybind part (before the first space or tab after the key combo)
+    echo -n "$selected" | xsel --clipboard
+fi

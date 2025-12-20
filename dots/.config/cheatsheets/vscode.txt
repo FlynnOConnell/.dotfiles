@@ -1,0 +1,68 @@
+── Navigation ──────────────────────────────────────
+gd                  Go to definition
+gD                  Go to declaration
+gi                  Go to implementation
+gr                  Go to references
+gy                  Go to type definition
+gh                  Show hover (documentation)
+Ctrl+o              Jump back (navigate backward)
+Ctrl+i              Jump forward (navigate forward)
+Ctrl+]              Go to definition (alternate)
+
+── Search & Find ───────────────────────────────────
+/                   Search in file
+*                   Search word under cursor
+n / N               Next / previous search result
+Ctrl+Shift+f        Search in all files
+Ctrl+p              Quick open file
+Ctrl+Shift+p        Command palette
+Ctrl+g              Go to line
+
+── Code Actions ────────────────────────────────────
+<leader>ca          Code action (quick fix)
+<leader>rn          Rename symbol
+<leader>f           Format document
+=                   Format selection (visual mode)
+Ctrl+.              Quick fix menu
+
+── Multi-cursor ────────────────────────────────────
+Ctrl+d              Add cursor at next occurrence
+gb                  Add cursor at next occurrence (vim)
+Ctrl+Shift+l        Select all occurrences
+Alt+Click           Add cursor at click position
+
+── Window & Splits ─────────────────────────────────
+Ctrl+\              Split editor
+Ctrl+1/2/3          Focus editor group 1/2/3
+Ctrl+w h/j/k/l      Navigate splits (vim style)
+Ctrl+w v            Vertical split
+Ctrl+w s            Horizontal split
+Ctrl+w q            Close split
+
+── File Explorer ───────────────────────────────────
+Ctrl+Shift+e        Focus file explorer
+a                   New file (in explorer)
+Shift+a             New folder (in explorer)
+r                   Rename (in explorer)
+d                   Delete (in explorer)
+
+── Terminal ────────────────────────────────────────
+Ctrl+`              Toggle terminal
+Ctrl+Shift+`        New terminal
+
+── Editing (Vim) ───────────────────────────────────
+ciw                 Change inner word
+ci"                 Change inside quotes
+ca{                 Change around braces
+yiw                 Yank inner word
+diw                 Delete inner word
+>>  / <<            Indent / dedent line
+gcc                 Toggle comment line
+gc                  Toggle comment (visual)
+
+── Folding ─────────────────────────────────────────
+za                  Toggle fold
+zc                  Close fold
+zo                  Open fold
+zM                  Close all folds
+zR                  Open all folds

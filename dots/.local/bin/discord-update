@@ -1,0 +1,18 @@
+#!/bin/bash
+# Auto-update Discord to latest version
+# Downloads the latest .deb and installs it
+# Uses pkexec for GUI password prompt
+
+set -e
+
+DOWNLOAD_URL="https://discord.com/api/download?platform=linux&format=deb"
+TMP_DEB="/tmp/discord.deb"
+
+echo "Downloading latest Discord..."
+curl -L "$DOWNLOAD_URL" -o "$TMP_DEB"
+
+echo "Installing Discord..."
+pkexec dpkg -i "$TMP_DEB"
+
+rm -f "$TMP_DEB"
+echo "Discord updated successfully!"
