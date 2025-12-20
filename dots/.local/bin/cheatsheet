@@ -1,32 +1,89 @@
 #!/bin/bash
-# Rofi-based cheatsheet viewer
-# Usage: cheatsheet [app_name]
-# If no app_name provided, shows a list of available cheatsheets
+# Cheatsheet viewer - works in terminal or with rofi
+# Usage: cheatsheet [app_name] [-r|--rofi]
+#
+# Examples:
+#   cheatsheet           # List available (terminal with fzf, or rofi)
+#   cheatsheet neovim    # Show neovim cheatsheet
+#   cheatsheet -r        # Force rofi mode
+#   cheatsheet neovim -r # Show in rofi
 
 CHEATSHEET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/cheatsheets"
 
-# If no argument, show list of available cheatsheets
-if [ -z "$1" ]; then
-    # List all .txt files in cheatsheets dir
-    selection=$(find "$CHEATSHEET_DIR" -name "*.txt" -exec basename {} .txt \; 2>/dev/null | sort | rofi -dmenu -i -p "Cheatsheet" -theme-str 'window {width: 300px;}')
-    [ -z "$selection" ] && exit 0
-    app="$selection"
-else
-    app="$1"
+# Parse arguments
+USE_ROFI=false
+APP=""
+for arg in "$@"; do
+    case $arg in
+        -r|--rofi)
+            USE_ROFI=true
+            ;;
+        *)
+            APP="$arg"
+            ;;
+    esac
+done
+
+# Determine if we should use rofi (GUI available and requested/default)
+use_rofi() {
+    if $USE_ROFI; then
+        return 0
+    fi
+    # Use terminal mode by default, rofi only if explicitly requested
+    return 1
+}
+
+# Terminal mode: use fzf for selection, less/bat for viewing
+terminal_select() {
+    find "$CHEATSHEET_DIR" -name "*.txt" -exec basename {} .txt \; 2>/dev/null | sort | fzf --prompt="Cheatsheet: " --height=40% --reverse
+}
+
+terminal_view() {
+    local file="$1"
+    if command -v bat &>/dev/null; then
+        bat --style=plain --paging=always "$file"
+    elif command -v less &>/dev/null; then
+        less -R "$file"
+    else
+        cat "$file"
+    fi
+}
+
+# Rofi mode
+rofi_select() {
+    find "$CHEATSHEET_DIR" -name "*.txt" -exec basename {} .txt \; 2>/dev/null | sort | rofi -dmenu -i -p "Cheatsheet" -theme-str 'window {width: 300px;}'
+}
+
+rofi_view() {
+    local file="$1"
+    local app="$2"
+    selected=$(rofi -dmenu -i -p "$app" -mesg "Select to copy • Esc to close" -theme-str 'window {width: 800px; height: 600px;} listview {lines: 25;}' < "$file")
+    if [ -n "$selected" ]; then
+        echo -n "$selected" | xsel --clipboard
+    fi
+}
+
+# If no app specified, show selection menu
+if [ -z "$APP" ]; then
+    if use_rofi; then
+        APP=$(rofi_select)
+    else
+        APP=$(terminal_select)
+    fi
+    [ -z "$APP" ] && exit 0
 fi
 
-cheatfile="$CHEATSHEET_DIR/${app}.txt"
+cheatfile="$CHEATSHEET_DIR/${APP}.txt"
 
 if [ ! -f "$cheatfile" ]; then
-    rofi -e "Cheatsheet not found: $app"
+    echo "Cheatsheet not found: $APP"
+    echo "Available: $(find "$CHEATSHEET_DIR" -name "*.txt" -exec basename {} .txt \; 2>/dev/null | tr '\n' ' ')"
     exit 1
 fi
 
-# Display cheatsheet in rofi
-# Each line is shown as a menu item, selecting copies to clipboard
-selected=$(rofi -dmenu -i -p "$app" -mesg "Select to copy • Esc to close" -theme-str 'window {width: 800px; height: 600px;} listview {lines: 25;}' < "$cheatfile")
-
-if [ -n "$selected" ]; then
-    # Copy the keybind part (before the first space or tab after the key combo)
-    echo -n "$selected" | xsel --clipboard
+# Display cheatsheet
+if use_rofi; then
+    rofi_view "$cheatfile" "$APP"
+else
+    terminal_view "$cheatfile"
 fi

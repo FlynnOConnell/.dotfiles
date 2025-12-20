@@ -1,0 +1,89 @@
+── Navigation (LSP) ────────────────────────────────
+gd                  Go to definition
+gD                  Go to declaration
+gi                  Go to implementation
+gt                  Go to type definition
+gu                  Find usages/references
+gr                  Rename symbol
+K                   Hover documentation
+Ctrl+k (insert)     Signature help
+
+── Diagnostics ─────────────────────────────────────
+gn                  Next diagnostic
+gp                  Previous diagnostic
+gk                  Show error description
+<leader>e           Show diagnostic float
+<leader>h           Show error help
+<leader>q           Open diagnostic quickfix
+
+── Code Actions ────────────────────────────────────
+gh                  Code actions (intentions)
+<leader>R           Refactorings (code actions)
+<leader>ca          Code action
+<leader>th          Toggle inlay hints
+
+── Symbols ─────────────────────────────────────────
+<leader>ds          Document symbols
+<leader>ws          Workspace symbols
+
+── Search (Telescope) ──────────────────────────────
+<leader>ff          Find files
+<leader>fg          Live grep
+<leader>fw          Grep current word
+<leader>fb          Find buffers
+<leader><leader>    Find buffers
+<leader>fh          Help tags
+<leader>fk          Keymaps
+<leader>fd          Diagnostics
+<leader>fr          Resume search
+<leader>f.          Recent files
+<leader>/           Fuzzy search in buffer
+<leader>fn          Search nvim config
+
+── Harpoon ─────────────────────────────────────────
+<leader>a           Add file to harpoon
+Ctrl+e              Toggle harpoon menu
+Ctrl+1/2/3/4        Jump to harpoon file 1/2/3/4
+Ctrl+p              Previous harpoon file
+Ctrl+n              Next harpoon file
+
+── Windows & Splits ────────────────────────────────
+Ctrl+h/j/k/l        Navigate splits
+<leader>|           Vertical split
+<leader>_           Horizontal split
+Arrow keys          Resize splits
+Ctrl+=              Equalize splits
+
+── Editing ─────────────────────────────────────────
+gcc                 Toggle comment line
+gc                  Toggle comment (visual)
+< / >               Indent/dedent (keeps selection)
+<leader>s           Search & replace word under cursor
+<leader>p           Paste without yanking (visual)
+<leader>y           Yank to system clipboard
+<leader>d           Delete to black hole register
+
+── Folding ─────────────────────────────────────────
+<leader>zo          Open all folds
+<leader>zc          Close all folds
+za                  Toggle fold
+zc / zo             Close/open fold
+
+── Movement ────────────────────────────────────────
+Ctrl+d / Ctrl+u     Half-page down/up (centered)
+n / N               Next/prev search (centered)
+J                   Join lines (cursor stays)
+
+── Debugging (DAP) ─────────────────────────────────
+,c                  Start/Continue
+,i                  Step into
+,o                  Step over
+,O                  Step out
+,b                  Toggle breakpoint
+,B                  Conditional breakpoint
+,r                  Toggle DAP UI
+
+── Misc ────────────────────────────────────────────
+kj (insert)         Escape
+Ctrl+f              Tmux sessionizer
+<Esc>               Clear search highlight

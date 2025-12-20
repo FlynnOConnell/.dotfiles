@@ -1,0 +1,79 @@
+── Navigation (LSP) ────────────────────────────────
+gd                  Go to declaration
+gi                  Go to implementation
+gu                  Show usages
+gr                  Rename element
+gk                  Show error description
+gh                  Show intention actions (quick fix)
+gn                  Go to next error
+gp                  Go to previous error
+gz                  Toggle zen mode
+
+── Files & Search ──────────────────────────────────
+Ctrl+f              Go to file
+Ctrl+Alt+p          Search everywhere
+<leader>s           File structure popup
+<leader>f           Find usages
+
+── Refactoring ─────────────────────────────────────
+<leader>R           Refactoring menu
+<leader>h           Show error description
+
+── Windows & Splits ────────────────────────────────
+Ctrl+h/j/k/l        Navigate splits
+Ctrl+Alt+\          Split vertically
+Ctrl+Alt+/          Split horizontally
+Ctrl+Alt+x          Unsplit
+Ctrl+Alt+z          Unsplit all
+Ctrl+Alt+m          Move editor to opposite group
+Ctrl+Alt+n          Edit source in new window
+Ctrl+Alt+q          Hide all windows
+Ctrl+Alt+w          Hide active window
+Ctrl+Alt+;          Jump to last window
+Ctrl+w              Close content
+
+── Tabs ────────────────────────────────────────────
+Ctrl+1-7            Go to tab 1-7
+Ctrl+PageDown       Next tab
+Ctrl+PageUp         Previous tab
+
+── Folding ─────────────────────────────────────────
+<leader>zo          Expand all regions
+<leader>zc          Collapse all regions
+<leader>zr          Expand region
+<leader>zm          Collapse region
+
+── Run & Debug ─────────────────────────────────────
+,r                  Run
+,d                  Debug
+,e                  Choose debug configuration
+,b                  Toggle breakpoint
+,a                  View breakpoints
+,s                  Step over
+,i                  Step into
+,m                  Step into my code
+,o                  Step out
+,c                  Resume
+,f                  Pop frame (debugger)
+
+── Editing ─────────────────────────────────────────
+gc                  Comment (vim-commentary)
+ys/cs/ds            Surround (vim-surround)
+< / >               Indent/dedent (keeps selection)
+kj (insert)         Escape
+Ctrl+c              Escape
+
+── Movement ────────────────────────────────────────
+j / k               Move down/up (centered)
+n / N               Next/prev search (centered)
+
+── Config ──────────────────────────────────────────
+\e                  Edit .ideavimrc
+\r                  Reload .ideavimrc
+Ctrl+- / Ctrl+Shift+= Font size decrease/increase
+
+── Plugins ─────────────────────────────────────────
+vim-commentary      gc to comment
+vim-surround        ys, cs, ds commands
+vim-highlightedyank Visual feedback on yank
+NERDTree            \ to open (file tree)

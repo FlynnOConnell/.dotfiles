@@ -1,0 +1,45 @@
+── Window Focus ────────────────────────────────────
+Mod+h/j/k/l         Focus left/down/up/right
+Mod+Arrow           Focus direction (arrow keys)
+Mod+a               Focus parent container
+
+── Window Movement ─────────────────────────────────
+Mod+Shift+h/j/k/l   Move window left/down/up/right
+Mod+Shift+Arrow     Move window (arrow keys)
+
+── Window Actions ──────────────────────────────────
+Mod+q               Close window
+Mod+f               Toggle fullscreen
+Mod+m               Toggle floating
+
+── Workspaces ──────────────────────────────────────
+Mod+1-9             Switch to workspace 1-9
+Mod+Shift+1-9       Move window to workspace 1-9
+Mod+n               Move workspace to output
+
+── Layouts ─────────────────────────────────────────
+Mod+s               Stacking layout
+Mod+w               Tabbed layout
+Mod+e               Toggle split direction
+Mod+Shift+'         Split horizontal
+Mod+Shift+v         Split vertical
+
+── Resize Mode ─────────────────────────────────────
+Mod+r               Enter resize mode
+  h                 Shrink width
+  j                 Shrink height
+  k                 Grow height
+  l                 Grow width
+  Esc/Return        Exit resize mode
+
+── Window Manager ──────────────────────────────────
+Mod+Shift+r         Restart i3
+Mod+Shift+e         Exit i3
+
+── Launchers ───────────────────────────────────────
+Alt+Space           App launcher (rofi)
+Mod+Shift+t         Terminal
+Mod+Shift+f         Browser
+
+── Config ──────────────────────────────────────────
+Config file:        ~/.config/i3/config
