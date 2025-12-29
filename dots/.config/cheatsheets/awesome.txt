@@ -1,0 +1,47 @@
+── Window Focus ────────────────────────────────────
+Mod+h/j/k/l         Focus left/down/up/right
+Mod+Shift+h/j/k/l   Swap window left/down/up/right
+Mod+Alt+h/j/k/l     Resize window
+Mod+Ctrl+h/j/k/l    Resize gaps
+
+── Window Actions ──────────────────────────────────
+Mod+q               Close client
+Mod+f               Toggle fullscreen
+Mod+m               Maximize
+Mod+n               Minimize
+Mod+Ctrl+n          Restore minimized
+Mod+Ctrl+Space      Toggle floating
+Mod+o               Move to other screen
+Mod+t               Toggle keep on top
+
+── Tags (Workspaces) ───────────────────────────────
+Mod+1-9             Switch to tag 1-9
+Mod+Shift+1-9       Move client to tag 1-9
+Mod+Ctrl+1-9        Toggle tag view
+Mod+Shift+s         Add new tag
+
+── Layout ──────────────────────────────────────────
+Mod+Space           Next layout
+Mod+Shift+Space     Previous layout
+Mod+b               Toggle wibox (bar)
+
+── Launchers ───────────────────────────────────────
+Alt+Space           Rofi app launcher
+Mod+Shift+t         Terminal
+Mod+r               Run prompt
+Mod+c               Toggle calendar
+
+── Screenshots (flameshot) ─────────────────────────
+Mod+Shift+p         Region screenshot to clipboard
+Print               Full screen to clipboard
+
+── System ──────────────────────────────────────────
+Mod+Ctrl+r          Reload awesome
+Mod+Shift+q         Quit awesome
+Mod+s               Show keybind help
+Mod+p               Copy password to clipboard
+
+── Misc ────────────────────────────────────────────
+Ctrl+;              Toggle quake terminal
+Ctrl+Alt+]          Volume up
+Ctrl+Alt+[          Volume down

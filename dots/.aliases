@@ -61,6 +61,7 @@ alias hf="history | fzf -e"
 alias lg="CONFIG_DIR="$HOME/.config/lazygit" /usr/local/bin/lazygit"
 
 # - Helpers ---------
+alias cs='cheatsheet'
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 alias keys='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
 alias path='tr ":" "\n" <<< "$PATH"'

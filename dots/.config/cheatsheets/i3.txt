@@ -41,5 +41,9 @@ Alt+Space           App launcher (rofi)
 Mod+Shift+t         Terminal
 Mod+Shift+f         Browser
 
+── Screenshots (flameshot) ─────────────────────────
+Mod+Shift+p         Region screenshot to clipboard
+Print               Full screen to clipboard
+
 ── Config ──────────────────────────────────────────
 Config file:        ~/.config/i3/config

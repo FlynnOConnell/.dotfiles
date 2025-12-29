@@ -114,7 +114,10 @@ for_window [class="(.*join\?action\=join.*|.*zoom.*)" title="Zoom Meeting"] floa
 set $STICKY floating enable, sticky enable
 set $FLOAT floating enable
 
-bindsym $mod+Shift+p exec --no-startup-id flameshot gui -c -s
+# Screenshot: region to clipboard (delay fixes picom freeze)
+bindsym $mod+Shift+p exec --no-startup-id flameshot gui -c -d 150
+# Screenshot: full screen to clipboard
+bindsym Print exec --no-startup-id flameshot full -c -d 150
 
 for_window [class="Tk"] floating enable, move position center, resize set 1280x768
 for_window [class="Blueman-manager"] $FLOAT

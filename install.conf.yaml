@@ -58,6 +58,10 @@
       path: dots/.config/picom
     ~/.config/cheatsheets:
       path: dots/.config/cheatsheets
+    ~/.config/i3:
+      path: dots/.config/i3
+    ~/.config/polybar:
+      path: dots/.config/polybar
 
 - shell:
   - 
