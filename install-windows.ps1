@@ -3,20 +3,36 @@
 #
 # Usage:
 #   .\install-windows.ps1
-#   irm https://raw.githubusercontent.com/FlynnOConnell/.dotfiles/master/install-windows.ps1 | iex
+#   iex (irm https://raw.githubusercontent.com/FlynnOConnell/.dotfiles/master/install-windows.ps1)
 
 $ErrorActionPreference = "Stop"
-$DOTFILES_ROOT = Split-Path -Parent $MyInvocation.MyCommand.Path
 
-# If running via irm | iex, clone the repo first
-if (-not $DOTFILES_ROOT -or -not (Test-Path (Join-Path $DOTFILES_ROOT "install-windows.conf.yaml"))) {
-    $DOTFILES_ROOT = Join-Path $env:USERPROFILE ".dotfiles"
-    if (-not (Test-Path $DOTFILES_ROOT)) {
-        Write-Host "Cloning dotfiles repository..." -ForegroundColor Cyan
-        git clone --recursive https://github.com/FlynnOConnell/.dotfiles.git $DOTFILES_ROOT
-    }
-    Set-Location $DOTFILES_ROOT
+# Determine dotfiles location
+$DOTFILES_ROOT = $null
+
+# Check if running from local file
+if ($MyInvocation.MyCommand.Path) {
+    $DOTFILES_ROOT = Split-Path -Parent $MyInvocation.MyCommand.Path
 }
+
+# Validate or clone
+if (-not $DOTFILES_ROOT -or -not (Test-Path $DOTFILES_ROOT)) {
+    $DOTFILES_ROOT = Join-Path $env:USERPROFILE ".dotfiles"
+}
+
+if (-not (Test-Path (Join-Path $DOTFILES_ROOT "install-windows.conf.yaml"))) {
+    Write-Host "Cloning dotfiles repository to $DOTFILES_ROOT ..." -ForegroundColor Cyan
+    if (Test-Path $DOTFILES_ROOT) {
+        Remove-Item -Recurse -Force $DOTFILES_ROOT
+    }
+    git clone --recursive https://github.com/FlynnOConnell/.dotfiles.git $DOTFILES_ROOT
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Failed to clone repository" -ForegroundColor Red
+        exit 1
+    }
+}
+
+Set-Location $DOTFILES_ROOT
 
 function Write-Info { Write-Host "[INFO] $args" -ForegroundColor Blue }
 function Write-Success { Write-Host "[OK] $args" -ForegroundColor Green }
