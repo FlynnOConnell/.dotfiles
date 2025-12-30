@@ -1,0 +1,58 @@
+# Windows Server Safe Configuration
+# Excludes: komorebi, whkd, Linux-only tools (i3, polybar, etc.), .local/bin
+# Run with: python dotbot/bin/dotbot -c install-windows.conf.yaml
+
+- defaults:
+    link:
+      relink: true
+      force: true
+      create: true
+
+- clean:
+    ~/.config:
+      recursive: true
+
+- shell:
+  -
+    command: git submodule update --init --recursive
+    description: Installing submodules
+    stdout: true
+
+- link:
+    # Shell configuration
+    ~/.bashrc:
+      path: dots/.bashrc
+    ~/.aliases:
+      path: dots/.aliases
+
+    # Neovim configuration
+    ~/.config/nvim:
+      path: kickstart.nvim
+
+    # Vim configurations
+    ~/.vimrc:
+      path: dots/.config/vim/.vimrc
+    ~/.ideavimrc:
+      path: dots/.ideavimrc
+
+    # Development tools
+    ~/.config/lazygit:
+      path: dots/.config/lazygit
+    ~/.config/github-copilot:
+      path: dots/.config/github-copilot
+
+    # System monitoring (cross-platform)
+    ~/.config/btop:
+      path: dots/.config/btop
+
+    # Editors
+    ~/.config/micro:
+      path: dots/.config/micro
+
+    # Reference
+    ~/.config/cheatsheets:
+      path: dots/.config/cheatsheets
+
+    # System info
+    ~/.config/fastfetch:
+      path: dots/.config/fastfetch
