@@ -8,7 +8,7 @@
 #   cheatsheet -r        # Force rofi mode
 #   cheatsheet neovim -r # Show in rofi
 
-CHEATSHEET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/cheatsheets"
+CHEATSHEET_DIR="$(readlink -f "${XDG_CONFIG_HOME:-$HOME/.config}/cheatsheets")"
 
 # Parse arguments
 USE_ROFI=false
@@ -35,7 +35,7 @@ use_rofi() {
 
 # Terminal mode: use fzf for selection, less/bat for viewing
 terminal_select() {
-    find "$CHEATSHEET_DIR" -name "*.txt" -exec basename {} .txt \; 2>/dev/null | sort | fzf --prompt="Cheatsheet: " --height=40% --reverse
+    find -L "$CHEATSHEET_DIR" -name "*.txt" -exec basename {} .txt \; 2>/dev/null | sort | fzf --prompt="Cheatsheet: " --height=40% --reverse
 }
 
 terminal_view() {
@@ -51,7 +51,7 @@ terminal_view() {
 
 # Rofi mode
 rofi_select() {
-    find "$CHEATSHEET_DIR" -name "*.txt" -exec basename {} .txt \; 2>/dev/null | sort | rofi -dmenu -i -p "Cheatsheet" -theme-str 'window {width: 300px;}'
+    find -L "$CHEATSHEET_DIR" -name "*.txt" -exec basename {} .txt \; 2>/dev/null | sort | rofi -dmenu -i -p "Cheatsheet" -theme-str 'window {width: 300px;}'
 }
 
 rofi_view() {
@@ -77,7 +77,7 @@ cheatfile="$CHEATSHEET_DIR/${APP}.txt"
 
 if [ ! -f "$cheatfile" ]; then
     echo "Cheatsheet not found: $APP"
-    echo "Available: $(find "$CHEATSHEET_DIR" -name "*.txt" -exec basename {} .txt \; 2>/dev/null | tr '\n' ' ')"
+    echo "Available: $(find -L "$CHEATSHEET_DIR" -name "*.txt" -exec basename {} .txt \; 2>/dev/null | tr '\n' ' ')"
     exit 1
 fi
 
