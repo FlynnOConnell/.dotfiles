@@ -11,8 +11,9 @@ $ErrorActionPreference = "Stop"
 $DOTFILES_ROOT = $null
 
 # Check if running from local file
-if ($MyInvocation.MyCommand.Path) {
-    $DOTFILES_ROOT = Split-Path -Parent $MyInvocation.MyCommand.Path
+$scriptPath = $MyInvocation.MyCommand.Path
+if ($scriptPath -and $scriptPath -ne "") {
+    $DOTFILES_ROOT = Split-Path -Parent $scriptPath
 }
 
 # Validate or clone
@@ -38,6 +39,120 @@ function Write-Info { Write-Host "[INFO] $args" -ForegroundColor Blue }
 function Write-Success { Write-Host "[OK] $args" -ForegroundColor Green }
 function Write-Warn { Write-Host "[WARN] $args" -ForegroundColor Yellow }
 function Write-Err { Write-Host "[ERROR] $args" -ForegroundColor Red }
+
+function Test-SymlinkCapability {
+    # Check if running as admin
+    $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    if ($isAdmin) { return $true }
+
+    # Check Developer Mode
+    try {
+        $devMode = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -ErrorAction SilentlyContinue
+        if ($devMode.AllowDevelopmentWithoutDevLicense -eq 1) { return $true }
+    } catch {}
+
+    return $false
+}
+
+function Request-AdminOrDevMode {
+    Write-Host ""
+    Write-Warn "Symlinks require Administrator privileges or Developer Mode."
+    Write-Host ""
+    Write-Host "  [1] Re-run entire script as Administrator" -ForegroundColor Cyan
+    Write-Host "  [2] Create symlinks only (elevate just for symlinks)" -ForegroundColor Cyan
+    Write-Host "  [3] Continue without symlinks (apps only)" -ForegroundColor Cyan
+    Write-Host "  [4] Exit" -ForegroundColor Cyan
+    Write-Host ""
+
+    $choice = Read-Host "Select option (1-4)"
+
+    switch ($choice) {
+        "1" {
+            Write-Info "Re-launching as Administrator..."
+            $scriptPath = Join-Path $DOTFILES_ROOT "install-windows.ps1"
+            Start-Process powershell -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -File `"$scriptPath`""
+            exit 0
+        }
+        "2" {
+            # Create symlinks via elevated subprocess
+            Install-SymlinksElevated
+            return $true  # Continue with apps
+        }
+        "3" {
+            return $true  # Continue without symlinks
+        }
+        default {
+            return $false  # Exit
+        }
+    }
+}
+
+function Install-SymlinksElevated {
+    Write-Info "Creating symlinks with elevation..."
+
+    # Build the symlink commands
+    $symlinkScript = @"
+`$ErrorActionPreference = 'Continue'
+`$dotfiles = '$DOTFILES_ROOT'
+
+# Neovim config
+`$nvimTarget = Join-Path `$dotfiles 'kickstart.nvim'
+`$nvimLink = Join-Path `$env:LOCALAPPDATA 'nvim'
+if (Test-Path `$nvimLink) { Remove-Item -Recurse -Force `$nvimLink }
+New-Item -ItemType SymbolicLink -Path `$nvimLink -Target `$nvimTarget -Force | Out-Null
+Write-Host "[OK] Neovim config linked" -ForegroundColor Green
+
+# Home directory symlinks
+`$links = @{
+    '~/.vimrc' = 'dots/.config/vim/.vimrc'
+    '~/.ideavimrc' = 'dots/.ideavimrc'
+    '~/.bashrc' = 'dots/.bashrc'
+    '~/.aliases' = 'dots/.aliases'
+}
+
+foreach (`$link in `$links.GetEnumerator()) {
+    `$linkPath = `$link.Key -replace '~', `$env:USERPROFILE
+    `$targetPath = Join-Path `$dotfiles `$link.Value
+    if (Test-Path `$linkPath) { Remove-Item -Force `$linkPath }
+    New-Item -ItemType SymbolicLink -Path `$linkPath -Target `$targetPath -Force | Out-Null
+    Write-Host "[OK] `$(`$link.Key) linked" -ForegroundColor Green
+}
+
+# .config directory symlinks
+`$configLinks = @{
+    'lazygit' = 'dots/.config/lazygit'
+    'btop' = 'dots/.config/btop'
+    'micro' = 'dots/.config/micro'
+    'cheatsheets' = 'dots/.config/cheatsheets'
+    'fastfetch' = 'dots/.config/fastfetch'
+    'github-copilot' = 'dots/.config/github-copilot'
+}
+
+`$configDir = Join-Path `$env:USERPROFILE '.config'
+if (-not (Test-Path `$configDir)) { New-Item -ItemType Directory -Path `$configDir -Force | Out-Null }
+
+foreach (`$link in `$configLinks.GetEnumerator()) {
+    `$linkPath = Join-Path `$configDir `$link.Key
+    `$targetPath = Join-Path `$dotfiles `$link.Value
+    if (Test-Path `$targetPath) {
+        if (Test-Path `$linkPath) { Remove-Item -Recurse -Force `$linkPath }
+        New-Item -ItemType SymbolicLink -Path `$linkPath -Target `$targetPath -Force | Out-Null
+        Write-Host "[OK] ~/.config/`$(`$link.Key) linked" -ForegroundColor Green
+    }
+}
+
+Write-Host ""
+Write-Host "Symlinks created successfully!" -ForegroundColor Green
+Start-Sleep -Seconds 2
+"@
+
+    # Run elevated
+    $bytes = [System.Text.Encoding]::Unicode.GetBytes($symlinkScript)
+    $encoded = [Convert]::ToBase64String($bytes)
+
+    Start-Process powershell -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -EncodedCommand $encoded" -Wait
+    Write-Success "Symlinks created"
+}
 
 function Show-Banner {
     Write-Host ""
@@ -68,23 +183,38 @@ function Install-Uv {
 }
 
 function Install-Dotbot {
+    # Check if dotbot is already installed
+    $installed = uv tool list 2>$null | Select-String "dotbot"
+    if ($installed) {
+        Write-Info "dotbot already installed"
+        return
+    }
     Write-Info "Installing dotbot via uv..."
-    uv tool install dotbot 2>&1 | Out-Null
-    Write-Success "dotbot installed"
+    $output = uv tool install dotbot 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        Write-Success "dotbot installed"
+    } else {
+        Write-Warn "dotbot install returned: $output"
+    }
 }
 
 function Install-Configs {
     Write-Host ""
     Write-Info "Symlinking configurations..."
 
-    # Initialize submodules
+    # Initialize submodules (git outputs to stderr even on success)
+    $ErrorActionPreference = "Continue"
     git -C $DOTFILES_ROOT submodule update --init --recursive 2>&1 | Out-Null
+    $ErrorActionPreference = "Stop"
 
     # Run dotbot
     $configPath = Join-Path $DOTFILES_ROOT "install-windows.conf.yaml"
+    $ErrorActionPreference = "Continue"
     dotbot -d $DOTFILES_ROOT -c $configPath 2>&1 | ForEach-Object { Write-Host "  $_" }
+    $dotbotExit = $LASTEXITCODE
+    $ErrorActionPreference = "Stop"
 
-    if ($LASTEXITCODE -eq 0) {
+    if ($dotbotExit -eq 0) {
         Write-Success "Configurations linked"
     } else {
         Write-Warn "Some configurations may have failed to link"
@@ -153,6 +283,26 @@ $APPS = @{
         Description = "Cross-shell prompt"
         Winget = "Starship.Starship"
     }
+    "ffmpeg" = @{
+        Name = "FFmpeg"
+        Description = "Video/audio processing toolkit"
+        Winget = "Gyan.FFmpeg"
+    }
+    "rust" = @{
+        Name = "Rust"
+        Description = "Rust toolchain (rustc, cargo, rustup)"
+        Winget = "Rustlang.Rustup"
+    }
+    "nodejs" = @{
+        Name = "Node.js"
+        Description = "JavaScript runtime (needed for some LSPs)"
+        Winget = "OpenJS.NodeJS.LTS"
+    }
+    "git" = @{
+        Name = "Git"
+        Description = "Version control system"
+        Winget = "Git.Git"
+    }
 }
 
 function Show-AppSelection {
@@ -181,19 +331,20 @@ function Show-AppSelection {
     Write-Host "  [N] None - Skip application installation" -ForegroundColor Yellow
     Write-Host ""
 
-    $input = Read-Host "Select apps (comma-separated numbers, A for all, N for none)"
-    $input = $input.Trim().ToUpper()
+    $selection = Read-Host "Select apps (comma-separated numbers, A for all, N for none)"
+    if (-not $selection) { $selection = "N" }
+    $selection = $selection.Trim().ToUpper()
 
-    if ($input -eq "N" -or $input -eq "") {
+    if ($selection -eq "N" -or $selection -eq "") {
         return @()
     }
 
-    if ($input -eq "A") {
+    if ($selection -eq "A") {
         return $sortedKeys
     }
 
     $selected = @()
-    $choices = $input -split ',' | ForEach-Object { $_.Trim() }
+    $choices = $selection -split ',' | ForEach-Object { $_.Trim() }
 
     foreach ($choice in $choices) {
         $num = 0
@@ -254,25 +405,215 @@ function Install-Apps {
     }
 }
 
+function Install-CoreDependencies {
+    Write-Host ""
+    Write-Info "Installing core dependencies..."
+
+    $ErrorActionPreference = "Continue"
+
+    # Install Python via uv (not system Python)
+    Write-Info "Installing Python 3.12 via uv..."
+    uv python install 3.12 2>&1 | ForEach-Object { if ($_ -match "Installed|already") { Write-Success $_ } }
+
+    # Find uv's python and add to PATH for Mason/Neovim
+    $uvPythonDir = uv python find 3.12 2>&1 | Out-String
+    $uvPythonDir = $uvPythonDir.Trim()
+    if ($uvPythonDir -and (Test-Path $uvPythonDir)) {
+        $pythonBinDir = Split-Path $uvPythonDir -Parent
+        Write-Info "Found uv Python at: $pythonBinDir"
+
+        # Add to user PATH if not already there
+        $userPath = [System.Environment]::GetEnvironmentVariable("Path", "User")
+        if ($userPath -notlike "*$pythonBinDir*") {
+            Write-Info "Adding uv Python to PATH..."
+            [System.Environment]::SetEnvironmentVariable("Path", "$pythonBinDir;$userPath", "User")
+            $env:Path = "$pythonBinDir;$env:Path"
+            Write-Success "uv Python added to PATH"
+        }
+    }
+
+    # Install debugpy for DAP (Python debugging)
+    Write-Info "Installing debugpy for Python debugging..."
+    uv tool install debugpy 2>&1 | Out-Null
+
+    # Disable Windows Store python alias (creates confusion)
+    Write-Info "Tip: Disable Windows Store Python alias in Settings > Apps > App execution aliases"
+
+    $ErrorActionPreference = "Stop"
+
+    # Refresh PATH
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+}
+
+function Install-UvTools {
+    Write-Host ""
+    Write-Info "Installing Python tools via uv..."
+
+    $ErrorActionPreference = "Continue"
+    $tools = @("ty", "ruff")
+
+    # Check for malformed tools and fix them
+    $toolListOutput = uv tool list 2>&1 | Out-String
+    foreach ($tool in $tools) {
+        if ($toolListOutput -match "malformed.*$tool") {
+            Write-Warn "Fixing malformed $tool installation..."
+            uv tool uninstall $tool 2>&1 | Out-Null
+        }
+    }
+
+    foreach ($tool in $tools) {
+        # Check if properly installed
+        $toolList = uv tool list 2>&1 | Out-String
+        if ($toolList -match "$tool\s+v") {
+            Write-Info "$tool already installed"
+            continue
+        }
+        Write-Info "Installing $tool..."
+        $output = uv tool install $tool 2>&1 | Out-String
+        if ($output -match "Installed" -or $LASTEXITCODE -eq 0) {
+            Write-Success "$tool installed"
+        } else {
+            Write-Warn "Failed to install $tool"
+        }
+    }
+
+    $ErrorActionPreference = "Stop"
+
+    # Refresh PATH to include uv tools
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+    # Also ensure uv tool bin is in PATH
+    $uvBin = Join-Path $env:USERPROFILE ".local\bin"
+    if ($env:Path -notlike "*$uvBin*") {
+        Write-Info "Adding uv tool bin to PATH..."
+        [System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";$uvBin", "User")
+        $env:Path = $env:Path + ";$uvBin"
+    }
+}
+
+function Install-PowerShellProfile {
+    Write-Host ""
+    Write-Info "Setting up PowerShell profile with aliases..."
+
+    $profileContent = @'
+# Dotfiles PowerShell Profile
+# Generated by install-windows.ps1
+
+# Aliases
+Set-Alias -Name lg -Value lazygit -ErrorAction SilentlyContinue
+Set-Alias -Name vim -Value nvim -ErrorAction SilentlyContinue
+Set-Alias -Name vi -Value nvim -ErrorAction SilentlyContinue
+Set-Alias -Name g -Value git -ErrorAction SilentlyContinue
+
+# lsa - Pretty directory listing with eza or fallback
+function lsa {
+    if (Get-Command eza -ErrorAction SilentlyContinue) {
+        eza -la --icons --group-directories-first @args
+    } elseif (Get-Command ls -ErrorAction SilentlyContinue) {
+        Get-ChildItem -Force @args | Format-Table Mode, LastWriteTime, Length, Name -AutoSize
+    }
+}
+
+# ll - Long listing
+function ll {
+    if (Get-Command eza -ErrorAction SilentlyContinue) {
+        eza -l --icons --group-directories-first @args
+    } else {
+        Get-ChildItem @args | Format-Table Mode, LastWriteTime, Length, Name -AutoSize
+    }
+}
+
+# la - All files
+function la { Get-ChildItem -Force @args }
+
+# Quick navigation
+function .. { Set-Location .. }
+function ... { Set-Location ..\.. }
+function .... { Set-Location ..\..\.. }
+
+# Git shortcuts
+function gs { git status @args }
+function ga { git add @args }
+function gc { git commit @args }
+function gp { git push @args }
+function gl { git pull @args }
+function gd { git diff @args }
+function gco { git checkout @args }
+function gb { git branch @args }
+function glog { git log --oneline --graph --decorate -20 @args }
+
+# Zoxide initialization (if installed)
+if (Get-Command zoxide -ErrorAction SilentlyContinue) {
+    Invoke-Expression (& { (zoxide init powershell | Out-String) })
+}
+
+# Starship prompt (if installed)
+if (Get-Command starship -ErrorAction SilentlyContinue) {
+    Invoke-Expression (&starship init powershell)
+}
+'@
+
+    $profileDir = Split-Path $PROFILE -Parent
+    if (-not (Test-Path $profileDir)) {
+        New-Item -ItemType Directory -Path $profileDir -Force | Out-Null
+    }
+
+    # Check if profile exists and has content
+    if (Test-Path $PROFILE) {
+        $existing = Get-Content $PROFILE -Raw -ErrorAction SilentlyContinue
+        if ($existing -and $existing -notmatch "Dotfiles PowerShell Profile") {
+            # Append to existing
+            Write-Info "Appending to existing profile..."
+            Add-Content -Path $PROFILE -Value "`n`n$profileContent"
+        } elseif ($existing -match "Dotfiles PowerShell Profile") {
+            Write-Info "Profile already configured"
+            return
+        } else {
+            Set-Content -Path $PROFILE -Value $profileContent
+        }
+    } else {
+        Set-Content -Path $PROFILE -Value $profileContent
+    }
+
+    Write-Success "PowerShell profile configured at $PROFILE"
+}
+
 function Show-Summary {
     Write-Host ""
     Write-Host "Installation Complete" -ForegroundColor Green
     Write-Host ""
-    Write-Host "  Configs installed to:" -ForegroundColor Gray
-    Write-Host "    ~/.config/nvim      (Neovim)" -ForegroundColor White
-    Write-Host "    ~/.vimrc            (Vim)" -ForegroundColor White
-    Write-Host "    ~/.ideavimrc        (JetBrains)" -ForegroundColor White
-    Write-Host "    ~/.bashrc           (Bash/Git Bash)" -ForegroundColor White
-    Write-Host "    ~/.aliases          (Shell aliases)" -ForegroundColor White
-    Write-Host "    ~/.config/lazygit   (Lazygit)" -ForegroundColor White
-    Write-Host "    ~/.config/btop      (btop)" -ForegroundColor White
+    Write-Host "  Python (via uv):" -ForegroundColor Gray
+    Write-Host "    Python 3.12 (managed by uv, not system)" -ForegroundColor White
     Write-Host ""
-    Write-Host "  Restart your terminal for PATH changes to take effect." -ForegroundColor Yellow
+    Write-Host "  Python tools (via uv):" -ForegroundColor Gray
+    Write-Host "    ty, ruff, debugpy" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  Configs linked to:" -ForegroundColor Gray
+    Write-Host "    %LOCALAPPDATA%\nvim   ~/.vimrc   ~/.ideavimrc" -ForegroundColor White
+    Write-Host "    ~/.bashrc   ~/.aliases   ~/.config/lazygit" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  PowerShell aliases:" -ForegroundColor Gray
+    Write-Host "    lg=lazygit  lsa=eza  vim=nvim  gs/ga/gc/gp=git" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  NEXT STEPS:" -ForegroundColor Yellow
+    Write-Host "    1. CLOSE and REOPEN your terminal (required for PATH)" -ForegroundColor White
+    Write-Host "    2. Open nvim and run :Lazy sync to install plugins" -ForegroundColor White
+    Write-Host "    3. Run :checkhealth to verify setup" -ForegroundColor White
     Write-Host ""
 }
 
 function Main {
     Show-Banner
+
+    # Check symlink capability
+    $canSymlink = Test-SymlinkCapability
+    if (-not $canSymlink) {
+        $continue = Request-AdminOrDevMode
+        if (-not $continue) {
+            Write-Info "Exiting. Re-run as Administrator or enable Developer Mode."
+            exit 0
+        }
+    }
 
     # Step 1: Install uv
     Install-Uv
@@ -281,11 +622,24 @@ function Main {
     Install-Dotbot
 
     # Step 3: Symlink configs
-    Install-Configs
+    if ($canSymlink) {
+        Install-Configs
+    } else {
+        Write-Warn "Skipping symlinks (no permission). Configs must be linked manually or re-run as Admin."
+    }
 
-    # Step 4: Select and install apps
+    # Step 4: Install core dependencies (Python, Node, pwsh, 7z, make)
+    Install-CoreDependencies
+
+    # Step 5: Select and install apps
     $selectedApps = Show-AppSelection
     Install-Apps -AppKeys $selectedApps
+
+    # Step 6: Install uv tools (ty, ruff)
+    Install-UvTools
+
+    # Step 7: Set up PowerShell profile
+    Install-PowerShellProfile
 
     # Done
     Show-Summary

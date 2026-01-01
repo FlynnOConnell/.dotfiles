@@ -5,9 +5,6 @@ map <c-f> <Action>(GotoFile)
 map <c-a-p> :action SearchEverywhere<CR>
 
 map <Leader>R <Action>(Refactorings.QuickListPopupAction)
-map <Leader>h <Action>(ShowErrorDescription)
-map <Leader>s <Action>(FileStructurePopup)
-map <Leader>f <Action>(FindUsages)
 
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
@@ -76,16 +73,22 @@ map <C-7> 7gt
 map <c-PageDown> <Action>(NextTab)<CR>
 map <c-PageUp> <Action>(PreviousTab)<CR>
 
-""" LSP -----------------------------
+""" LSP (matches Neovim keybindings) -----------------------------
 map gn <Action>(GotoNextError)
 map gp <Action>(GotoPreviousError)
-map gk <Action>(ShowErrorDescription)
-map gh <Action>(ShowIntentionActions)
-
-map gi <Action>(GotoImplementation)
 map gd <Action>(GotoDeclaration)
-map gr <Action>(RenameElement)
-map gu <Action>(ShowUsages)
+map gI <Action>(GotoImplementation)
+map gr <Action>(FindUsages)
+map gD <Action>(GotoTypeDeclaration)
+map K <Action>(QuickJavaDoc)
+
+map <leader>rn <Action>(RenameElement)
+map <leader>ca <Action>(ShowIntentionActions)
+map <leader>e <Action>(ShowErrorDescription)
+map <leader>D <Action>(GotoTypeDeclaration)
+map <leader>ds <Action>(FileStructurePopup)
+map <leader>ws <Action>(GotoSymbol)
+
 map gz <Action>(ToggleZenMode)
 
 """ Leader Key Mappings ----------------------
