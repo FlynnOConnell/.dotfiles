@@ -33,7 +33,23 @@ symbol = " "
 symbol = " "
 
 [directory]
+truncation_length = 8
+truncate_to_repo = false
 read_only = " 󰌾"
+
+[git_status]
+# More readable git status symbols
+conflicted = "="
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?${count}"
+stashed = "*"
+modified = "!${count}"
+staged = "+${count}"
+renamed = "»"
+deleted = "✘"
+format = '([\[$all_status$ahead_behind\]]($style) )'
 
 [docker_context]
 symbol = " "
