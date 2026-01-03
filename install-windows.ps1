@@ -126,6 +126,7 @@ foreach (`$link in `$links.GetEnumerator()) {
     'cheatsheets' = 'dots/.config/cheatsheets'
     'fastfetch' = 'dots/.config/fastfetch'
     'github-copilot' = 'dots/.config/github-copilot'
+    'starship.toml' = 'dots/.config/starship/starship.toml'
 }
 
 `$configDir = Join-Path `$env:USERPROFILE '.config'
@@ -283,6 +284,11 @@ $APPS = @{
         Description = "Cross-shell prompt"
         Winget = "Starship.Starship"
     }
+    "nerd-fonts" = @{
+        Name = "JetBrainsMono Nerd Font"
+        Description = "Nerd Font for terminal icons (Starship, eza, etc.)"
+        Winget = "DEVCOM.JetBrainsMonoNerdFont"
+    }
     "ffmpeg" = @{
         Name = "FFmpeg"
         Description = "Video/audio processing toolkit"
@@ -362,22 +368,37 @@ function Install-App {
         [hashtable]$AppInfo
     )
 
+    # Check if command exists in PATH
     if (Test-CommandExists $Key) {
-        Write-Info "$($AppInfo.Name) already installed, skipping"
+        Write-Info "$($AppInfo.Name) already installed"
+        return $true
+    }
+
+    # Also check winget list for installed apps (some don't add to PATH)
+    $installed = winget list --id $AppInfo.Winget 2>$null | Out-String
+    if ($installed -match $AppInfo.Winget) {
+        Write-Info "$($AppInfo.Name) already installed (via winget)"
         return $true
     }
 
     Write-Info "Installing $($AppInfo.Name)..."
 
     if ($AppInfo.Winget) {
-        winget install -e --id $AppInfo.Winget --accept-package-agreements --accept-source-agreements 2>&1 | Out-Null
+        $output = winget install -e --id $AppInfo.Winget --accept-package-agreements --accept-source-agreements 2>&1 | Out-String
+
         if ($LASTEXITCODE -eq 0) {
             Write-Success "$($AppInfo.Name) installed"
             return $true
+        } elseif ($output -match "already installed" -or $output -match "No available upgrade") {
+            Write-Info "$($AppInfo.Name) already installed"
+            return $true
+        } else {
+            Write-Warn "Failed to install $($AppInfo.Name): exit code $LASTEXITCODE"
+            return $false
         }
     }
 
-    Write-Warn "Failed to install $($AppInfo.Name)"
+    Write-Warn "No winget ID for $($AppInfo.Name)"
     return $false
 }
 
@@ -436,6 +457,25 @@ function Install-CoreDependencies {
     Write-Info "Installing debugpy for Python debugging..."
     uv tool install debugpy 2>&1 | Out-Null
 
+    # Create dedicated Neovim Python provider venv with pynvim
+    Write-Info "Setting up Neovim Python provider (uv-managed)..."
+    $nvimVenv = Join-Path $env:LOCALAPPDATA "nvim-python"
+
+    if (-not (Test-Path $nvimVenv)) {
+        Write-Info "Creating Neovim Python venv at $nvimVenv..."
+        uv venv $nvimVenv --python 3.12 2>&1 | Out-Null
+    }
+
+    # Install pynvim into the dedicated venv
+    Write-Info "Installing pynvim into Neovim venv..."
+    uv pip install pynvim --python "$nvimVenv\Scripts\python.exe" 2>&1 | Out-Null
+
+    if (Test-Path "$nvimVenv\Scripts\python.exe") {
+        Write-Success "Neovim Python provider ready at $nvimVenv"
+    } else {
+        Write-Warn "Failed to create Neovim Python venv"
+    }
+
     # Disable Windows Store python alias (creates confusion)
     Write-Info "Tip: Disable Windows Store Python alias in Settings > Apps > App execution aliases"
 
@@ -489,6 +529,35 @@ function Install-UvTools {
         [System.Environment]::SetEnvironmentVariable("Path", $env:Path + ";$uvBin", "User")
         $env:Path = $env:Path + ";$uvBin"
     }
+}
+
+function Install-NpmPackages {
+    Write-Host ""
+    Write-Info "Installing npm packages for Neovim..."
+
+    # Check if npm is available
+    if (-not (Test-CommandExists "npm")) {
+        Write-Warn "npm not found. Install Node.js first for Neovim npm provider."
+        return
+    }
+
+    $ErrorActionPreference = "Continue"
+
+    # Install neovim npm package globally
+    $installed = npm list -g neovim 2>&1 | Out-String
+    if ($installed -match "neovim@") {
+        Write-Info "neovim npm package already installed"
+    } else {
+        Write-Info "Installing neovim npm package..."
+        npm install -g neovim 2>&1 | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+            Write-Success "neovim npm package installed"
+        } else {
+            Write-Warn "Failed to install neovim npm package"
+        }
+    }
+
+    $ErrorActionPreference = "Stop"
 }
 
 function Install-PowerShellProfile {
@@ -584,9 +653,13 @@ function Show-Summary {
     Write-Host ""
     Write-Host "  Python (via uv):" -ForegroundColor Gray
     Write-Host "    Python 3.12 (managed by uv, not system)" -ForegroundColor White
+    Write-Host "    %LOCALAPPDATA%\nvim-python (dedicated Neovim provider venv)" -ForegroundColor White
     Write-Host ""
     Write-Host "  Python tools (via uv):" -ForegroundColor Gray
     Write-Host "    ty, ruff, debugpy" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  Node.js packages:" -ForegroundColor Gray
+    Write-Host "    neovim (Neovim Node provider)" -ForegroundColor White
     Write-Host ""
     Write-Host "  Configs linked to:" -ForegroundColor Gray
     Write-Host "    %LOCALAPPDATA%\nvim   ~/.vimrc   ~/.ideavimrc" -ForegroundColor White
@@ -597,8 +670,11 @@ function Show-Summary {
     Write-Host ""
     Write-Host "  NEXT STEPS:" -ForegroundColor Yellow
     Write-Host "    1. CLOSE and REOPEN your terminal (required for PATH)" -ForegroundColor White
-    Write-Host "    2. Open nvim and run :Lazy sync to install plugins" -ForegroundColor White
-    Write-Host "    3. Run :checkhealth to verify setup" -ForegroundColor White
+    Write-Host "    2. Set terminal font to 'JetBrainsMono Nerd Font' in settings" -ForegroundColor White
+    Write-Host "       - Windows Terminal: Settings > Profiles > Defaults > Appearance > Font" -ForegroundColor Gray
+    Write-Host "       - VS Code: Settings > Terminal > Integrated > Font Family" -ForegroundColor Gray
+    Write-Host "    3. Open nvim and run :Lazy sync to install plugins" -ForegroundColor White
+    Write-Host "    4. Run :checkhealth to verify setup" -ForegroundColor White
     Write-Host ""
 }
 
@@ -638,7 +714,10 @@ function Main {
     # Step 6: Install uv tools (ty, ruff)
     Install-UvTools
 
-    # Step 7: Set up PowerShell profile
+    # Step 7: Install npm packages (neovim provider)
+    Install-NpmPackages
+
+    # Step 8: Set up PowerShell profile
     Install-PowerShellProfile
 
     # Done
