@@ -9,3 +9,8 @@ depth = 1
 [[search_dirs]]
 path = "~"
 depth = 1
+
+# Network drive notes (only appears when mounted)
+[[search_dirs]]
+path = "/mnt/mbospace/foconnell/notes"
+depth = 1
