@@ -83,6 +83,26 @@ J                   Join lines (cursor stays)
 ,B                  Conditional breakpoint
 ,r                  Toggle DAP UI
 
+── Obsidian ────────────────────────────────────────
+<leader>oo          Open note (quick switch)
+<leader>of          Find in notes (grep)
+<leader>ob          Backlinks to current note
+<leader>ol          Links in current note
+<leader>ot          Browse tags
+<leader>on          New note
+<leader>od          Daily note (today)
+<leader>oy          Yesterday's daily note
+<leader>om          Tomorrow's daily note
+<leader>oc          Table of contents
+<leader>or          Rename note
+<leader>oi          Paste image
+<leader>op          Insert template
+<leader>ox          Toggle checkbox
+<leader>oO          Open in Obsidian app
+gf                  Follow link (markdown)
+<leader>ol (visual) Create link from selection
+<leader>oe (visual) Extract selection to note
+
 ── Misc ────────────────────────────────────────────
 kj (insert)         Escape
 Ctrl+f              Tmux sessionizer
