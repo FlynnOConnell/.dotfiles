@@ -112,3 +112,8 @@ alias kstate='powershell.exe -Command "komorebic.exe state"'
 
 # Reload komorebi config
 alias kreload='powershell.exe -Command "komorebic.exe reload-configuration"'
+
+# - Network Drives (MBO) --------
+alias mnt='sudo mount /mnt/s1_data && sudo mount /mnt/mbospace && echo "Mounted s1_data and mbospace"'
+alias umnt='sudo umount /mnt/s1_data 2>/dev/null; sudo umount /mnt/mbospace 2>/dev/null; echo "Unmounted drives"'
+alias mntstatus='echo "" && echo "  Network Drive Status" && echo "  =====================" && for d in s1_data mbospace; do mountpoint -q /mnt/$d && echo -e "  \033[32m●\033[0m /mnt/$d (mounted)" || echo -e "  \033[31m○\033[0m /mnt/$d (not mounted)"; done && echo ""'
