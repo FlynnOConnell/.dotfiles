@@ -121,5 +121,5 @@ alias mntstatus='echo "" && echo "  Network Drive Status" && echo "  ===========
 
 # Server notes (auto-mounts if needed)
 alias on='mnt && nvim /mnt/mbospace/foconnell/docs/notes'
-alias qn='mnt && nvim -c "Obsidian today" /mnt/mbospace/foconnell/docs/notes'
+alias qn='mnt && nvim -c "Obsidian today"'
 alias cdnotes='mnt && cd /mnt/mbospace/foconnell/docs/notes'
