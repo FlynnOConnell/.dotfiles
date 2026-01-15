@@ -227,3 +227,17 @@ keybinding:
     init: 'i'
     update: 'u'
     bulkMenu: 'b'
+customCommands:
+  - key: 'S'
+    context: 'files'
+    description: 'Commit & push all submodules'
+    command: |
+      for dir in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }'); do
+        if [ -d "$dir" ] && [ -n "$(git -C $dir status --porcelain)" ]; then
+          git -C "$dir" add -A && git -C "$dir" commit -m "auto-commit" && git -C "$dir" push
+        elif [ -d "$dir" ] && [ -n "$(git -C $dir log @{u}.. 2>/dev/null)" ]; then
+          git -C "$dir" push
+        fi
+      done
+      git add -A
+    loadingText: 'Syncing submodules...'
