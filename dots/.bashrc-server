@@ -1,0 +1,74 @@
+#!/bin/bash
+# server bashrc - minimal, portable shell configuration
+
+# if not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
+# history settings
+HISTCONTROL=ignoreboth
+HISTSIZE=10000
+HISTFILESIZE=20000
+shopt -s histappend
+
+# check window size after each command
+shopt -s checkwinsize
+
+# make less more friendly for non-text input files
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# enable color support
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
+
+# path setup
+export PATH="$HOME/.local/bin:$PATH"
+
+# default editor
+export EDITOR=nvim
+export VISUAL=nvim
+
+# fzf configuration
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+if command -v fd &>/dev/null; then
+    export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+elif command -v rg &>/dev/null; then
+    export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git"'
+fi
+
+# neovim python provider (if using uv-managed venv)
+if [ -d "$HOME/.local/share/nvim-python" ]; then
+    export PYTHON3_HOST_PROG="$HOME/.local/share/nvim-python/bin/python"
+fi
+
+# source server aliases
+if [ -f ~/.aliases-server ]; then
+    source ~/.aliases-server
+elif [ -f ~/.aliases ]; then
+    source ~/.aliases
+fi
+
+# zoxide (smarter cd)
+if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init bash)"
+fi
+
+# starship prompt
+if command -v starship &>/dev/null; then
+    eval "$(starship init bash)"
+else
+    # fallback prompt with git branch
+    parse_git_branch() {
+        git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+    }
+    export PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[33m\]$(parse_git_branch)\[\033[00m\]\$ '
+fi
+
+# fzf keybindings (if installed via git)
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# local customizations (machine-specific, not tracked)
+[ -f ~/.bashrc.local ] && source ~/.bashrc.local

@@ -1,0 +1,116 @@
+#!/bin/bash
+# server aliases - cross-platform, no GUI/Windows dependencies
+
+# navigation
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias ~="cd ~"
+alias cdr="cd ~/repos"
+
+# listing (use eza if available)
+if command -v eza &>/dev/null; then
+    alias ls='eza'
+    alias ll='eza -l --icons --group-directories-first'
+    alias la='eza -la --icons --group-directories-first'
+    alias lsa='eza -la --icons --group-directories-first'
+    alias lt='eza --tree --level=2 --icons'
+else
+    alias ll='ls -lh'
+    alias la='ls -lah'
+    alias lsa='ls -lah'
+fi
+
+# nvim
+alias vim='nvim'
+alias vi='nvim'
+alias v='nvim'
+alias n="nvim -c 'Telescope oldfiles'"
+
+# quick config edits
+alias goa="nvim ~/.aliases"
+alias gol="nvim ~/.config/lazygit/config.yml"
+alias goz="nvim ~/.zshrc"
+alias gob="nvim ~/.bashrc"
+alias gov="nvim ~/.vimrc"
+alias gon="nvim ~/.config/nvim/"
+alias got="nvim ~/.config/tmux/tmux.conf"
+
+# source configs
+alias sz="source ~/.zshrc"
+alias sb="source ~/.bashrc"
+alias st="tmux source ~/.config/tmux/tmux.conf"
+
+# git
+alias gs="git status"
+alias ga="git add"
+alias gb="git branch"
+alias gc="git commit"
+alias gd="git diff"
+alias gp="git push"
+alias gl="git pull"
+alias gco="git checkout"
+alias glog="git log --oneline --graph --decorate -20"
+alias lg="lazygit"
+
+# tools
+alias hf="history | fzf -e"
+alias path='tr ":" "\n" <<< "$PATH"'
+
+# fzf file picker (opens in editor)
+if command -v fzf &>/dev/null; then
+    if command -v bat &>/dev/null; then
+        alias e='fzf -m --bind ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all --print0 --preview "bat --color=always {}" | xargs -0 -o ${EDITOR:-nvim}'
+    else
+        alias e='fzf -m --bind ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all --print0 | xargs -0 -o ${EDITOR:-nvim}'
+    fi
+fi
+
+# cat with syntax highlighting (if bat available)
+if command -v bat &>/dev/null; then
+    alias cat='bat --paging=never'
+    alias catp='bat'
+fi
+
+# find with fd (if available)
+if command -v fd &>/dev/null; then
+    alias find='fd'
+fi
+
+# grep with ripgrep (if available)
+if command -v rg &>/dev/null; then
+    alias grep='rg'
+fi
+
+# python
+alias py='python3'
+alias pip='pip3'
+
+# safer defaults
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# disk usage
+alias df='df -h'
+alias du='du -h'
+alias duh='du -h --max-depth=1 | sort -h'
+
+# process management
+alias psg='ps aux | grep -v grep | grep'
+alias topc='top -o %CPU'
+alias topm='top -o %MEM'
+
+# network
+alias ports='netstat -tulanp 2>/dev/null || ss -tulanp'
+
+# quick server info
+alias meminfo='free -h'
+alias cpuinfo='lscpu | head -20'
+alias diskinfo='df -h | grep -E "^/dev|Filesystem"'
+
+# tmux
+alias t='tmux'
+alias ta='tmux attach -t'
+alias tls='tmux list-sessions'
+alias tn='tmux new-session -s'

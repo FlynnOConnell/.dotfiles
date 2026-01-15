@@ -1,0 +1,73 @@
+# server dotfiles configuration
+# minimal configs for headless linux servers (no GUI tools)
+# run with: dotbot -d . -c install-server.conf.yaml
+
+- defaults:
+    link:
+      relink: true
+      force: true
+      create: true
+
+- clean:
+    ~/.config:
+      recursive: true
+
+- shell:
+  -
+    command: git submodule update --init --recursive
+    description: installing submodules
+    stdout: false
+    stderr: false
+
+- link:
+    # shell configuration (server-specific, no Windows/GUI deps)
+    ~/.bashrc:
+      path: dots/.bashrc-server
+    ~/.aliases:
+      path: dots/.aliases-server
+    ~/.zshrc:
+      path: dots/.zshrc
+      if: '[ "$SHELL" = "/bin/zsh" ] || [ "$SHELL" = "/usr/bin/zsh" ]'
+    ~/.zshenv:
+      path: dots/.zshenv
+      if: '[ "$SHELL" = "/bin/zsh" ] || [ "$SHELL" = "/usr/bin/zsh" ]'
+
+    # neovim configuration
+    ~/.config/nvim:
+      path: kickstart.nvim
+
+    # vim configurations
+    ~/.vimrc:
+      path: dots/.config/vim/.vimrc
+    ~/.ideavimrc:
+      path: dots/.ideavimrc
+
+    # development tools
+    ~/.config/lazygit:
+      path: dots/.config/lazygit
+    ~/.config/github-copilot:
+      path: dots/.config/github-copilot
+
+    # system monitoring
+    ~/.config/btop:
+      path: dots/.config/btop
+    ~/.config/htop:
+      path: dots/.config/htop
+
+    # terminal multiplexer
+    ~/.config/tmux:
+      path: dots/.config/tmux
+    ~/.config/tms:
+      path: dots/.config/tms
+
+    # editors
+    ~/.config/micro:
+      path: dots/.config/micro
+
+    # reference
+    ~/.config/cheatsheets:
+      path: dots/.config/cheatsheets
+
+    # shell prompt
+    ~/.config/starship.toml:
+      path: dots/.config/starship/starship.toml
