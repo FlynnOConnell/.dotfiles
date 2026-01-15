@@ -130,8 +130,22 @@ function gw {
   local file="$vault/weekly/$(date +%Y-W%V).md"
   mkdir -p "$vault/weekly"
   if [[ ! -f "$file" ]]; then
+    # Calculate Monday and Friday of current week
+    local dow=$(date +%u)  # 1=Mon, 7=Sun
+    local mon=$(date -d "today - $((dow - 1)) days" +%s)
+    local fri=$(date -d "@$mon + 4 days" +%s)
+    local mon_month=$(date -d "@$mon" +%B)
+    local fri_month=$(date -d "@$fri" +%B)
+    local mon_day=$(date -d "@$mon" +%-d)
+    local fri_day=$(date -d "@$fri" +%-d)
+    local year=$(date -d "@$fri" +%Y)
+    if [[ "$mon_month" == "$fri_month" ]]; then
+      local week_range="$mon_month $mon_day-$fri_day, $year"
+    else
+      week_range="$mon_month $mon_day – $fri_month $fri_day, $year"
+    fi
     sed -e "s/{{date}}/$(date +%Y-%m-%d)/g" \
-        -e "s/{{date_long}}/$(date '+%A, %B %d, %Y')/g" \
+        -e "s/{{week_range}}/$week_range/g" \
         "$vault/templates/weekly.md" > "$file"
   fi
   nvim "$file"
