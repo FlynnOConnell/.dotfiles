@@ -119,8 +119,20 @@ alias mnt='mountpoint -q /mnt/s1_data || sudo mount /mnt/s1_data; mountpoint -q 
 alias umnt='sudo umount /mnt/s1_data 2>/dev/null; sudo umount /mnt/mbospace 2>/dev/null; echo "Unmounted drives"'
 alias mntstatus='echo "" && echo "  Network Drive Status" && echo "  =====================" && for d in s1_data mbospace; do mountpoint -q /mnt/$d && echo -e "  \033[32m●\033[0m /mnt/$d (mounted)" || echo -e "  \033[31m○\033[0m /mnt/$d (not mounted)"; done && echo ""'
 
-# Notes (~/repos/docs/notes)
+# Notes (vault: ~/repos/docs)
 alias gn='nvim ~/repos/docs/notes'
-alias gd='nvim ~/repos/docs/notes/daily/$(date +%Y-%m-%d).md'
-alias gw='nvim ~/repos/docs/notes/weekly/$(date +%Y-W%V).md'
+alias gd='nvim ~/repos/docs/daily/$(date +%Y-%m-%d).md'
 alias cdnotes='cd ~/repos/docs/notes'
+
+# Weekly note with template
+function gw {
+  local vault=~/repos/docs
+  local file="$vault/weekly/$(date +%Y-W%V).md"
+  mkdir -p "$vault/weekly"
+  if [[ ! -f "$file" ]]; then
+    sed -e "s/{{date}}/$(date +%Y-%m-%d)/g" \
+        -e "s/{{date_long}}/$(date '+%A, %B %d, %Y')/g" \
+        "$vault/templates/weekly.md" > "$file"
+  fi
+  nvim "$file"
+}

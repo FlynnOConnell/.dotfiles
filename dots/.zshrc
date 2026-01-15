@@ -174,5 +174,3 @@ export PATH=/home/flynn/.pixi/bin:$PATH
 eval "$(pixi completion --shell zsh)"
 
 alias -g winhome="/mnt/c/Users/flynn"
-
-source "$HOME/.aliases"
