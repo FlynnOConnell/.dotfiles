@@ -75,13 +75,22 @@ function daily {
     $date = Get-Date -Format "yyyy-MM-dd"
     $file = "$NotesVault\daily\$date.md"
     if (!(Test-Path "$NotesVault\daily")) { New-Item -ItemType Directory -Path "$NotesVault\daily" -Force | Out-Null }
+
+    if (!(Test-Path $file)) {
+        $templatePath = "$NotesVault\templates\daily.md"
+        if (Test-Path $templatePath) {
+            $content = Get-Content $templatePath -Raw
+            $content = $content -replace '\{\{date\}\}', $date
+            Set-Content -Path $file -Value $content -NoNewline
+        }
+    }
     nvim $file
 }
 
 function weekly {
-    $weekNum = Get-Date -UFormat "%V"
+    $weekNum = [int](Get-Date -UFormat "%V")
     $year = Get-Date -Format "yyyy"
-    $file = "$NotesVault\weekly\$year-W$weekNum.md"
+    $file = "$NotesVault\weekly\$year-W$($weekNum.ToString('00')).md"
 
     if (!(Test-Path "$NotesVault\weekly")) { New-Item -ItemType Directory -Path "$NotesVault\weekly" -Force | Out-Null }
 
@@ -94,18 +103,24 @@ function weekly {
             $monday = $today.AddDays(-($dayOfWeek - 1))
             $friday = $monday.AddDays(4)
 
-            $monMonth = $monday.ToString("MMMM")
-            $friMonth = $friday.ToString("MMMM")
-            if ($monMonth -eq $friMonth) {
-                $weekRange = "$monMonth $($monday.Day)-$($friday.Day), $($friday.Year)"
-            } else {
-                $weekRange = "$monMonth $($monday.Day) - $friMonth $($friday.Day), $($friday.Year)"
-            }
+            $dateShort = Get-Date -Format "yyyy-MM-dd"
+            $monDate = $monday.ToString("MMMM dd")
+            $friDate = $friday.ToString("MMMM dd, yyyy")
+            $prevWeek = "$year-W$(($weekNum - 1).ToString('00'))"
+            $nextWeek = "$year-W$(($weekNum + 1).ToString('00'))"
 
             $content = Get-Content $templatePath -Raw
-            $content = $content -replace '\{\{date\}\}', (Get-Date -Format "yyyy-MM-dd")
-            $content = $content -replace '\{\{week_range\}\}', $weekRange
-            Set-Content -Path $file -Value $content
+            # Templater syntax
+            $content = $content -replace '<%\s*tp\.date\.now\("YYYY-MM-DD"\)\s*%>', $dateShort
+            $content = $content -replace '<%\s*tp\.date\.now\("MMMM DD"\)\s*%>', $monDate
+            $content = $content -replace '<%\s*tp\.date\.now\("MMMM DD, YYYY", 6\)\s*%>', $friDate
+            $content = $content -replace '<%\s*tp\.date\.now\("YYYY-\[W\]WW", -7\)\s*%>', $prevWeek
+            $content = $content -replace '<%\s*tp\.date\.now\("YYYY-\[W\]WW", 7\)\s*%>', $nextWeek
+            # Obsidian syntax
+            $content = $content -replace '\{\{date\}\}', $dateShort
+            $content = $content -replace '\{\{week_range\}\}', "$monDate - $friDate"
+
+            Set-Content -Path $file -Value $content -NoNewline
         }
     }
     nvim $file
