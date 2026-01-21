@@ -4,11 +4,19 @@
       relink: true
       force: true
 
-- clean: ['~']
 - clean:
     ~/:
+      exclude:
+        - .config/
     ~/.config:
       recursive: true
+      exclude:
+        - Slack/
+        - teams-for-linux/
+        - Code/
+        - google-chrome/
+        - chromium/
+        - discord/
 - link:
     ~/.config/nvim:
       path: kickstart.nvim
