@@ -71,7 +71,8 @@ function glog { git log --oneline --graph --decorate -20 @args }
 # === Notes functions ===
 $NotesVault = "$HOME\repos\docs"
 
-function daily {
+# od - open daily note with template
+function od {
     $date = Get-Date -Format "yyyy-MM-dd"
     $file = "$NotesVault\daily\$date.md"
     if (!(Test-Path "$NotesVault\daily")) { New-Item -ItemType Directory -Path "$NotesVault\daily" -Force | Out-Null }
@@ -87,7 +88,8 @@ function daily {
     nvim $file
 }
 
-function weekly {
+# ow - open weekly note with template
+function ow {
     $weekNum = [int](Get-Date -UFormat "%V")
     $year = Get-Date -Format "yyyy"
     $file = "$NotesVault\weekly\$year-W$($weekNum.ToString('00')).md"
@@ -126,16 +128,14 @@ function weekly {
     nvim $file
 }
 
-function notes {
-    $notesDir = "$NotesVault\notes"
-    if (!(Test-Path $notesDir)) { Write-Host "Notes not found: $notesDir" -ForegroundColor Red; return }
-
+# on - open notes (fzf browser)
+function on {
     if (Get-Command fzf -ErrorAction SilentlyContinue) {
         $files = Get-ChildItem -Path $NotesVault -Recurse -Filter "*.md" | Select-Object -ExpandProperty FullName
         $selected = $files | ForEach-Object { $_.Replace("$NotesVault\", "") } | fzf --prompt="Note: " --height=40% --reverse
         if ($selected) { nvim "$NotesVault\$selected" }
     } else {
-        nvim $notesDir
+        nvim "$NotesVault\notes"
     }
 }
 
@@ -167,8 +167,8 @@ if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
     Write-Host "    ls           list files                lsv         detailed list" -ForegroundColor Gray
     Write-Host "    lt           tree view                 la          list all (hidden)" -ForegroundColor Gray
     Write-Host "    cd <name>    smart jump (zoxide)       cd -        go back" -ForegroundColor Gray
-    Write-Host "    daily        open daily note           weekly      open weekly note" -ForegroundColor Gray
-    Write-Host "    notes        browse notes (fzf)        lg          lazygit" -ForegroundColor Gray
+    Write-Host "    od           open daily note           ow          open weekly note" -ForegroundColor Gray
+    Write-Host "    on           browse notes (fzf)        lg          lazygit" -ForegroundColor Gray
     Write-Host "    nvim-keys    show nvim keybindings" -ForegroundColor Gray
     Write-Host ""
 }

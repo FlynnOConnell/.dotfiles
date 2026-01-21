@@ -120,11 +120,21 @@ alias umnt='sudo umount /mnt/s1_data 2>/dev/null; sudo umount /mnt/mbospace 2>/d
 alias mntstatus='echo "" && echo "  Network Drive Status" && echo "  =====================" && for d in s1_data mbospace; do mountpoint -q /mnt/$d && echo -e "  \033[32m●\033[0m /mnt/$d (mounted)" || echo -e "  \033[31m○\033[0m /mnt/$d (not mounted)"; done && echo ""'
 
 # Notes (vault: ~/repos/docs)
-alias gn='nvim ~/repos/docs/notes'
 alias cdnotes='cd ~/repos/docs/notes'
 
-# Daily note with template
-function gd {
+# on - open notes (fzf browser)
+function on {
+  local vault=~/repos/docs
+  if command -v fzf &>/dev/null; then
+    local selected=$(find "$vault" -name "*.md" -type f | sed "s|$vault/||" | fzf --prompt="Note: " --height=40% --reverse)
+    [[ -n "$selected" ]] && nvim "$vault/$selected"
+  else
+    nvim "$vault/notes"
+  fi
+}
+
+# od - open daily note with template
+function od {
   local vault=~/repos/docs
   local today=$(date +%Y-%m-%d)
   local file="$vault/daily/$today.md"
@@ -138,8 +148,8 @@ function gd {
   nvim "$file"
 }
 
-# Weekly note with template
-function gw {
+# ow - open weekly note with template
+function ow {
   local vault=~/repos/docs
   local week_num=$(date +%V)
   local year=$(date +%Y)
