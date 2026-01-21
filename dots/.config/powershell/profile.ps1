@@ -1,180 +1,159 @@
-# PowerShell Profile - Notes functions
-# Symlink to: $HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
+# MBO PowerShell Profile
 
+# === Path ===
+$env:Path = "$env:USERPROFILE\.local\bin;$env:Path"
+
+# === Network drives (RBO-S1) ===
+if (!(Test-Path Y:)) {
+    net use Y: \\RBO-S1\mbospace /user:foconnell "foconnell@RU2$" /persistent:yes 2>$null
+}
+
+# === PSReadLine ===
+if (Get-Module -ListAvailable -Name PSReadLine) {
+    Import-Module PSReadLine
+    Set-PSReadLineOption -EditMode Windows
+    Set-PSReadLineOption -PredictionSource History
+    Set-PSReadLineOption -PredictionViewStyle ListView
+    Set-PSReadLineOption -HistorySearchCursorMovesToEnd
+    Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+    Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+    Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
+}
+
+# === Aliases ===
+Set-Alias -Name lg -Value lazygit -ErrorAction SilentlyContinue
+Set-Alias -Name vim -Value nvim -ErrorAction SilentlyContinue
+Set-Alias -Name vi -Value nvim -ErrorAction SilentlyContinue
+Set-Alias -Name g -Value git -ErrorAction SilentlyContinue
+
+# === ls -> eza ===
+Remove-Item Alias:ls -Force -ErrorAction SilentlyContinue
+function ls { eza -l --icons --group-directories-first --no-permissions --no-time --no-user @args }
+function lsv { eza -l --icons --group-directories-first @args }
+function la { eza -la --icons --group-directories-first --no-permissions --no-time --no-user @args }
+function lt { eza -T --icons --group-directories-first @args }
+function ll { eza -l --icons --group-directories-first @args }
+
+# === cat -> bat ===
+Remove-Item Alias:cat -Force -ErrorAction SilentlyContinue
+function cat { bat --paging=never @args }
+
+# === rm (unix-style) ===
+Remove-Item Alias:rm -ErrorAction SilentlyContinue
+function rm {
+    param(
+        [switch]$r, [switch]$f, [switch]$rf,
+        [Parameter(ValueFromRemainingArguments)][string[]]$paths
+    )
+    $recurse = $r -or $rf
+    $force = $f -or $rf
+    foreach ($path in $paths) {
+        Remove-Item $path -Recurse:$recurse -Force:$force -ErrorAction $(if($force){'SilentlyContinue'}else{'Stop'})
+    }
+}
+
+# === Navigation ===
+function .. { Set-Location .. }
+function ... { Set-Location ..\.. }
+function .... { Set-Location ..\..\.. }
+
+# === Git shortcuts ===
+function gs { git status @args }
+function ga { git add @args }
+function gc { git commit @args }
+function gp { git push @args }
+function gl { git pull @args }
+function gd { git diff @args }
+function gco { git checkout @args }
+function gb { git branch @args }
+function glog { git log --oneline --graph --decorate -20 @args }
+
+# === Notes functions ===
 $NotesVault = "$HOME\repos\docs"
 
-# gd - Go to daily note
-function gd {
+function daily {
     $date = Get-Date -Format "yyyy-MM-dd"
-    $dailyDir = "$NotesVault\daily"
-    $file = "$dailyDir\$date.md"
-
-    if (-not (Test-Path $dailyDir)) {
-        New-Item -ItemType Directory -Path $dailyDir -Force | Out-Null
-    }
-
+    $file = "$NotesVault\daily\$date.md"
+    if (!(Test-Path "$NotesVault\daily")) { New-Item -ItemType Directory -Path "$NotesVault\daily" -Force | Out-Null }
     nvim $file
 }
 
-# gw - Go to weekly note (with template)
-function gw {
+function weekly {
     $weekNum = Get-Date -UFormat "%V"
     $year = Get-Date -Format "yyyy"
-    $weeklyDir = "$NotesVault\weekly"
-    $file = "$weeklyDir\$year-W$weekNum.md"
+    $file = "$NotesVault\weekly\$year-W$weekNum.md"
 
-    if (-not (Test-Path $weeklyDir)) {
-        New-Item -ItemType Directory -Path $weeklyDir -Force | Out-Null
-    }
+    if (!(Test-Path "$NotesVault\weekly")) { New-Item -ItemType Directory -Path "$NotesVault\weekly" -Force | Out-Null }
 
-    # Create from template if doesn't exist
-    if (-not (Test-Path $file)) {
+    if (!(Test-Path $file)) {
         $templatePath = "$NotesVault\templates\weekly.md"
-
         if (Test-Path $templatePath) {
-            # Calculate Monday-Friday range
             $today = Get-Date
             $dayOfWeek = [int]$today.DayOfWeek
-            if ($dayOfWeek -eq 0) { $dayOfWeek = 7 }  # Sunday = 7
+            if ($dayOfWeek -eq 0) { $dayOfWeek = 7 }
             $monday = $today.AddDays(-($dayOfWeek - 1))
             $friday = $monday.AddDays(4)
 
             $monMonth = $monday.ToString("MMMM")
             $friMonth = $friday.ToString("MMMM")
-            $monDay = $monday.Day
-            $friDay = $friday.Day
-            $friYear = $friday.Year
-
             if ($monMonth -eq $friMonth) {
-                $weekRange = "$monMonth $monDay-$friDay, $friYear"
+                $weekRange = "$monMonth $($monday.Day)-$($friday.Day), $($friday.Year)"
             } else {
-                $weekRange = "$monMonth $monDay - $friMonth $friDay, $friYear"
+                $weekRange = "$monMonth $($monday.Day) - $friMonth $($friday.Day), $($friday.Year)"
             }
 
-            $dateShort = Get-Date -Format "yyyy-MM-dd"
-
             $content = Get-Content $templatePath -Raw
-            $content = $content -replace '\{\{date\}\}', $dateShort
+            $content = $content -replace '\{\{date\}\}', (Get-Date -Format "yyyy-MM-dd")
             $content = $content -replace '\{\{week_range\}\}', $weekRange
-            # Handle Templater syntax for basic dates
-            $content = $content -replace '<% tp\.date\.now\("YYYY-MM-DD"\) %>', $dateShort
-            $content = $content -replace '<% tp\.date\.now\("MMMM DD"\) %>', $monday.ToString("MMMM dd")
-            $content = $content -replace '<% tp\.date\.now\("MMMM DD, YYYY", 6\) %>', $friday.ToString("MMMM dd, yyyy")
-            $content = $content -replace '<% tp\.date\.now\("YYYY-\[W\]WW", -7\) %>', "$year-W$([int]$weekNum - 1)"
-            $content = $content -replace '<% tp\.date\.now\("YYYY-\[W\]WW", 7\) %>', "$year-W$([int]$weekNum + 1)"
-
             Set-Content -Path $file -Value $content
         }
     }
-
     nvim $file
 }
 
-# gn - Go to notes with interactive selection
-function gn {
+function notes {
     $notesDir = "$NotesVault\notes"
+    if (!(Test-Path $notesDir)) { Write-Host "Notes not found: $notesDir" -ForegroundColor Red; return }
 
-    if (-not (Test-Path $notesDir)) {
-        Write-Host "Notes directory not found: $notesDir" -ForegroundColor Red
-        return
-    }
-
-    # Check if fzf is available
-    $hasFzf = Get-Command fzf -ErrorAction SilentlyContinue
-
-    if ($hasFzf) {
-        # Use fzf for selection
-        $folders = @("[New Note]") + (Get-ChildItem -Path $notesDir -Directory | Select-Object -ExpandProperty Name)
-        $selectedFolder = $folders | fzf --prompt="Select folder: " --height=40% --reverse
-
-        if (-not $selectedFolder) { return }
-
-        if ($selectedFolder -eq "[New Note]") {
-            $noteName = Read-Host "Enter note name"
-            if ($noteName) {
-                $file = "$notesDir\$noteName.md"
-                nvim $file
-            }
-            return
-        }
-
-        $folderPath = "$notesDir\$selectedFolder"
-        $notes = @("[New Note]", "[Back]") + (Get-ChildItem -Path $folderPath -Filter "*.md" | Select-Object -ExpandProperty Name)
-        $selectedNote = $notes | fzf --prompt="Select note in $selectedFolder : " --height=40% --reverse
-
-        if (-not $selectedNote -or $selectedNote -eq "[Back]") {
-            gn  # Recursive call to go back
-            return
-        }
-
-        if ($selectedNote -eq "[New Note]") {
-            $noteName = Read-Host "Enter note name"
-            if ($noteName) {
-                if (-not $noteName.EndsWith(".md")) { $noteName += ".md" }
-                $file = "$folderPath\$noteName"
-                nvim $file
-            }
-            return
-        }
-
-        nvim "$folderPath\$selectedNote"
-    }
-    else {
-        # Fallback: simple menu without fzf
-        Write-Host "`nFolders in notes:" -ForegroundColor Cyan
-        $folders = Get-ChildItem -Path $notesDir -Directory
-        $i = 1
-        Write-Host "  0. [New Note in root]" -ForegroundColor Yellow
-        foreach ($folder in $folders) {
-            Write-Host "  $i. $($folder.Name)"
-            $i++
-        }
-
-        $choice = Read-Host "`nSelect folder number"
-
-        if ($choice -eq "0") {
-            $noteName = Read-Host "Enter note name"
-            if ($noteName) {
-                nvim "$notesDir\$noteName.md"
-            }
-            return
-        }
-
-        $selectedFolder = $folders[$choice - 1]
-        if (-not $selectedFolder) {
-            Write-Host "Invalid selection" -ForegroundColor Red
-            return
-        }
-
-        Write-Host "`nNotes in $($selectedFolder.Name):" -ForegroundColor Cyan
-        $notes = Get-ChildItem -Path $selectedFolder.FullName -Filter "*.md"
-        $i = 1
-        Write-Host "  0. [New Note]" -ForegroundColor Yellow
-        foreach ($note in $notes) {
-            Write-Host "  $i. $($note.BaseName)"
-            $i++
-        }
-
-        $noteChoice = Read-Host "`nSelect note number"
-
-        if ($noteChoice -eq "0") {
-            $noteName = Read-Host "Enter note name"
-            if ($noteName) {
-                if (-not $noteName.EndsWith(".md")) { $noteName += ".md" }
-                nvim "$($selectedFolder.FullName)\$noteName"
-            }
-            return
-        }
-
-        $selectedNote = $notes[$noteChoice - 1]
-        if ($selectedNote) {
-            nvim $selectedNote.FullName
-        }
+    if (Get-Command fzf -ErrorAction SilentlyContinue) {
+        $files = Get-ChildItem -Path $NotesVault -Recurse -Filter "*.md" | Select-Object -ExpandProperty FullName
+        $selected = $files | ForEach-Object { $_.Replace("$NotesVault\", "") } | fzf --prompt="Note: " --height=40% --reverse
+        if ($selected) { nvim "$NotesVault\$selected" }
+    } else {
+        nvim $notesDir
     }
 }
 
-# Aliases
-Set-Alias -Name vim -Value nvim -ErrorAction SilentlyContinue
-Set-Alias -Name vi -Value nvim -ErrorAction SilentlyContinue
+# === nvim-keys ===
+function nvim-keys {
+    param([string]$mode = "n", [string]$filter = "")
+    $lua = "for _,map in ipairs(vim.api.nvim_get_keymap('$mode')) do local desc = map.desc or map.rhs or '' if desc then print('$mode | ' .. map.lhs .. ' | ' .. desc) end end"
+    $output = nvim --headless -c "lua $lua" -c "qa!" 2>&1 | ForEach-Object { $_.ToString() } | Where-Object { $_ -match "^\w+ \|" }
+    if ($filter) { $output = $output | Where-Object { $_ -match $filter } }
+    if ($output) { @("MODE | KEY | DESCRIPTION", "---- | --- | -----------") + ($output | Sort-Object) | bat --language=markdown --style=plain }
+    else { Write-Host "No keybindings found for mode '$mode'" -ForegroundColor Yellow }
+}
 
-Write-Host "Notes functions loaded: gd (daily), gw (weekly), gn (notes browser)" -ForegroundColor Green
+# === zoxide (smart cd) ===
+if (Get-Command zoxide -ErrorAction SilentlyContinue) {
+    Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
+}
+
+# === Starship prompt ===
+if (Get-Command starship -ErrorAction SilentlyContinue) {
+    Invoke-Expression (&starship init powershell)
+}
+
+# === Startup: fastfetch + quick reference ===
+if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
+    fastfetch
+    Write-Host ""
+    Write-Host "  quick reference" -ForegroundColor Cyan
+    Write-Host "    ls           list files                lsv         detailed list" -ForegroundColor Gray
+    Write-Host "    lt           tree view                 la          list all (hidden)" -ForegroundColor Gray
+    Write-Host "    cd <name>    smart jump (zoxide)       cd -        go back" -ForegroundColor Gray
+    Write-Host "    daily        open daily note           weekly      open weekly note" -ForegroundColor Gray
+    Write-Host "    notes        browse notes (fzf)        lg          lazygit" -ForegroundColor Gray
+    Write-Host "    nvim-keys    show nvim keybindings" -ForegroundColor Gray
+    Write-Host ""
+}
