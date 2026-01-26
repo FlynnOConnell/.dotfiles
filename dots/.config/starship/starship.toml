@@ -2,6 +2,25 @@
 # Requires a Nerd Font installed and enabled in your terminal
 "$schema" = 'https://starship.rs/config-schema.json'
 
+# Increase timeout for slow commands (uv python can be slow on Windows)
+command_timeout = 1000
+
+[username]
+show_always = true
+format = "[$user]($style) in "
+style_user = "bold yellow"
+style_root = "bold red"
+
+[hostname]
+ssh_only = true
+ssh_symbol = " "
+format = "[$hostname]($style) "
+style = "bold blue"
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+
 [aws]
 symbol = " "
 
@@ -74,6 +93,8 @@ symbol = " "
 
 [git_branch]
 symbol = " "
+format = "on [$symbol$branch]($style) "
+style = "bold purple"
 
 [git_commit]
 tag_symbol = '  '
@@ -95,9 +116,6 @@ symbol = " "
 
 [hg_branch]
 symbol = " "
-
-[hostname]
-ssh_symbol = " "
 
 [java]
 symbol = " "
@@ -200,6 +218,10 @@ symbol = "󰏗 "
 
 [python]
 symbol = " "
+# Only detect python in venv folders (faster - avoids running python --version)
+detect_extensions = []
+detect_files = []
+detect_folders = [".venv", "venv"]
 
 [rlang]
 symbol = "󰟔 "

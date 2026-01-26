@@ -1,9 +1,76 @@
-# Windows Dotfiles Installer
-# Installs configs + optional applications via winget
+# ============================================================================
+# DOTFILES INSTALLER - Windows
+# ============================================================================
 #
 # Usage:
-#   .\install-windows.ps1
-#   iex (irm https://raw.githubusercontent.com/FlynnOConnell/.dotfiles/master/install-windows.ps1)
+#   .\install.ps1
+#   iex (irm https://raw.githubusercontent.com/FlynnOConnell/.dotfiles/master/install.ps1)
+#
+# ============================================================================
+# WHAT THIS INSTALLS
+# ============================================================================
+#
+# CORE (always installed):
+#   - uv              Python package manager (astral.sh)
+#   - Python 3.12     via uv (not system Python)
+#   - dotbot          Symlink manager
+#
+# PYTHON TOOLS (via uv):
+#   - ty              Type checker
+#   - ruff            Linter/formatter
+#   - debugpy         Python debugger for DAP
+#   - pynvim          Neovim Python provider (in dedicated venv)
+#
+# NODE PACKAGES:
+#   - neovim          Neovim Node provider
+#
+# APPS (optional, via winget - user selects):
+#   - neovim          Text editor
+#   - lazygit         Git TUI
+#   - ripgrep         Fast grep (rg)
+#   - fd              Fast find
+#   - fzf             Fuzzy finder
+#   - bat             Cat with syntax highlighting
+#   - delta           Git diff viewer
+#   - eza             Modern ls
+#   - zoxide          Smart cd
+#   - starship        Shell prompt
+#   - btop            System monitor
+#   - fastfetch       System info
+#   - ffmpeg          Media toolkit
+#   - rust            Rust toolchain
+#   - nodejs          JavaScript runtime
+#   - nerd-fonts      JetBrainsMono Nerd Font
+#
+# ============================================================================
+# WHAT THIS CONFIGURES
+# ============================================================================
+#
+# SYMLINKS (via dotbot):
+#   ~/.config/nvim      -> kickstart.nvim (full Neovim config)
+#   ~/.vimrc            -> dots/.config/vim/.vimrc
+#   ~/.ideavimrc        -> dots/.ideavimrc
+#   ~/.bashrc           -> dots/.bashrc
+#   ~/.aliases          -> dots/.aliases
+#   ~/.config/lazygit   -> dots/.config/lazygit
+#   ~/.config/starship.toml -> dots/.config/starship/starship.toml
+#   ~/.config/btop      -> dots/.config/btop
+#   ~/.config/fastfetch -> dots/.config/fastfetch
+#   ~/.config/micro     -> dots/.config/micro
+#
+# POWERSHELL PROFILE ($PROFILE):
+#   - PSReadLine with history search, predictions, tab completion
+#   - Aliases: lg, vim, vi, g, lsa, ll, rm (unix-style)
+#   - Git shortcuts: gs, ga, gc, gp, gl, gd
+#   - Zoxide integration
+#   - Starship prompt
+#
+# WINDOWS TERMINAL:
+#   - Default profile: PowerShell 7 (pwsh.exe)
+#   - Font: JetBrainsMono Nerd Font
+#   - Hidden: Legacy Windows PowerShell 5.1
+#
+# ============================================================================
 
 $ErrorActionPreference = "Stop"
 
@@ -21,7 +88,7 @@ if (-not $DOTFILES_ROOT -or -not (Test-Path $DOTFILES_ROOT)) {
     $DOTFILES_ROOT = Join-Path $env:USERPROFILE ".dotfiles"
 }
 
-if (-not (Test-Path (Join-Path $DOTFILES_ROOT "install-windows.conf.yaml"))) {
+if (-not (Test-Path (Join-Path $DOTFILES_ROOT "install.conf.yaml")) -and -not (Test-Path (Join-Path $DOTFILES_ROOT "install-windows.conf.yaml"))) {
     Write-Host "Cloning dotfiles repository to $DOTFILES_ROOT ..." -ForegroundColor Cyan
     if (Test-Path $DOTFILES_ROOT) {
         Remove-Item -Recurse -Force $DOTFILES_ROOT
