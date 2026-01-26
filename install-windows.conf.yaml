@@ -25,6 +25,10 @@
     ~/.aliases:
       path: dots/.aliases
 
+    # PowerShell profile (pwsh 7)
+    ~/Documents/PowerShell/Microsoft.PowerShell_profile.ps1:
+      path: dots/.config/powershell/profile.ps1
+
     # Neovim configuration (Windows uses $LOCALAPPDATA/nvim)
     ~/AppData/Local/nvim:
       path: kickstart.nvim

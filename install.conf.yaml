@@ -4,11 +4,10 @@
       relink: true
       force: true
 
-- clean: ['~']
 - clean:
     ~/:
-    ~/.config:
-      recursive: true
+      exclude:
+        - .config/
 - link:
     ~/.config/nvim:
       path: kickstart.nvim

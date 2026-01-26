@@ -54,7 +54,6 @@ alias gs="git status"
 alias ga="git add"
 alias gb="git branch"
 alias gc="git commit"
-alias gd="git diff"
 
 # - Tools ---------
 alias hf="history | fzf -e"
@@ -120,33 +119,63 @@ alias umnt='sudo umount /mnt/s1_data 2>/dev/null; sudo umount /mnt/mbospace 2>/d
 alias mntstatus='echo "" && echo "  Network Drive Status" && echo "  =====================" && for d in s1_data mbospace; do mountpoint -q /mnt/$d && echo -e "  \033[32m●\033[0m /mnt/$d (mounted)" || echo -e "  \033[31m○\033[0m /mnt/$d (not mounted)"; done && echo ""'
 
 # Notes (vault: ~/repos/docs)
-alias gn='nvim ~/repos/docs/notes'
-alias gd='nvim ~/repos/docs/daily/$(date +%Y-%m-%d).md'
 alias cdnotes='cd ~/repos/docs/notes'
 
-# Weekly note with template
-function gw {
+# on - open notes (fzf browser)
+function on {
   local vault=~/repos/docs
-  local file="$vault/weekly/$(date +%Y-W%V).md"
+  if command -v fzf &>/dev/null; then
+    local selected=$(find "$vault" -name "*.md" -type f | sed "s|$vault/||" | fzf --prompt="Note: " --height=40% --reverse)
+    [[ -n "$selected" ]] && nvim "$vault/$selected"
+  else
+    nvim "$vault/notes"
+  fi
+}
+
+# od - open daily note with template
+function od {
+  local vault=~/repos/docs
+  local today=$(date +%Y-%m-%d)
+  local file="$vault/daily/$today.md"
+  mkdir -p "$vault/daily"
+  if [[ ! -f "$file" ]]; then
+    local template="$vault/templates/daily.md"
+    if [[ -f "$template" ]]; then
+      sed "s/{{date}}/$today/g" "$template" > "$file"
+    fi
+  fi
+  nvim "$file"
+}
+
+# ow - open weekly note with template
+function ow {
+  local vault=~/repos/docs
+  local week_num=$(date +%V)
+  local year=$(date +%Y)
+  local file="$vault/weekly/$year-W$week_num.md"
   mkdir -p "$vault/weekly"
   if [[ ! -f "$file" ]]; then
-    # Calculate Monday and Friday of current week
-    local dow=$(date +%u)  # 1=Mon, 7=Sun
-    local mon=$(date -d "today - $((dow - 1)) days" +%s)
-    local fri=$(date -d "@$mon + 4 days" +%s)
-    local mon_month=$(date -d "@$mon" +%B)
-    local fri_month=$(date -d "@$fri" +%B)
-    local mon_day=$(date -d "@$mon" +%-d)
-    local fri_day=$(date -d "@$fri" +%-d)
-    local year=$(date -d "@$fri" +%Y)
-    if [[ "$mon_month" == "$fri_month" ]]; then
-      local week_range="$mon_month $mon_day-$fri_day, $year"
-    else
-      week_range="$mon_month $mon_day – $fri_month $fri_day, $year"
+    local template="$vault/templates/weekly.md"
+    if [[ -f "$template" ]]; then
+      local dow=$(date +%u)
+      local mon=$(date -d "today - $((dow - 1)) days" +%s)
+      local fri=$(date -d "@$mon + 4 days" +%s)
+
+      local date_short=$(date +%Y-%m-%d)
+      local mon_date=$(date -d "@$mon" "+%B %d")
+      local fri_date=$(date -d "@$fri" "+%B %d, %Y")
+      local prev_week="$year-W$(printf '%02d' $((10#$week_num - 1)))"
+      local next_week="$year-W$(printf '%02d' $((10#$week_num + 1)))"
+
+      sed -e "s/<% tp\.date\.now(\"YYYY-MM-DD\") %>/$date_short/g" \
+          -e "s/<% tp\.date\.now(\"MMMM DD\") %>/$mon_date/g" \
+          -e "s/<% tp\.date\.now(\"MMMM DD, YYYY\", 6) %>/$fri_date/g" \
+          -e "s/<% tp\.date\.now(\"YYYY-\[W\]WW\", -7) %>/$prev_week/g" \
+          -e "s/<% tp\.date\.now(\"YYYY-\[W\]WW\", 7) %>/$next_week/g" \
+          -e "s/{{date}}/$date_short/g" \
+          -e "s/{{week_range}}/$mon_date - $fri_date/g" \
+          "$template" > "$file"
     fi
-    sed -e "s/{{date}}/$(date +%Y-%m-%d)/g" \
-        -e "s/{{week_range}}/$week_range/g" \
-        "$vault/templates/weekly.md" > "$file"
   fi
   nvim "$file"
 }
