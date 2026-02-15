@@ -121,8 +121,34 @@ alias mntstatus='echo "" && echo "  Network Drive Status" && echo "  ===========
 # Notes (vault: ~/repos/docs)
 alias cdnotes='cd ~/repos/docs/notes'
 
+# gsync - git sync repos (pull, commit, push)
+function gsync {
+  local repos=(~/repos/docs ~/repos/.dotfiles)
+  for repo in "${repos[@]}"; do
+    if [[ -d "$repo/.git" ]]; then
+      local name=$(basename "$repo")
+      echo "syncing $name..."
+      git -C "$repo" pull --rebase --quiet 2>/dev/null
+      git -C "$repo" add -A
+      if ! git -C "$repo" diff --cached --quiet 2>/dev/null; then
+        git -C "$repo" commit -m "sync $(date +%Y-%m-%d)" --quiet
+        git -C "$repo" push --quiet 2>/dev/null
+        echo "  $name: pushed changes"
+      else
+        echo "  $name: up to date"
+      fi
+    fi
+  done
+}
+
+# _notes_pull - pull latest docs before opening
+function _notes_pull {
+  git -C ~/repos/docs pull --rebase --quiet 2>/dev/null
+}
+
 # on - open notes (fzf browser)
 function on {
+  _notes_pull
   local vault=~/repos/docs
   if command -v fzf &>/dev/null; then
     local selected=$(find "$vault" -name "*.md" -type f | sed "s|$vault/||" | fzf --prompt="Note: " --height=40% --reverse)
@@ -134,6 +160,7 @@ function on {
 
 # od - open daily note with template
 function od {
+  _notes_pull
   local vault=~/repos/docs
   local today=$(date +%Y-%m-%d)
   local file="$vault/daily/$today.md"
@@ -149,6 +176,7 @@ function od {
 
 # ow - open weekly note with template
 function ow {
+  _notes_pull
   local vault=~/repos/docs
   local week_num=$(date +%V)
   local year=$(date +%Y)
