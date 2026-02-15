@@ -71,8 +71,33 @@ function glog { git log --oneline --graph --decorate -20 @args }
 # === Notes functions ===
 $NotesVault = "$HOME\repos\docs"
 
+# gsync - git sync repos (pull, commit, push)
+function gsync {
+    $repos = @("$HOME\repos\docs", "$HOME\repos\.dotfiles")
+    foreach ($repo in $repos) {
+        if (Test-Path "$repo\.git") {
+            $name = Split-Path $repo -Leaf
+            Write-Host "syncing $name..."
+            git -C $repo pull --rebase --quiet 2>$null
+            git -C $repo add -A
+            $hasChanges = git -C $repo diff --cached --quiet 2>$null; $LASTEXITCODE -ne 0
+            if ($hasChanges) {
+                $d = Get-Date -Format "yyyy-MM-dd"
+                git -C $repo commit -m "sync $d" --quiet
+                git -C $repo push --quiet 2>$null
+                Write-Host "  ${name}: pushed changes"
+            } else {
+                Write-Host "  ${name}: up to date"
+            }
+        }
+    }
+}
+
+function _notesPull { git -C $NotesVault pull --rebase --quiet 2>$null }
+
 # od - open daily note with template
 function od {
+    _notesPull
     $date = Get-Date -Format "yyyy-MM-dd"
     $file = "$NotesVault\daily\$date.md"
     if (!(Test-Path "$NotesVault\daily")) { New-Item -ItemType Directory -Path "$NotesVault\daily" -Force | Out-Null }
@@ -90,6 +115,7 @@ function od {
 
 # ow - open weekly note with template
 function ow {
+    _notesPull
     $weekNum = [int](Get-Date -UFormat "%V")
     $year = Get-Date -Format "yyyy"
     $file = "$NotesVault\weekly\$year-W$($weekNum.ToString('00')).md"
@@ -130,6 +156,7 @@ function ow {
 
 # on - open notes (fzf browser)
 function on {
+    _notesPull
     if (Get-Command fzf -ErrorAction SilentlyContinue) {
         $files = Get-ChildItem -Path $NotesVault -Recurse -Filter "*.md" | Select-Object -ExpandProperty FullName
         $selected = $files | ForEach-Object { $_.Replace("$NotesVault\", "") } | fzf --prompt="Note: " --height=40% --reverse
@@ -169,6 +196,6 @@ if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
     Write-Host "    cd <name>    smart jump (zoxide)       cd -        go back" -ForegroundColor Gray
     Write-Host "    od           open daily note           ow          open weekly note" -ForegroundColor Gray
     Write-Host "    on           browse notes (fzf)        lg          lazygit" -ForegroundColor Gray
-    Write-Host "    nvim-keys    show nvim keybindings" -ForegroundColor Gray
+    Write-Host "    gsync        sync docs + dotfiles      nvim-keys   show nvim keybindings" -ForegroundColor Gray
     Write-Host ""
 }
