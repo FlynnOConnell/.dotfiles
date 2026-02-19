@@ -103,6 +103,7 @@ return {
     preferred_link_style = 'wiki',
     open_notes_in = 'current',
     ui = { enable = false },
+    statusline = { enabled = false },
   },
   keys = {
     { '<leader>oo', '<cmd>Obsidian quick_switch<cr>', desc = '[O]bsidian: [O]pen note' },

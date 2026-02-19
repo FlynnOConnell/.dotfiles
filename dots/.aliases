@@ -195,6 +195,14 @@ function ow {
       local prev_week="$year-W$(printf '%02d' $((10#$week_num - 1)))"
       local next_week="$year-W$(printf '%02d' $((10#$week_num + 1)))"
 
+      # Extract (Next) TO-DO from previous week's file
+      local prev_file="$vault/weekly/$prev_week.md"
+      local prev_todos=""
+      if [[ -f "$prev_file" ]]; then
+        prev_todos=$(awk '/^## \(Next\) TO-DO/,/^## / { if (/^- \[/) print }' "$prev_file")
+      fi
+      [[ -z "$prev_todos" ]] && prev_todos="- [ ]"
+
       sed -e "s/<% tp\.date\.now(\"YYYY-MM-DD\") %>/$date_short/g" \
           -e "s/<% tp\.date\.now(\"MMMM DD\") %>/$mon_date/g" \
           -e "s/<% tp\.date\.now(\"MMMM DD, YYYY\", 6) %>/$fri_date/g" \
@@ -202,7 +210,10 @@ function ow {
           -e "s/<% tp\.date\.now(\"YYYY-\[W\]WW\", 7) %>/$next_week/g" \
           -e "s/{{date}}/$date_short/g" \
           -e "s/{{week_range}}/$mon_date - $fri_date/g" \
-          "$template" > "$file"
+          "$template" | awk -v todos="$prev_todos" '
+            /^- \[ \]$/ && !replaced { print todos; replaced=1; next }
+            { print }
+          ' > "$file"
     fi
   fi
   nvim "$file"
