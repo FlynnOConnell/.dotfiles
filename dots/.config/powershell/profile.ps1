@@ -176,6 +176,43 @@ function nvim-keys {
     else { Write-Host "No keybindings found for mode '$mode'" -ForegroundColor Yellow }
 }
 
+# === nvim-keys lsp cheat sheet ===
+function nvim-lsp {
+    $cheat = @"
+# lsp navigation (active in any lsp-attached buffer)
+
+  gd             goto definition        jump to where function/class/var is defined
+  gr             goto references        show all callers/usages of symbol under cursor
+  gI             goto implementation    jump to the actual implementation
+  gD             goto declaration       jump to declaration
+  <leader>D      type definition        jump to the type's definition
+  <leader>ds     document symbols       list all functions/classes/vars in current file
+  <leader>ws     workspace symbols      search all symbols across the entire project
+  K              hover docs             show docstring/signature popup
+  Ctrl-t         jump back              return to previous location after gd/gr/gI
+
+# editing / refactoring
+
+  <leader>rn     rename                 rename symbol across all files
+  <leader>ca     code action            quick fixes, refactors, imports
+  <leader>th     toggle inlay hints     show/hide inline type hints
+
+# diagnostics
+
+  gn             next diagnostic        jump to next error/warning
+  gp             prev diagnostic        jump to previous error/warning
+  <leader>e      show diagnostic        open error float at cursor
+  <leader>q      quickfix list          open all diagnostics in quickfix
+
+# python-specific (ruff + ty)
+
+  ruff provides linting/formatting, ty provides go-to-definition/completions/hover
+  use <leader>ds to browse all functions in a module
+  use gr on a function to find everything that calls it
+"@
+    $cheat | bat --language=markdown --style=plain
+}
+
 # === zoxide (smart cd) ===
 if (Get-Command zoxide -ErrorAction SilentlyContinue) {
     Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
@@ -197,5 +234,6 @@ if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
     Write-Host "    od           open daily note           ow          open weekly note" -ForegroundColor Gray
     Write-Host "    on           browse notes (fzf)        lg          lazygit" -ForegroundColor Gray
     Write-Host "    gsync        sync docs + dotfiles      nvim-keys   show nvim keybindings" -ForegroundColor Gray
+    Write-Host "    nvim-lsp     lsp cheat sheet           nvim-keys -filter lsp" -ForegroundColor Gray
     Write-Host ""
 }
