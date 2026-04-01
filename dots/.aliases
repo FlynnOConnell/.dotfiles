@@ -82,9 +82,6 @@ alias td="tms ~/repos/.dotfiles/"
 
 alias pkp="sudo pkill -9 pulsesecure && pkill -9 pulseUI"
 
-# - Windows Apps (WSL) --------
-alias firefox='/mnt/c/Program Files/Firefox Developer Edition/firefox.exe'
-
 # - Komorebi (Windows) --------
 # Start/Restart komorebi with all configurations
 alias kstart='powershell.exe -ExecutionPolicy Bypass -File "C:\\Users\\flynn\\start-komorebi.ps1"'
