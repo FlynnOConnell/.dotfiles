@@ -213,11 +213,6 @@ function nvim-lsp {
     $cheat | bat --language=markdown --style=plain
 }
 
-# === zoxide (smart cd) ===
-if (Get-Command zoxide -ErrorAction SilentlyContinue) {
-    Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
-}
-
 # === Starship prompt ===
 if (Get-Command starship -ErrorAction SilentlyContinue) {
     Invoke-Expression (&starship init powershell)
@@ -236,4 +231,9 @@ if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
     Write-Host "    gsync        sync docs + dotfiles      nvim-keys   show nvim keybindings" -ForegroundColor Gray
     Write-Host "    nvim-lsp     lsp cheat sheet           nvim-keys -filter lsp" -ForegroundColor Gray
     Write-Host ""
+}
+
+# === zoxide (smart cd) - must be last, after starship and any other prompt hooks ===
+if (Get-Command zoxide -ErrorAction SilentlyContinue) {
+    Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
 }

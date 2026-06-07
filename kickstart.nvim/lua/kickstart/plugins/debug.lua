@@ -1,51 +1,63 @@
 -- debug.lua
 --
--- Shows how to use the DAP plugin to debug your code.
---
--- Primarily focused on configuring the debugger for Go, but can
--- be extended to other languages as well. That's why it's called
--- kickstart.nvim and not kitchen-sink.nvim ;)
+-- python debugging via debugpy with automatic venv injection.
+-- if a .venv exists in the project, debugpy gets installed into it
+-- on first debug launch via `uv pip install debugpy`.
 
 return {
-  -- NOTE: Yes, you can install new plugins here!
   'mfussenegger/nvim-dap',
-  -- NOTE: And you can specify dependencies as well
   dependencies = {
-    -- Creates a beautiful debugger UI
     'rcarriga/nvim-dap-ui',
-
-    -- Required dependency for nvim-dap-ui
     'nvim-neotest/nvim-nio',
-
-    -- Installs the debug adapters for you
-    'williamboman/mason.nvim',
-    'jay-babu/mason-nvim-dap.nvim',
-
-    -- Add your own debuggers here
-    'leoluz/nvim-dap-go',
+    'mfussenegger/nvim-dap-python',
   },
   config = function()
     local dap = require 'dap'
     local dapui = require 'dapui'
 
-    require('mason-nvim-dap').setup {
-      -- Makes a best effort to setup the various debuggers with
-      -- reasonable debug configurations
-      automatic_installation = true,
+    -- find venv python, install debugpy if missing
+    local function ensure_debugpy()
+      local venv = vim.fn.getcwd() .. '/.venv'
+      local is_win = vim.fn.has 'win32' == 1
+      local python = is_win and venv .. '/Scripts/python.exe' or venv .. '/bin/python'
 
-      -- You can provide additional configuration to the handlers,
-      -- see mason-nvim-dap README for more information
-      handlers = {},
+      if vim.fn.executable(python) ~= 1 then
+        vim.notify('no .venv found in project root, run `uv venv` first', vim.log.levels.WARN)
+        return nil
+      end
 
-      -- You'll need to check that you have the required things installed
-      -- online, please don't ask me how to install them :)
-      ensure_installed = {
-        -- Update this to ensure that you have the debuggers for the langs you want
-        '',
-      },
-    }
+      -- check if debugpy is importable
+      local check = vim.fn.system { python, '-c', 'import debugpy' }
+      if vim.v.shell_error ~= 0 then
+        vim.notify('installing debugpy into .venv...', vim.log.levels.INFO)
+        local result = vim.fn.system { 'uv', 'pip', 'install', 'debugpy', '--python', python }
+        if vim.v.shell_error ~= 0 then
+          vim.notify('failed to install debugpy: ' .. result, vim.log.levels.ERROR)
+          return nil
+        end
+        vim.notify('debugpy installed', vim.log.levels.INFO)
+      end
 
-    -- Basic debugging keymaps, feel free to change to your liking!
+      return python
+    end
+
+    -- set up dap-python with venv detection
+    local python = ensure_debugpy()
+    if python then
+      require('dap-python').setup(python)
+    end
+
+    -- re-detect venv when changing directories
+    vim.api.nvim_create_autocmd('DirChanged', {
+      callback = function()
+        local py = ensure_debugpy()
+        if py then
+          require('dap-python').setup(py)
+        end
+      end,
+    })
+
+    -- keymaps
     vim.keymap.set('n', ',c', dap.continue, { desc = 'Debug: Start/Continue' })
     vim.keymap.set('n', ',i', dap.step_into, { desc = 'Debug: Step Into' })
     vim.keymap.set('n', ',o', dap.step_over, { desc = 'Debug: Step Over' })
@@ -55,12 +67,7 @@ return {
       dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
     end, { desc = 'Debug: Set Breakpoint' })
 
-    -- Dap UI setup
-    -- For more information, see |:help nvim-dap-ui|
     dapui.setup {
-      -- Set icons to characters that are more likely to work in every terminal.
-      --    Feel free to remove or use ones that you like more! :)
-      --    Don't feel like these are good choices.
       icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
       controls = {
         icons = {
@@ -77,7 +84,6 @@ return {
       },
     }
 
-    -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
     vim.keymap.set('n', ',r', dapui.toggle, { desc = 'Debug: See last session result.' })
 
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open

@@ -51,11 +51,6 @@ elif [ -f ~/.aliases ]; then
     source ~/.aliases
 fi
 
-# zoxide (smarter cd)
-if command -v zoxide &>/dev/null; then
-    eval "$(zoxide init bash)"
-fi
-
 # starship prompt
 if command -v starship &>/dev/null; then
     eval "$(starship init bash)"
@@ -72,3 +67,8 @@ fi
 
 # local customizations (machine-specific, not tracked)
 [ -f ~/.bashrc.local ] && source ~/.bashrc.local
+
+# zoxide (smarter cd) - must be last, after starship and any other PROMPT_COMMAND hooks
+if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init bash)"
+fi

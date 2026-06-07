@@ -41,11 +41,6 @@ if command -v starship &> /dev/null; then
     eval "$(starship init bash)"
 fi
 
-# zoxide (smart cd) - must be after starship
-if command -v zoxide &> /dev/null; then
-    eval "$(zoxide init bash --cmd cd)"
-fi
-
 # fastfetch + tips on startup
 if command -v fastfetch &> /dev/null && [[ $- == *i* ]]; then
     fastfetch
@@ -58,4 +53,9 @@ if command -v fastfetch &> /dev/null && [[ $- == *i* ]]; then
     echo -e "  \033[90m  cat <file>   view with syntax         nvim        editor\033[0m"
     echo -e "  \033[90m  lg           lazygit                  uv run      run python script\033[0m"
     echo ""
+fi
+
+# zoxide (smart cd) - must be last, after starship and any other PROMPT_COMMAND hooks
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init bash --cmd cd)"
 fi

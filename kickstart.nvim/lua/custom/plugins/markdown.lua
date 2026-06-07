@@ -1,6 +1,38 @@
 -- Markdown utilities: image paste, video link, and code block wrappers
 local vault_path = vim.fn.expand '~/repos/docs'
 
+-- toggle checkbox on current line: unchecked -> checked, checked -> unchecked
+_G.toggle_checkbox = function()
+  local line = vim.api.nvim_get_current_line()
+  if line:match '%[x%]' or line:match '%[X%]' then
+    line = line:gsub('%[[xX]%]', '[ ]', 1)
+  elseif line:match '%[~%]' then
+    line = line:gsub('%[~%]', '[x]', 1)
+  elseif line:match '%[ %]' then
+    line = line:gsub('%[ %]', '[x]', 1)
+  elseif line:match '^%s*%-' then
+    line = line:gsub('(%-) ', '%1 [ ] ', 1)
+  else
+    return
+  end
+  vim.api.nvim_set_current_line(line)
+end
+
+-- set current line checkbox to in-progress [~]
+_G.toggle_partial = function()
+  local line = vim.api.nvim_get_current_line()
+  if line:match '%[~%]' then
+    line = line:gsub('%[~%]', '[ ]', 1)
+  elseif line:match '%[[xX ]%]' then
+    line = line:gsub('%[[xX ]%]', '[~]', 1)
+  elseif line:match '^%s*%-' then
+    line = line:gsub('(%-) ', '%1 [~] ', 1)
+  else
+    return
+  end
+  vim.api.nvim_set_current_line(line)
+end
+
 -- Make wrap_python globally accessible
 _G.wrap_python_codeblock = function()
   local start_line = vim.fn.line "'<"
@@ -61,6 +93,8 @@ return {
       { '<leader>P', '<cmd>PasteImage<cr>', desc = '[P]aste image from clipboard' },
       { '<leader>V', '<cmd>lua paste_video()<cr>', desc = 'Link [V]ideo file' },
       { '<leader>C', '<esc><cmd>lua wrap_python_codeblock()<cr>', desc = 'Wrap in python [C]ode block', mode = 'v' },
+      { '<leader>tx', '<cmd>lua toggle_checkbox()<cr>', desc = '[T]oggle checkbox [x]', ft = 'markdown' },
+      { '<leader>t~', '<cmd>lua toggle_partial()<cr>', desc = '[T]oggle in-progress [~]', ft = 'markdown' },
     },
   },
   {
