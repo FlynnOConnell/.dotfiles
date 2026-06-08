@@ -22,6 +22,8 @@ Temporary Items
 .apdisk
 
 ### Windows ###
+# Reserved device name; created when a `> nul` redirect runs under bash
+nul
 # Windows thumbnail cache files
 Thumbs.db
 ehthumbs.db
