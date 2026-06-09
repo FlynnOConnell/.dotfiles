@@ -59,6 +59,10 @@ alias gc="git commit"
 alias hf="history | fzf -e"
 alias lg="CONFIG_DIR="$HOME/.config/lazygit" /usr/local/bin/lazygit"
 
+# - Brightness ---------
+alias bright+='brightnessctl set +10%'
+alias bright-='brightnessctl set 10%-'
+
 # - Helpers ---------
 alias cs='cheatsheet'
 alias key='cat ~/repos/.dotfiles/scripts/shortcuts.txt'
