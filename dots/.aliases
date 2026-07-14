@@ -122,6 +122,59 @@ alias mntstatus='echo "" && echo "  Network Drive Status" && echo "  ===========
 # Notes (vault: ~/repos/docs)
 alias cdnotes='cd ~/repos/docs/notes'
 
+# nn - new note in tmux window
+# Usage: nn <note-name> [category]
+# Example: nn dendrites software
+# Example: nn my-idea           (defaults to notes/)
+function nn {
+  local vault=~/repos/docs
+  local name="${1:-}"
+  local category="${2:-}"
+
+  if [[ -z "$name" ]]; then
+    echo "Usage: nn <note-name> [category]"
+    echo "Categories: software, literature, sop, personal, events"
+    return 1
+  fi
+
+  _notes_pull
+
+  # Determine path based on category
+  local dir="$vault/notes"
+  [[ -n "$category" ]] && dir="$vault/notes/$category"
+  mkdir -p "$dir"
+
+  # Handle sop prefix
+  local filename="$name"
+  [[ "$category" == "sop" && ! "$name" =~ ^sop_ ]] && filename="sop_$name"
+
+  local file="$dir/$filename.md"
+  local today=$(date +%Y-%m-%d)
+
+  # Create note with frontmatter if it doesn't exist
+  if [[ ! -f "$file" ]]; then
+    cat > "$file" << EOF
+---
+tags:
+  - ${name}
+$( [[ -n "$category" ]] && echo "  - ${category}" )
+category: ${category:-notes}
+created: ${today}
+---
+
+## Overview
+
+EOF
+  fi
+
+  # Open in new tmux window named after the note
+  if [[ -n "$TMUX" ]]; then
+    tmux new-window -n "$name" "nvim '$file'"
+  else
+    nvim "$file"
+  fi
+}
+
 # gsync - git sync repos (pull, commit, push)
 function gsync {
   local repos=(~/repos/docs ~/repos/.dotfiles)
