@@ -1,0 +1,29 @@
+/* ==========================================================================
+   readable.css — legible Catppuccin (Mocha) look, tuned to match VSCode.
+   Toggle in Settings → Appearance → CSS snippets to switch this look on/off.
+   Palette is unchanged (still Catppuccin Mocha, same as your VSCode); this
+   only fixes prose font, blue bold, and washed-out code text.
+   ========================================================================== */
+
+body {
+  /* --- Reading font -------------------------------------------------------
+     Prose was rendering in JetBrainsMono (a monospace font), which is hard
+     to read for long text. Switch reading/editor text to a real sans face.
+     Code blocks & inline code keep the monospace font below. */
+  --font-text-theme: "Noto Sans", ui-sans-serif, sans-serif;
+  --font-text: "Noto Sans", ui-sans-serif, sans-serif;
+
+  /* --- Bold text ----------------------------------------------------------
+     Catppuccin colors every **bold** word sapphire (blue). Use the normal
+     text color instead — the heavier weight already signals emphasis. */
+  --ctp-bold: var(--ctp-text);
+
+  /* --- Code readability ---------------------------------------------------
+     Default code text is --text-muted / comments --text-faint, so code
+     blocks look washed-out and low-contrast next to bright prose. Bring the
+     brightness up and shrink the size gap so code sits closer to the text. */
+  --code-size: 0.9em;
+  --code-normal: var(--text-normal);
+  --code-comment: var(--text-muted);
+  --code-punctuation: var(--text-normal);
+}

@@ -61,6 +61,8 @@
       path: dots/.config/i3
     ~/.config/polybar:
       path: dots/.config/polybar
+    ~/repos/arctic-lake/.obsidian/snippets/readable.css:
+      path: dots/.config/obsidian/snippets/readable.css
 
 - shell:
   - 
