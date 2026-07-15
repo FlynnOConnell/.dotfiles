@@ -1,49 +1,6 @@
 -- Obsidian.nvim configuration
--- Vault: ~/repos/docs
-local vault_path = vim.fn.expand '~/repos/docs'
-
--- Calculate week range (Monday - Friday)
-local function get_week_range()
-  local now = os.time()
-  local dow = tonumber(os.date('%w', now)) -- 0=Sun, 1=Mon, ..., 6=Sat
-  if dow == 0 then dow = 7 end -- Convert Sunday to 7
-  local mon = now - (dow - 1) * 86400
-  local fri = mon + 4 * 86400
-  local mon_month = os.date('%B', mon)
-  local fri_month = os.date('%B', fri)
-  local mon_day = os.date('%d', mon):gsub('^0', '')
-  local fri_day = os.date('%d', fri):gsub('^0', '')
-  local year = os.date('%Y', fri)
-  if mon_month == fri_month then
-    return string.format('%s %s-%s, %s', mon_month, mon_day, fri_day, year)
-  else
-    return string.format('%s %s – %s %s, %s', mon_month, mon_day, fri_month, fri_day, year)
-  end
-end
-
--- Open weekly note (creates from template if doesn't exist)
-local function open_weekly()
-  local weekly_dir = vault_path .. '/weekly'
-  local week_file = os.date '%Y-W%V' .. '.md'
-  local full_path = weekly_dir .. '/' .. week_file
-
-  vim.fn.mkdir(weekly_dir, 'p')
-
-  if vim.fn.filereadable(full_path) ~= 1 then
-    local template_path = vault_path .. '/templates/weekly.md'
-    local template = vim.fn.readfile(template_path)
-    local date_short = os.date '%Y-%m-%d'
-    local week_range = get_week_range()
-
-    for i, line in ipairs(template) do
-      template[i] = line:gsub('{{date}}', date_short):gsub('{{week_range}}', week_range)
-    end
-
-    vim.fn.writefile(template, full_path)
-  end
-
-  vim.cmd('edit ' .. full_path)
-end
+-- Vault: ~/repos/arctic-lake
+local vault_path = vim.fn.expand '~/repos/arctic-lake'
 
 return {
   'obsidian-nvim/obsidian.nvim',
@@ -60,7 +17,7 @@ return {
     legacy_commands = false,
     workspaces = {
       {
-        name = 'docs',
+        name = 'arctic-lake',
         path = vault_path,
       },
     },
@@ -75,14 +32,7 @@ return {
       end
     end,
 
-    -- Daily notes: ~/repos/docs/daily/
-    daily_notes = {
-      folder = 'daily',
-      date_format = '%Y-%m-%d',
-      template = 'daily.md',  -- Use template from templates folder
-    },
-
-    -- Templates: ~/repos/docs/templates/
+    -- Templates: ~/repos/arctic-lake/templates/
     templates = {
       folder = 'templates',
       date_format = '%Y-%m-%d',
@@ -113,10 +63,6 @@ return {
     { '<leader>ot', '<cmd>Obsidian tags<cr>', desc = '[O]bsidian: [T]ags' },
 
     { '<leader>on', '<cmd>Obsidian new<cr>', desc = '[O]bsidian: [N]ew note' },
-    { '<leader>od', '<cmd>Obsidian today<cr>', desc = '[O]bsidian: [D]aily note' },
-    { '<leader>ow', open_weekly, desc = '[O]bsidian: [W]eekly note' },
-    { '<leader>oy', '<cmd>Obsidian yesterday<cr>', desc = '[O]bsidian: [Y]esterday' },
-    { '<leader>om', '<cmd>Obsidian tomorrow<cr>', desc = '[O]bsidian: To[M]orrow' },
 
     { '<leader>oc', '<cmd>Obsidian toc<cr>', desc = '[O]bsidian: Table of [C]ontents' },
     { '<leader>or', '<cmd>Obsidian rename<cr>', desc = '[O]bsidian: [R]ename note' },

@@ -90,9 +90,6 @@ J                   Join lines (cursor stays)
 <leader>ol          Links in current note
 <leader>ot          Browse tags
 <leader>on          New note
-<leader>od          Daily note (today)
-<leader>oy          Yesterday's daily note
-<leader>om          Tomorrow's daily note
 <leader>oc          Table of contents
 <leader>or          Rename note
 <leader>oi          Paste image

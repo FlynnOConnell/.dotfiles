@@ -119,15 +119,15 @@ alias mnt='mountpoint -q /mnt/s1_data || sudo mount /mnt/s1_data; mountpoint -q 
 alias umnt='sudo umount /mnt/s1_data 2>/dev/null; sudo umount /mnt/mbospace 2>/dev/null; echo "Unmounted drives"'
 alias mntstatus='echo "" && echo "  Network Drive Status" && echo "  =====================" && for d in s1_data mbospace; do mountpoint -q /mnt/$d && echo -e "  \033[32m●\033[0m /mnt/$d (mounted)" || echo -e "  \033[31m○\033[0m /mnt/$d (not mounted)"; done && echo ""'
 
-# Notes (vault: ~/repos/docs)
-alias cdnotes='cd ~/repos/docs/notes'
+# Notes (vault: ~/repos/arctic-lake)
+alias cdnotes='cd ~/repos/arctic-lake/notes'
 
 # nn - new note in tmux window
 # Usage: nn <note-name> [category]
 # Example: nn dendrites software
 # Example: nn my-idea           (defaults to notes/)
 function nn {
-  local vault=~/repos/docs
+  local vault=~/repos/arctic-lake
   local name="${1:-}"
   local category="${2:-}"
 
@@ -177,7 +177,7 @@ EOF
 
 # gsync - git sync repos (pull, commit, push)
 function gsync {
-  local repos=(~/repos/docs ~/repos/.dotfiles)
+  local repos=(~/repos/arctic-lake ~/repos/.dotfiles)
   for repo in "${repos[@]}"; do
     if [[ -d "$repo/.git" ]]; then
       local name=$(basename "$repo")
@@ -197,78 +197,11 @@ function gsync {
 
 # _notes_pull - pull latest docs before opening
 function _notes_pull {
-  git -C ~/repos/docs pull --rebase --quiet 2>/dev/null
+  git -C ~/repos/arctic-lake pull --rebase --quiet 2>/dev/null
 }
 
-# on - open notes (fzf browser)
+# on - open notes (fzopen fuzzy finder)
 function on {
   _notes_pull
-  local vault=~/repos/docs
-  if command -v fzf &>/dev/null; then
-    local selected=$(find "$vault" -name "*.md" -type f | sed "s|$vault/||" | fzf --prompt="Note: " --height=40% --reverse)
-    [[ -n "$selected" ]] && nvim "$vault/$selected"
-  else
-    nvim "$vault/notes"
-  fi
-}
-
-# od - open daily note with template
-function od {
-  _notes_pull
-  local vault=~/repos/docs
-  local today=$(date +%Y-%m-%d)
-  local file="$vault/daily/$today.md"
-  mkdir -p "$vault/daily"
-  if [[ ! -f "$file" ]]; then
-    local template="$vault/templates/daily.md"
-    if [[ -f "$template" ]]; then
-      sed "s/{{date}}/$today/g" "$template" > "$file"
-    fi
-  fi
-  nvim "$file"
-}
-
-# ow - open weekly note with template
-function ow {
-  _notes_pull
-  local vault=~/repos/docs
-  local week_num=$(date +%V)
-  local year=$(date +%Y)
-  local file="$vault/weekly/$year-W$week_num.md"
-  mkdir -p "$vault/weekly"
-  if [[ ! -f "$file" ]]; then
-    local template="$vault/templates/weekly.md"
-    if [[ -f "$template" ]]; then
-      local dow=$(date +%u)
-      local mon=$(date -d "today - $((dow - 1)) days" +%s)
-      local fri=$(date -d "@$mon + 4 days" +%s)
-
-      local date_short=$(date +%Y-%m-%d)
-      local mon_date=$(date -d "@$mon" "+%B %d")
-      local fri_date=$(date -d "@$fri" "+%B %d, %Y")
-      local prev_week="$year-W$(printf '%02d' $((10#$week_num - 1)))"
-      local next_week="$year-W$(printf '%02d' $((10#$week_num + 1)))"
-
-      # Extract (Next) TO-DO from previous week's file
-      local prev_file="$vault/weekly/$prev_week.md"
-      local prev_todos=""
-      if [[ -f "$prev_file" ]]; then
-        prev_todos=$(awk '/^## \(Next\) TO-DO/,/^## / { if (/^- \[/) print }' "$prev_file")
-      fi
-      [[ -z "$prev_todos" ]] && prev_todos="- [ ]"
-
-      sed -e "s/<% tp\.date\.now(\"YYYY-MM-DD\") %>/$date_short/g" \
-          -e "s/<% tp\.date\.now(\"MMMM DD\") %>/$mon_date/g" \
-          -e "s/<% tp\.date\.now(\"MMMM DD, YYYY\", 6) %>/$fri_date/g" \
-          -e "s/<% tp\.date\.now(\"YYYY-\[W\]WW\", -7) %>/$prev_week/g" \
-          -e "s/<% tp\.date\.now(\"YYYY-\[W\]WW\", 7) %>/$next_week/g" \
-          -e "s/{{date}}/$date_short/g" \
-          -e "s/{{week_range}}/$mon_date - $fri_date/g" \
-          "$template" | awk -v todos="$prev_todos" '
-            /^- \[ \]$/ && !replaced { print todos; replaced=1; next }
-            { print }
-          ' > "$file"
-    fi
-  fi
-  nvim "$file"
+  fzopen -d ~/repos/arctic-lake -e md
 }

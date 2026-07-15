@@ -69,11 +69,11 @@ function gb { git branch @args }
 function glog { git log --oneline --graph --decorate -20 @args }
 
 # === Notes functions ===
-$NotesVault = "$HOME\repos\docs"
+$NotesVault = "$HOME\repos\arctic-lake"
 
 # gsync - git sync repos (pull, commit, push)
 function gsync {
-    $repos = @("$HOME\repos\docs", "$HOME\repos\.dotfiles")
+    $repos = @("$HOME\repos\arctic-lake", "$HOME\repos\.dotfiles")
     foreach ($repo in $repos) {
         if (Test-Path "$repo\.git") {
             $name = Split-Path $repo -Leaf
@@ -94,65 +94,6 @@ function gsync {
 }
 
 function _notesPull { git -C $NotesVault pull --rebase --quiet 2>$null }
-
-# od - open daily note with template
-function od {
-    _notesPull
-    $date = Get-Date -Format "yyyy-MM-dd"
-    $file = "$NotesVault\daily\$date.md"
-    if (!(Test-Path "$NotesVault\daily")) { New-Item -ItemType Directory -Path "$NotesVault\daily" -Force | Out-Null }
-
-    if (!(Test-Path $file)) {
-        $templatePath = "$NotesVault\templates\daily.md"
-        if (Test-Path $templatePath) {
-            $content = Get-Content $templatePath -Raw
-            $content = $content -replace '\{\{date\}\}', $date
-            Set-Content -Path $file -Value $content -NoNewline
-        }
-    }
-    nvim $file
-}
-
-# ow - open weekly note with template
-function ow {
-    _notesPull
-    $weekNum = [int](Get-Date -UFormat "%V")
-    $year = Get-Date -Format "yyyy"
-    $file = "$NotesVault\weekly\$year-W$($weekNum.ToString('00')).md"
-
-    if (!(Test-Path "$NotesVault\weekly")) { New-Item -ItemType Directory -Path "$NotesVault\weekly" -Force | Out-Null }
-
-    if (!(Test-Path $file)) {
-        $templatePath = "$NotesVault\templates\weekly.md"
-        if (Test-Path $templatePath) {
-            $today = Get-Date
-            $dayOfWeek = [int]$today.DayOfWeek
-            if ($dayOfWeek -eq 0) { $dayOfWeek = 7 }
-            $monday = $today.AddDays(-($dayOfWeek - 1))
-            $friday = $monday.AddDays(4)
-
-            $dateShort = Get-Date -Format "yyyy-MM-dd"
-            $monDate = $monday.ToString("MMMM dd")
-            $friDate = $friday.ToString("MMMM dd, yyyy")
-            $prevWeek = "$year-W$(($weekNum - 1).ToString('00'))"
-            $nextWeek = "$year-W$(($weekNum + 1).ToString('00'))"
-
-            $content = Get-Content $templatePath -Raw
-            # Templater syntax
-            $content = $content -replace '<%\s*tp\.date\.now\("YYYY-MM-DD"\)\s*%>', $dateShort
-            $content = $content -replace '<%\s*tp\.date\.now\("MMMM DD"\)\s*%>', $monDate
-            $content = $content -replace '<%\s*tp\.date\.now\("MMMM DD, YYYY", 6\)\s*%>', $friDate
-            $content = $content -replace '<%\s*tp\.date\.now\("YYYY-\[W\]WW", -7\)\s*%>', $prevWeek
-            $content = $content -replace '<%\s*tp\.date\.now\("YYYY-\[W\]WW", 7\)\s*%>', $nextWeek
-            # Obsidian syntax
-            $content = $content -replace '\{\{date\}\}', $dateShort
-            $content = $content -replace '\{\{week_range\}\}', "$monDate - $friDate"
-
-            Set-Content -Path $file -Value $content -NoNewline
-        }
-    }
-    nvim $file
-}
 
 # on - open notes (fzf browser)
 function on {
@@ -226,9 +167,8 @@ if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
     Write-Host "    ls           list files                lsv         detailed list" -ForegroundColor Gray
     Write-Host "    lt           tree view                 la          list all (hidden)" -ForegroundColor Gray
     Write-Host "    cd <name>    smart jump (zoxide)       cd -        go back" -ForegroundColor Gray
-    Write-Host "    od           open daily note           ow          open weekly note" -ForegroundColor Gray
     Write-Host "    on           browse notes (fzf)        lg          lazygit" -ForegroundColor Gray
-    Write-Host "    gsync        sync docs + dotfiles      nvim-keys   show nvim keybindings" -ForegroundColor Gray
+    Write-Host "    gsync        sync notes + dotfiles     nvim-keys   show nvim keybindings" -ForegroundColor Gray
     Write-Host "    nvim-lsp     lsp cheat sheet           nvim-keys -filter lsp" -ForegroundColor Gray
     Write-Host ""
 }
