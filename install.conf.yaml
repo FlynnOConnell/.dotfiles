@@ -63,6 +63,10 @@
       path: dots/.config/polybar
     ~/repos/arctic-lake/.obsidian/snippets/readable.css:
       path: dots/.config/obsidian/snippets/readable.css
+    ~/.config/keybinds:
+      path: dots/.config/keybinds
+    ~/.local/share/applications/keybinds.desktop:
+      path: dots/.local/share/applications/keybinds.desktop
 
 - shell:
   - 

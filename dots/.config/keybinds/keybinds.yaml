@@ -1,0 +1,271 @@
+# keybinds.yaml — single source of truth for the `kb` viewer.
+#
+# Each top-level key is a GROUP (an app/context). Each entry has:
+#   keys : the key combo (shown + copied to clipboard on select)
+#   desc : what it does
+#   cat  : optional sub-group used for sorting/scanning within a group
+#
+# Add a binding = add one line. Example:
+#   - { keys: "Super+x", desc: "do the thing", cat: "misc" }
+#
+# Reload is instant — `kb` re-reads this file every launch.
+
+awesome:
+  # mod = Super (Mod4), alt = Mod1
+  - { keys: "Super+Shift+t",      desc: "open terminal",                 cat: "launch" }
+  - { keys: "Super+r",            desc: "run prompt",                    cat: "launch" }
+  - { keys: "Alt+space",          desc: "rofi launcher",                 cat: "launch" }
+  - { keys: "Super+c",            desc: "awesome cheatsheet",            cat: "launch" }
+  - { keys: "Super+slash",        desc: "keybind menu (kb)",             cat: "launch" }
+  - { keys: "Super+grave",        desc: "note fuzzy finder",             cat: "launch" }
+  - { keys: "Super+p",            desc: "copy password to clipboard",    cat: "launch" }
+  - { keys: "Super+Shift+p",      desc: "screenshot region",            cat: "launch" }
+  - { keys: "Print",              desc: "screenshot full screen",       cat: "launch" }
+  - { keys: "Super+h/j/k/l",      desc: "focus left/down/up/right",     cat: "focus" }
+  - { keys: "Super+Shift+h/j/k/l",desc: "move window",                  cat: "focus" }
+  - { keys: "Super+o",            desc: "swap with master + focus",     cat: "focus" }
+  - { keys: "Super+s",            desc: "show help",                    cat: "focus" }
+  - { keys: "Super+f",            desc: "toggle fullscreen",            cat: "window" }
+  - { keys: "Alt+f",              desc: "toggle floating",              cat: "window" }
+  - { keys: "Super+Shift+f",      desc: "float + center",               cat: "window" }
+  - { keys: "Super+t",            desc: "toggle keep-on-top",           cat: "window" }
+  - { keys: "Super+n",            desc: "minimize",                     cat: "window" }
+  - { keys: "Super+Ctrl+n",       desc: "restore minimized",            cat: "window" }
+  - { keys: "Super+m",            desc: "(un)maximize",                 cat: "window" }
+  - { keys: "Super+Ctrl+m",       desc: "(un)maximize vertical",        cat: "window" }
+  - { keys: "Super+Shift+m",      desc: "(un)maximize horizontal",      cat: "window" }
+  - { keys: "Alt+Shift+m",        desc: "magnify client",               cat: "window" }
+  - { keys: "Super+Shift+y",      desc: "close window",                 cat: "window" }
+  - { keys: "Super+Ctrl+arrows",  desc: "nudge window",                 cat: "window" }
+  - { keys: "Super+Ctrl+Shift+arrows", desc: "resize window",           cat: "window" }
+  - { keys: "Super+Shift+arrows", desc: "snap to edge",                 cat: "window" }
+  - { keys: "Super+Ctrl+o",       desc: "rescue off-edge windows",      cat: "window" }
+  - { keys: "Super+space",        desc: "next layout",                  cat: "layout" }
+  - { keys: "Super+Shift+space",  desc: "previous layout",              cat: "layout" }
+  - { keys: "Super+Alt+h/l",      desc: "master count +/-",             cat: "layout" }
+  - { keys: "Super+Ctrl+h/l",     desc: "master width +/-",             cat: "layout" }
+  - { keys: "Super+Ctrl+j/k",     desc: "columns +/-",                  cat: "layout" }
+  - { keys: "Super+Alt+j/k",      desc: "useless gaps +/-",             cat: "layout" }
+  - { keys: "Super+b",            desc: "toggle wibar",                 cat: "layout" }
+  - { keys: "Super+1..9",         desc: "view tag",                     cat: "tag" }
+  - { keys: "Super+Ctrl+1..9",    desc: "toggle tag on view",           cat: "tag" }
+  - { keys: "Super+Shift+1..9",   desc: "move client to tag",           cat: "tag" }
+  - { keys: "Super+Ctrl+Shift+1..9", desc: "toggle client on tag",      cat: "tag" }
+  - { keys: "Super+Shift+s",      desc: "add tag",                      cat: "tag" }
+  - { keys: "Super+Shift+r",      desc: "rename tag",                   cat: "tag" }
+  - { keys: "Super+Shift+d",      desc: "delete tag",                   cat: "tag" }
+  - { keys: "Super+Shift+Left/Right", desc: "move tag left/right",      cat: "tag" }
+  - { keys: "Ctrl+Alt+]",         desc: "brightness +5%",               cat: "system" }
+  - { keys: "Ctrl+Alt+[",         desc: "brightness -5%",               cat: "system" }
+  - { keys: "Super+Ctrl+r",       desc: "reload awesome",               cat: "system" }
+  - { keys: "Super+Shift+q",      desc: "quit awesome",                 cat: "system" }
+  - { keys: "Ctrl+;",             desc: "clear all notifications",      cat: "system" }
+
+kitty:
+  # kitty_mod = ctrl+shift
+  - { keys: "ctrl+alt+n",         desc: "new note prompt",              cat: "custom" }
+  - { keys: "ctrl+shift+n",       desc: "hints: open line in $EDITOR",  cat: "custom" }
+  - { keys: "ctrl+shift+enter",   desc: "new window",                   cat: "window" }
+  - { keys: "ctrl+shift+w",       desc: "close window",                 cat: "window" }
+  - { keys: "ctrl+shift+]/[",     desc: "next/prev window",             cat: "window" }
+  - { keys: "ctrl+shift+l",       desc: "next layout",                  cat: "window" }
+  - { keys: "ctrl+shift+t",       desc: "new tab",                      cat: "tab" }
+  - { keys: "ctrl+shift+q",       desc: "close tab",                    cat: "tab" }
+  - { keys: "ctrl+shift+right/left", desc: "next/prev tab",             cat: "tab" }
+  - { keys: "ctrl+shift+c",       desc: "copy",                         cat: "edit" }
+  - { keys: "ctrl+shift+v",       desc: "paste",                        cat: "edit" }
+  - { keys: "ctrl+shift+e",       desc: "open URL hints",               cat: "nav" }
+  - { keys: "ctrl+shift+h",       desc: "open scrollback in pager",     cat: "nav" }
+  - { keys: "ctrl+shift+u",       desc: "unicode input",                cat: "input" }
+  - { keys: "ctrl+shift+=/-",     desc: "font size +/-",                cat: "font" }
+  - { keys: "ctrl+shift+0",       desc: "reset font size",              cat: "font" }
+
+tmux:
+  # prefix = Ctrl+Space
+  - { keys: "prefix K",           desc: "keybind menu (kb popup)",      cat: "launch" }
+  - { keys: "prefix C-j",         desc: "tms: switch session (popup)",  cat: "session" }
+  - { keys: "prefix C-w",         desc: "tms: switch window (popup)",   cat: "session" }
+  - { keys: "prefix (",           desc: "previous session",             cat: "session" }
+  - { keys: "prefix )",           desc: "next session",                 cat: "session" }
+  - { keys: "prefix d",           desc: "detach",                       cat: "session" }
+  - { keys: "prefix s",           desc: "session list",                 cat: "session" }
+  - { keys: "prefix \\",          desc: "split horizontal",             cat: "pane" }
+  - { keys: "prefix -",           desc: "split vertical",               cat: "pane" }
+  - { keys: "prefix h/j/k/l",     desc: "select pane L/D/U/R",          cat: "pane" }
+  - { keys: "Alt+arrows",         desc: "switch pane (no prefix)",      cat: "pane" }
+  - { keys: "Ctrl+arrows",        desc: "resize pane (no prefix)",      cat: "pane" }
+  - { keys: "prefix x",           desc: "kill pane",                    cat: "pane" }
+  - { keys: "prefix z",           desc: "zoom pane",                    cat: "pane" }
+  - { keys: "prefix c",           desc: "new window",                   cat: "window" }
+  - { keys: "prefix ,",           desc: "rename window",                cat: "window" }
+  - { keys: "prefix w",           desc: "window list",                  cat: "window" }
+  - { keys: "Ctrl+Shift+Left/Right", desc: "swap window (no prefix)",   cat: "window" }
+  - { keys: "prefix [",           desc: "copy mode",                    cat: "copy" }
+  - { keys: "v (copy-mode)",      desc: "begin selection",              cat: "copy" }
+  - { keys: "y (copy-mode)",      desc: "copy to system clipboard",     cat: "copy" }
+
+nvim:
+  # leader = Space ; DAP prefix = ,
+  - { keys: "C-h/j/k/l",          desc: "move focus between windows",   cat: "window" }
+  - { keys: "arrows",             desc: "resize splits",                cat: "window" }
+  - { keys: "<leader>|",          desc: "vertical split",               cat: "window" }
+  - { keys: "<leader>_",          desc: "horizontal split",             cat: "window" }
+  - { keys: "C-=",                desc: "equalize splits",              cat: "window" }
+  - { keys: "C-f",                desc: "tmux-sessionizer",             cat: "window" }
+  - { keys: "<leader>a",          desc: "harpoon: add file",            cat: "harpoon" }
+  - { keys: "C-e",                desc: "harpoon: menu",                cat: "harpoon" }
+  - { keys: "C-1..4",             desc: "harpoon: jump to file",        cat: "harpoon" }
+  - { keys: "C-p/C-n",            desc: "harpoon: prev/next",           cat: "harpoon" }
+  - { keys: "<leader>ff",         desc: "find files",                   cat: "find" }
+  - { keys: "<leader>fg",         desc: "live grep",                    cat: "find" }
+  - { keys: "<leader>fw",         desc: "find word under cursor",       cat: "find" }
+  - { keys: "<leader>fh",         desc: "find help",                    cat: "find" }
+  - { keys: "<leader>fk",         desc: "find keymaps",                 cat: "find" }
+  - { keys: "<leader>fd",         desc: "find diagnostics",             cat: "find" }
+  - { keys: "<leader>fr",         desc: "find resume",                  cat: "find" }
+  - { keys: "<leader>f.",         desc: "recent files",                 cat: "find" }
+  - { keys: "<leader><leader>",   desc: "open buffers",                 cat: "find" }
+  - { keys: "<leader>/",          desc: "fuzzy search in buffer",       cat: "find" }
+  - { keys: "<leader>fn",         desc: "search nvim config",           cat: "find" }
+  - { keys: "gd",                 desc: "goto definition",              cat: "lsp" }
+  - { keys: "gr",                 desc: "goto references",              cat: "lsp" }
+  - { keys: "gI",                 desc: "goto implementation",          cat: "lsp" }
+  - { keys: "gD",                 desc: "goto declaration",             cat: "lsp" }
+  - { keys: "K",                  desc: "hover documentation",          cat: "lsp" }
+  - { keys: "<leader>rn",         desc: "rename symbol",                cat: "lsp" }
+  - { keys: "<leader>ca",         desc: "code action",                  cat: "lsp" }
+  - { keys: "<leader>D",          desc: "type definition",              cat: "lsp" }
+  - { keys: "<leader>ds",         desc: "document symbols",             cat: "lsp" }
+  - { keys: "<leader>ws",         desc: "workspace symbols",            cat: "lsp" }
+  - { keys: "<leader>th",         desc: "toggle inlay hints",           cat: "lsp" }
+  - { keys: "gp/gn",              desc: "prev/next diagnostic",         cat: "diagnostic" }
+  - { keys: "<leader>e",          desc: "show diagnostic float",        cat: "diagnostic" }
+  - { keys: "<leader>q",          desc: "diagnostics to loclist",       cat: "diagnostic" }
+  - { keys: ",c",                 desc: "debug: continue",              cat: "debug" }
+  - { keys: ",i",                 desc: "debug: step into",             cat: "debug" }
+  - { keys: ",o",                 desc: "debug: step over",             cat: "debug" }
+  - { keys: ",O",                 desc: "debug: step out",              cat: "debug" }
+  - { keys: ",b",                 desc: "debug: toggle breakpoint",     cat: "debug" }
+  - { keys: ",B",                 desc: "debug: conditional breakpoint",cat: "debug" }
+  - { keys: ",r",                 desc: "debug: toggle UI",             cat: "debug" }
+  - { keys: "J",                  desc: "join lines, keep cursor",      cat: "edit" }
+  - { keys: "C-d/C-u",            desc: "half-page down/up + center",   cat: "edit" }
+  - { keys: "n/N",                desc: "search next/prev + center",    cat: "edit" }
+  - { keys: "</> (visual)",       desc: "indent, keep selection",       cat: "edit" }
+  - { keys: "<leader>y/Y",        desc: "yank to system clipboard",     cat: "edit" }
+  - { keys: "<leader>p (visual)", desc: "paste without yanking",        cat: "edit" }
+  - { keys: "<leader>d",          desc: "delete to void register",      cat: "edit" }
+  - { keys: "kj (insert)",        desc: "escape",                       cat: "edit" }
+  - { keys: "<leader>s",          desc: "substitute word under cursor", cat: "edit" }
+  - { keys: "<Esc>",              desc: "clear search highlight",       cat: "edit" }
+  - { keys: "<Esc><Esc>",         desc: "exit terminal mode",           cat: "misc" }
+  - { keys: "<leader>Gor",        desc: "edit dotfiles",                cat: "misc" }
+  - { keys: "<leader>Got",        desc: "edit tmux config",             cat: "misc" }
+
+vscode:
+  # custom (from keybindings.json) + essential defaults
+  - { keys: "ctrl+h/l",           desc: "focus left/right editor group",cat: "custom" }
+  - { keys: "ctrl+j/k",           desc: "focus below/above group",      cat: "custom" }
+  - { keys: "ctrl+shift+h/l",     desc: "move editor group left/right", cat: "custom" }
+  - { keys: "ctrl+w",             desc: "close active editor",          cat: "custom" }
+  - { keys: "ctrl+j/k",           desc: "next/prev suggestion (in list)",cat: "custom" }
+  - { keys: "ctrl+p",             desc: "quick open file",              cat: "nav" }
+  - { keys: "ctrl+shift+p",       desc: "command palette",              cat: "nav" }
+  - { keys: "ctrl+shift+o",       desc: "go to symbol in file",         cat: "nav" }
+  - { keys: "ctrl+g",             desc: "go to line",                   cat: "nav" }
+  - { keys: "f12",                desc: "go to definition",             cat: "nav" }
+  - { keys: "alt+left/right",     desc: "navigate back/forward",        cat: "nav" }
+  - { keys: "ctrl+shift+f",       desc: "search in files",              cat: "search" }
+  - { keys: "ctrl+shift+h",       desc: "replace in files",             cat: "search" }
+  - { keys: "ctrl+d",             desc: "add next occurrence to sel",   cat: "edit" }
+  - { keys: "ctrl+shift+l",       desc: "select all occurrences",       cat: "edit" }
+  - { keys: "alt+up/down",        desc: "move line up/down",            cat: "edit" }
+  - { keys: "ctrl+shift+k",       desc: "delete line",                  cat: "edit" }
+  - { keys: "ctrl+/",             desc: "toggle line comment",          cat: "edit" }
+  - { keys: "f2",                 desc: "rename symbol",                cat: "edit" }
+  - { keys: "ctrl+.",             desc: "quick fix / code action",      cat: "edit" }
+  - { keys: "ctrl+b",             desc: "toggle sidebar",               cat: "view" }
+  - { keys: "ctrl+`",             desc: "toggle terminal",              cat: "view" }
+  - { keys: "ctrl+shift+e",       desc: "explorer",                     cat: "view" }
+
+pycharm:
+  # Linux default keymap — essentials
+  - { keys: "Shift Shift",        desc: "search everywhere",            cat: "nav" }
+  - { keys: "Ctrl+Shift+A",       desc: "find action",                  cat: "nav" }
+  - { keys: "Ctrl+N",             desc: "go to class",                  cat: "nav" }
+  - { keys: "Ctrl+Shift+N",       desc: "go to file",                   cat: "nav" }
+  - { keys: "Ctrl+B",             desc: "go to declaration",            cat: "nav" }
+  - { keys: "Ctrl+Alt+Left/Right",desc: "navigate back/forward",        cat: "nav" }
+  - { keys: "Alt+F7",             desc: "find usages",                  cat: "nav" }
+  - { keys: "Ctrl+Shift+F",       desc: "find in path",                 cat: "search" }
+  - { keys: "Ctrl+F",             desc: "find in file",                 cat: "search" }
+  - { keys: "Alt+Enter",          desc: "show intention / quick fix",   cat: "edit" }
+  - { keys: "Ctrl+Alt+L",         desc: "reformat code",                cat: "edit" }
+  - { keys: "Ctrl+/",             desc: "line comment",                 cat: "edit" }
+  - { keys: "Ctrl+D",             desc: "duplicate line",               cat: "edit" }
+  - { keys: "Ctrl+Y",             desc: "delete line",                  cat: "edit" }
+  - { keys: "Ctrl+W",             desc: "extend selection",             cat: "edit" }
+  - { keys: "Shift+F6",           desc: "rename",                       cat: "edit" }
+  - { keys: "Shift+F10",          desc: "run",                          cat: "run" }
+  - { keys: "Shift+F9",           desc: "debug",                        cat: "run" }
+  - { keys: "Ctrl+F8",            desc: "toggle breakpoint",            cat: "run" }
+  - { keys: "Ctrl+Shift+F10",     desc: "run context config",           cat: "run" }
+
+terminal:
+  # readline / emacs mode (default shell line editing)
+  - { keys: "Ctrl+a",             desc: "move to line start",           cat: "move" }
+  - { keys: "Ctrl+e",             desc: "move to line end",             cat: "move" }
+  - { keys: "Alt+b",              desc: "back one word",                cat: "move" }
+  - { keys: "Alt+f",              desc: "forward one word",             cat: "move" }
+  - { keys: "Ctrl+b/f",           desc: "back/forward one char",        cat: "move" }
+  - { keys: "Ctrl+w",             desc: "delete word before cursor",    cat: "edit" }
+  - { keys: "Alt+d",              desc: "delete word after cursor",     cat: "edit" }
+  - { keys: "Ctrl+u",             desc: "delete to line start",         cat: "edit" }
+  - { keys: "Ctrl+k",             desc: "delete to line end",           cat: "edit" }
+  - { keys: "Ctrl+y",             desc: "yank (paste last killed)",     cat: "edit" }
+  - { keys: "Alt+.",              desc: "insert last arg of prev cmd",  cat: "edit" }
+  - { keys: "Ctrl+r",             desc: "reverse history search",       cat: "history" }
+  - { keys: "Ctrl+g",             desc: "abort history search",         cat: "history" }
+  - { keys: "!!",                 desc: "repeat last command",          cat: "history" }
+  - { keys: "Up/Down",            desc: "previous/next command",        cat: "history" }
+  - { keys: "Ctrl+l",             desc: "clear screen",                 cat: "control" }
+  - { keys: "Ctrl+c",             desc: "cancel current line (SIGINT)", cat: "control" }
+  - { keys: "Ctrl+d",             desc: "EOF / exit shell",             cat: "control" }
+  - { keys: "Ctrl+z",             desc: "suspend to background",        cat: "control" }
+  - { keys: "Tab",                desc: "autocomplete",                 cat: "control" }
+
+claude:
+  # Claude Code CLI
+  - { keys: "Shift+Tab",          desc: "cycle mode (auto-accept/plan)",cat: "mode" }
+  - { keys: "Esc",                desc: "interrupt Claude",             cat: "control" }
+  - { keys: "Esc Esc",            desc: "rewind / edit previous msg",   cat: "control" }
+  - { keys: "Ctrl+c",             desc: "clear input (twice to exit)",  cat: "control" }
+  - { keys: "Ctrl+d",             desc: "exit session",                 cat: "control" }
+  - { keys: "Ctrl+l",             desc: "clear screen",                 cat: "control" }
+  - { keys: "Ctrl+v",             desc: "paste image from clipboard",   cat: "input" }
+  - { keys: "Up/Down",            desc: "prompt history",               cat: "input" }
+  - { keys: "\\ then Enter",      desc: "insert newline",               cat: "input" }
+  - { keys: "Shift+Enter",        desc: "insert newline",               cat: "input" }
+  - { keys: "/",                  desc: "slash commands",               cat: "input" }
+  - { keys: "@",                  desc: "mention a file/dir",           cat: "input" }
+  - { keys: "#",                  desc: "save memory to CLAUDE.md",     cat: "input" }
+  - { keys: "!",                  desc: "bash mode (run shell cmd)",    cat: "input" }
+
+notes:
+  # aggregated note workflow across tools
+  - { keys: "on",                 desc: "shell: open-note fuzzy finder",cat: "shell" }
+  - { keys: "nn <name> [cat]",    desc: "shell: new note (tmux window)",cat: "shell" }
+  - { keys: "cdnotes",            desc: "shell: cd to notes",           cat: "shell" }
+  - { keys: "gsync",              desc: "shell: sync vault + dotfiles", cat: "shell" }
+  - { keys: "Super+grave",        desc: "awesome: note fuzzy finder",   cat: "wm" }
+  - { keys: "ctrl+alt+n",         desc: "kitty: new note prompt",       cat: "kitty" }
+  - { keys: "<leader>oo",         desc: "nvim: open/quick-switch note", cat: "nvim" }
+  - { keys: "<leader>of",         desc: "nvim: search in notes",        cat: "nvim" }
+  - { keys: "<leader>on",         desc: "nvim: new note",               cat: "nvim" }
+  - { keys: "<leader>ob",         desc: "nvim: backlinks",              cat: "nvim" }
+  - { keys: "<leader>ot",         desc: "nvim: tags",                   cat: "nvim" }
+  - { keys: "<leader>oc",         desc: "nvim: table of contents",      cat: "nvim" }
+  - { keys: "<leader>or",         desc: "nvim: rename note",            cat: "nvim" }
+  - { keys: "<leader>oi",         desc: "nvim: paste image",            cat: "nvim" }
+  - { keys: "gf",                 desc: "nvim: follow link",            cat: "nvim" }
+  - { keys: "<leader>mp",         desc: "nvim: markdown preview",       cat: "nvim" }

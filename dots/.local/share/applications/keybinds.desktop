@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Keybinds
+Comment=Browse consolidated keybindings (kb)
+Exec=/home/flynn/.local/bin/kb
+Icon=input-keyboard
+Terminal=false
+Categories=Utility;
+Keywords=keybind;keybinding;shortcut;cheatsheet;hotkey;

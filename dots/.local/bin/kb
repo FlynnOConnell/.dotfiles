@@ -1,0 +1,269 @@
+#!/usr/bin/env python3
+"""kb - consolidated keybind viewer.
+
+Single source of truth: ~/.config/keybinds/keybinds.yaml
+(override with $KEYBINDS_FILE).
+
+Flow: pick a GROUP in rofi, then see all of that group's binds at once, laid
+out in colored, category-grouped columns (like awesome's Mod+S popup) - but
+scoped to one app so it stays readable.
+
+Usage:
+  kb                 rofi group picker -> grouped popup view (default)
+  kb <group>         skip the picker, show one group   (e.g. kb nvim)
+  kb --show <group>  print the colorized grouped view to stdout (no picker/pager)
+  kb --dump [group]  plain text, no color              (grep / pipe)
+  kb --groups        list group names
+  kb -h | --help     this help
+"""
+import os
+import re
+import sys
+import math
+import shlex
+import shutil
+import subprocess
+from collections import OrderedDict
+
+DEFAULT_FILE = os.path.expanduser("~/.config/keybinds/keybinds.yaml")
+
+ORDER = ["awesome", "kitty", "tmux", "nvim", "vscode", "pycharm",
+         "terminal", "claude", "notes"]
+
+# --- Catppuccin Mocha truecolor ------------------------------------------
+RESET, BOLD = "\x1b[0m", "\x1b[1m"
+
+
+def _fg(r, g, b):
+    return f"\x1b[38;2;{r};{g};{b}m"
+
+
+C_TITLE = _fg(203, 166, 247)   # mauve
+C_HEAD = _fg(137, 180, 250)    # blue
+C_KEY = _fg(166, 227, 161)     # green
+C_DESC = _fg(205, 214, 244)    # text
+C_RULE = _fg(88, 91, 112)      # surface2
+
+_ANSI = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def vis_len(s):
+    return len(_ANSI.sub("", s))
+
+
+# --- data ----------------------------------------------------------------
+def load(path):
+    try:
+        import yaml
+    except ImportError:
+        sys.exit("kb: PyYAML not installed (pip install pyyaml)")
+    try:
+        with open(path) as fh:
+            data = yaml.safe_load(fh) or {}
+    except FileNotFoundError:
+        sys.exit(f"kb: no keybind file at {path}")
+    except yaml.YAMLError as exc:
+        sys.exit(f"kb: could not parse {path}: {exc}")
+    groups = {}
+    for name, entries in data.items():
+        groups[name] = [(str(e.get("keys", "")).strip(),
+                         str(e.get("desc", "")).strip(),
+                         str(e.get("cat", "")).strip() or "misc")
+                        for e in (entries or [])]
+    return groups
+
+
+def ordered_names(groups):
+    known = [g for g in ORDER if g in groups]
+    return known + sorted(g for g in groups if g not in ORDER)
+
+
+def build_blocks(groups, name):
+    """Return list of (title, [(keys, desc), ...]) blocks."""
+    if name == "all":
+        blocks = []
+        for g in ordered_names(groups):
+            items = [(k, d) for k, d, _ in sorted(groups[g], key=lambda r: (r[2], r[0]))]
+            blocks.append((g, items))
+        return blocks
+    od = OrderedDict()
+    for k, d, c in sorted(groups[name], key=lambda r: (r[2], r[0])):
+        od.setdefault(c, []).append((k, d))
+    return list(od.items())
+
+
+# --- rendering -----------------------------------------------------------
+def format_block(title, items):
+    kw = max((len(k) for k, _ in items), default=0)
+    lines = [C_HEAD + BOLD + title.upper() + RESET]
+    for k, d in items:
+        keycol = C_KEY + k + RESET + " " * (kw - len(k))
+        lines.append("  " + keycol + "  " + C_DESC + d + RESET)
+    width = max((vis_len(l) for l in lines), default=0)
+    return lines, width
+
+
+def pack(blocks, width, gutter=4):
+    if not blocks:
+        return ""
+    maxw = max(w for _, w in blocks)
+    ncols = max(1, (width + gutter) // (maxw + gutter))
+    ncols = min(ncols, len(blocks))
+    heights = [len(lines) + 1 for lines, _ in blocks]
+    target = math.ceil(sum(heights) / ncols)
+    cols, ci, acc = [[] for _ in range(ncols)], 0, 0
+    for (lines, w), h in zip(blocks, heights):
+        if acc + h > target and ci < ncols - 1 and cols[ci]:
+            ci, acc = ci + 1, 0
+        cols[ci].append((lines, w))
+        acc += h
+    col_lines, col_widths = [], []
+    for col in cols:
+        cl = []
+        for i, (lines, _) in enumerate(col):
+            if i:
+                cl.append("")
+            cl.extend(lines)
+        col_lines.append(cl)
+        col_widths.append(max((vis_len(l) for l in cl), default=0))
+    height = max((len(cl) for cl in col_lines), default=0)
+    out = []
+    for r in range(height):
+        parts = []
+        for cidx, cl in enumerate(col_lines):
+            seg = cl[r] if r < len(cl) else ""
+            parts.append(seg + " " * max(0, col_widths[cidx] - vis_len(seg)))
+        out.append((" " * gutter).join(parts).rstrip())
+    return "\n".join(out)
+
+
+def render(groups, name):
+    width = shutil.get_terminal_size((100, 40)).columns
+    blocks = [format_block(t, items) for t, items in build_blocks(groups, name)]
+    body = pack(blocks, width)
+    title = f"{name} keybinds"
+    head = C_TITLE + BOLD + title + RESET + "\n" + C_RULE + "─" * min(width, 80) + RESET
+    return head + "\n\n" + body + "\n"
+
+
+# --- pickers / display ---------------------------------------------------
+def has_gui():
+    return bool(os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"))
+
+
+def pick_group(groups):
+    names = ordered_names(groups)
+    labels = [f"all  ({sum(len(v) for v in groups.values())})"]
+    labels += [f"{n}  ({len(groups[n])})" for n in names]
+    joined = "\n".join(labels)
+    if has_gui() and shutil.which("rofi"):
+        cmd = ["rofi", "-dmenu", "-i", "-no-custom", "-p", "keybinds"]
+    elif shutil.which("fzf") and sys.stdin.isatty():
+        cmd = ["fzf", "--prompt", "keybinds ", "--layout", "reverse",
+               "--info", "inline", "--no-multi", "--cycle"]
+    else:
+        return None
+    res = subprocess.run(cmd, input=joined, capture_output=True, text=True)
+    if res.returncode != 0 or not res.stdout.strip():
+        return "__cancel__"
+    choice = res.stdout.strip("\n")
+    return "all" if choice.startswith("all ") else choice.split("  (")[0]
+
+
+def show(groups, name):
+    content = render(groups, name)
+    if sys.stdout.isatty():
+        if shutil.which("less"):
+            p = subprocess.Popen(["less", "-R"], stdin=subprocess.PIPE, text=True)
+            try:
+                p.communicate(content)
+            except BrokenPipeError:
+                pass
+        else:
+            sys.stdout.write(content)
+        return
+    # No usable terminal (GUI spawn) -> open a floating terminal window.
+    exe = os.path.abspath(sys.argv[0])
+    inner = f"{shlex.quote(exe)} --show {shlex.quote(name)} | less -R"
+    kitty = shutil.which("kitty")
+    if kitty:
+        cmd = [kitty, "--class", "kb-viewer",
+               "-o", "initial_window_width=112c",
+               "-o", "initial_window_height=48c",
+               "-o", "remember_window_size=no",
+               "sh", "-c", inner]
+    else:
+        term = os.environ.get("TERMINAL") or shutil.which("x-terminal-emulator") or "xterm"
+        cmd = [term, "-e", "sh", "-c", inner]
+    subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+# --- cli -----------------------------------------------------------------
+def main():
+    args = sys.argv[1:]
+    if any(a in ("-h", "--help") for a in args):
+        print(__doc__)
+        return
+
+    groups = load(os.environ.get("KEYBINDS_FILE", DEFAULT_FILE))
+
+    if args and args[0] == "--groups":
+        print("\n".join(ordered_names(groups)))
+        return
+    if args and args[0] == "--pick":
+        # rofi/fzf group picker only; print the chosen group (for awesome).
+        chosen = pick_group(groups)
+        if chosen and chosen != "__cancel__":
+            print(chosen)
+        return
+    if args and args[0] == "--lua":
+        # emit a flat Lua table of rows for awesome's hotkeys popup.
+        def lua_str(s):
+            return '"' + s.replace("\\", "\\\\").replace('"', '\\"') + '"'
+        out = ["return {"]
+        for g in ordered_names(groups):
+            for k, d, c in sorted(groups[g], key=lambda r: (r[2], r[0])):
+                out.append(f"  {{ group={lua_str(g)}, cat={lua_str(c)}, "
+                           f"key={lua_str(k)}, desc={lua_str(d)} }},")
+        out.append("}")
+        print("\n".join(out))
+        return
+    if args and args[0] == "--dump":
+        target = args[1] if len(args) > 1 else "all"
+        names = ordered_names(groups) if target == "all" else [target]
+        for g in names:
+            if g not in groups:
+                sys.exit(f"kb: no such group '{g}'")
+            for k, d, c in sorted(groups[g], key=lambda r: (r[2], r[0])):
+                print(f"{g:<9}{c:<11}{k:<26}{d}")
+        return
+    if args and args[0] == "--show":
+        if len(args) < 2:
+            sys.exit("kb: --show needs a group")
+        name = args[1]
+        if name != "all" and name not in groups:
+            sys.exit(f"kb: no such group '{name}'")
+        sys.stdout.write(render(groups, name))
+        return
+
+    # group given directly?
+    name = None
+    if args:
+        if args[0] not in groups and args[0] != "all":
+            sys.exit(f"kb: no such group '{args[0]}' "
+                     f"(try: {', '.join(ordered_names(groups))})")
+        name = args[0]
+
+    if name is None:
+        name = pick_group(groups)
+        if name is None:
+            print("available groups:\n  " + "\n  ".join(ordered_names(groups)))
+            return
+        if name == "__cancel__":
+            return
+
+    show(groups, name)
+
+
+if __name__ == "__main__":
+    main()
