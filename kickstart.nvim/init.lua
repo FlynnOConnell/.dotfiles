@@ -107,6 +107,10 @@ end
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
+-- Enable 24-bit truecolor (required for themes and markdown code-block
+-- backgrounds to render correctly; works with the tmux RGB passthrough).
+vim.opt.termguicolors = true
+
 -- Make line numbers default
 vim.opt.number = true
 vim.opt.nu = true
@@ -941,7 +945,7 @@ require('lazy').setup({
       require('nvim-treesitter.install').prefer_git = true
 
       -- Install parsers (new API doesn't use ensure_installed in opts)
-      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'python' }
+      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'vim', 'vimdoc', 'python' }
       for _, parser in ipairs(parsers) do
         local ok, _ = pcall(vim.treesitter.language.inspect, parser)
         if not ok then

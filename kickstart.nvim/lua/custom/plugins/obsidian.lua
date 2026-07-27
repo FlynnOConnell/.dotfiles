@@ -40,7 +40,7 @@ return {
     },
 
     completion = {
-      nvim_cmp = true,
+      -- nvim_cmp removed: completion is now served by the built-in obsidian-ls LSP
       min_chars = 2,
     },
 
@@ -50,7 +50,7 @@ return {
       tag_mappings = { tag_note = '<C-t>', insert_tag = '<C-l>' },
     },
 
-    preferred_link_style = 'wiki',
+    link = { style = 'wiki' },
     open_notes_in = 'current',
     ui = { enable = false },
     statusline = { enabled = false },

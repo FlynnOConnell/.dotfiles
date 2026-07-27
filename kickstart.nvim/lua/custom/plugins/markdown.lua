@@ -151,12 +151,112 @@ return {
     },
   },
   {
+    -- In-buffer markdown renderer (VSCode-preview feel, stays in the terminal).
+    -- Renders headings, code blocks, tables, callouts, checkboxes, bullets etc.
+    -- inline. The line under the cursor drops back to raw text so you can edit,
+    -- so text<->preview "switching" is automatic. <leader>mp fully toggles it.
+    'MeanderingProgrammer/render-markdown.nvim',
+    ft = { 'markdown' },
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-tree/nvim-web-devicons',
+    },
+    config = function()
+      require('render-markdown').setup {
+        -- Render in normal/command/terminal modes; raw text while inserting so
+        -- editing is unobstructed.
+        render_modes = { 'n', 'c', 't' },
+        anti_conceal = { enabled = true }, -- reveal raw text on the cursor line
+        heading = {
+          icons = { '󰲡 ', '󰲣 ', '󰲥 ', '󰲧 ', '󰲩 ', '󰲫 ' },
+          sign = false,
+          width = 'block',
+          left_pad = 0,
+          right_pad = 2,
+        },
+        code = {
+          style = 'full',
+          width = 'block',
+          border = 'thick',
+          left_pad = 2,
+          right_pad = 2,
+          language_pad = 2,
+          min_width = 60, -- consistent panel width like an editor
+        },
+        bullet = {
+          icons = { '●', '○', '◆', '◇' },
+        },
+        checkbox = {
+          enabled = true,
+          checked = { icon = '󰄲 ' },
+          unchecked = { icon = '󰄰 ' },
+          -- your in-progress marker [~]
+          custom = {
+            progress = { raw = '[~]', rendered = '󰦖 ', highlight = 'RenderMarkdownWarn' },
+          },
+        },
+        pipe_table = {
+          preset = 'round', -- rounded corners
+          style = 'full',
+          cell = 'trimmed', -- trim padding so wide tables are less likely to clip
+        },
+      }
+
+      -- Explicit highlights so code blocks read as a clearly visible panel
+      -- (like VSCode) instead of an invisible tint, and tables/links stay
+      -- readable. Tuned for tokyonight-night; reapplied on any theme switch.
+      local function md_highlights()
+        -- Code panels: darker than the editor bg (#1a1b26) so they read as a
+        -- distinct, near-black card; neutral (not blue) inline-code text.
+        vim.api.nvim_set_hl(0, 'RenderMarkdownCode', { bg = '#15161e' })
+        vim.api.nvim_set_hl(0, 'RenderMarkdownCodeBorder', { fg = '#292e42', bg = '#15161e' })
+        vim.api.nvim_set_hl(0, 'RenderMarkdownCodeInline', { bg = '#24283b', fg = '#c0caf5' })
+        vim.api.nvim_set_hl(0, 'RenderMarkdownTableHead', { fg = '#7aa2f7', bold = true })
+        vim.api.nvim_set_hl(0, 'RenderMarkdownTableRow', { fg = '#c0caf5' })
+        vim.api.nvim_set_hl(0, 'RenderMarkdownTableFill', { fg = '#3b4261' })
+        vim.api.nvim_set_hl(0, 'RenderMarkdownLink', { fg = '#7dcfff', underline = true })
+      end
+      md_highlights()
+      vim.api.nvim_create_autocmd('ColorScheme', { callback = md_highlights })
+
+      -- Full render-view via glow in a side split. Unlike the in-buffer
+      -- renderer, glow reflows tables and WRAPS cell text to width, so wide
+      -- tables stay legible — the VSCode-preview behavior. Toggles open/closed.
+      local glow_win = nil
+      local function glow_preview()
+        if glow_win and vim.api.nvim_win_is_valid(glow_win) then
+          vim.api.nvim_win_close(glow_win, true)
+          glow_win = nil
+          return
+        end
+        local file = vim.fn.expand '%:p'
+        if file == '' or vim.bo.filetype ~= 'markdown' then
+          return
+        end
+        local src = vim.api.nvim_get_current_win()
+        vim.cmd 'botright vsplit | enew'
+        glow_win = vim.api.nvim_get_current_win()
+        vim.api.nvim_win_set_width(glow_win, math.floor(vim.o.columns * 0.45))
+        local width = math.max(60, vim.api.nvim_win_get_width(glow_win) - 4)
+        vim.fn.jobstart({ 'glow', '-s', 'dark', '-w', tostring(width), file }, { term = true })
+        vim.bo.bufhidden = 'wipe'
+        vim.cmd 'stopinsert'
+        vim.api.nvim_set_current_win(src) -- keep the cursor in the text
+      end
+      vim.keymap.set('n', '<leader>mv', glow_preview, { desc = 'Markdown [V]iew (glow split, wraps tables)' })
+    end,
+    keys = {
+      { '<leader>mp', '<cmd>RenderMarkdown toggle<cr>', desc = '[M]arkdown [P]review toggle (in-buffer)', ft = 'markdown' },
+    },
+  },
+  {
+    -- Browser preview, kept as a fallback on <leader>mP (shift).
     'iamcco/markdown-preview.nvim',
     cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
     ft = { 'markdown' },
     build = 'cd app && npm install',
     keys = {
-      { '<leader>mp', '<cmd>MarkdownPreviewToggle<cr>', desc = '[M]arkdown [P]review toggle' },
+      { '<leader>mP', '<cmd>MarkdownPreviewToggle<cr>', desc = '[M]arkdown browser [P]review' },
     },
   },
 }
