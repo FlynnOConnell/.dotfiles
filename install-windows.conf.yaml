@@ -30,8 +30,10 @@
       path: dots/.config/powershell/profile.ps1
 
     # Neovim configuration (Windows uses $LOCALAPPDATA/nvim)
+    # Points at the standalone kickstart.nvim repo (sibling of .dotfiles), not the
+    # embedded snapshot in this repo, so nvim always tracks the current config.
     ~/AppData/Local/nvim:
-      path: kickstart.nvim
+      path: ~/repos/kickstart.nvim
 
     # Vim configurations
     ~/.vimrc:

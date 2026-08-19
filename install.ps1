@@ -47,7 +47,7 @@
 # ============================================================================
 #
 # SYMLINKS (via dotbot):
-#   ~/.config/nvim      -> kickstart.nvim (full Neovim config)
+#   ~/.config/nvim      -> ~/repos/kickstart.nvim (standalone Neovim config repo)
 #   ~/.vimrc            -> dots/.config/vim/.vimrc
 #   ~/.ideavimrc        -> dots/.ideavimrc
 #   ~/.bashrc           -> dots/.bashrc
@@ -163,7 +163,7 @@ function Install-SymlinksElevated {
 `$dotfiles = '$DOTFILES_ROOT'
 
 # Neovim config
-`$nvimTarget = Join-Path `$dotfiles 'kickstart.nvim'
+`$nvimTarget = Join-Path `$env:USERPROFILE 'repos\kickstart.nvim'
 `$nvimLink = Join-Path `$env:LOCALAPPDATA 'nvim'
 if (Test-Path `$nvimLink) { Remove-Item -Recurse -Force `$nvimLink }
 New-Item -ItemType SymbolicLink -Path `$nvimLink -Target `$nvimTarget -Force | Out-Null
@@ -250,6 +250,28 @@ function Install-Uv {
     Write-Success "uv installed"
 }
 
+function Install-PowerShell7 {
+    if (Test-CommandExists "pwsh") {
+        $version = pwsh --version
+        Write-Info "PowerShell 7 already installed: $version"
+        return
+    }
+    if (-not (Test-CommandExists "winget")) {
+        Write-Err "winget not found; cannot install PowerShell 7. Install App Installer from Microsoft Store, then re-run."
+        return
+    }
+    Write-Info "Installing PowerShell 7 (required for `$PROFILE and Windows Terminal defaults)..."
+    $ErrorActionPreference = "Continue"
+    $output = winget install -e --id Microsoft.PowerShell --accept-package-agreements --accept-source-agreements --disable-interactivity 2>&1 | Out-String
+    $ErrorActionPreference = "Stop"
+    if ($LASTEXITCODE -eq 0 -or $output -match "already installed") {
+        Write-Success "PowerShell 7 installed"
+    } else {
+        Write-Warn "Failed to install PowerShell 7: exit code $LASTEXITCODE"
+    }
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+}
+
 function Install-Dotbot {
     # Check if dotbot is already installed
     $installed = uv tool list 2>$null | Select-String "dotbot"
@@ -258,7 +280,9 @@ function Install-Dotbot {
         return
     }
     Write-Info "Installing dotbot via uv..."
+    $ErrorActionPreference = "Continue"
     $output = uv tool install dotbot 2>&1
+    $ErrorActionPreference = "Stop"
     if ($LASTEXITCODE -eq 0) {
         Write-Success "dotbot installed"
     } else {
@@ -295,6 +319,11 @@ $APPS = @{
         Name = "Neovim"
         Description = "Hyperextensible Vim-based text editor"
         Winget = "Neovim.Neovim"
+    }
+    "tree-sitter-cli" = @{
+        Name = "tree-sitter CLI"
+        Description = "Required by nvim-treesitter (main branch) to compile parsers"
+        Winget = "tree-sitter.tree-sitter-cli"
     }
     "lazygit" = @{
         Name = "Lazygit"
@@ -442,7 +471,7 @@ function Install-App {
     }
 
     # Also check winget list for installed apps (some don't add to PATH)
-    $installed = winget list --id $AppInfo.Winget 2>$null | Out-String
+    $installed = winget list --id $AppInfo.Winget --accept-source-agreements --disable-interactivity 2>$null | Out-String
     if ($installed -match $AppInfo.Winget) {
         Write-Info "$($AppInfo.Name) already installed (via winget)"
         return $true
@@ -451,7 +480,9 @@ function Install-App {
     Write-Info "Installing $($AppInfo.Name)..."
 
     if ($AppInfo.Winget) {
-        $output = winget install -e --id $AppInfo.Winget --accept-package-agreements --accept-source-agreements 2>&1 | Out-String
+        $ErrorActionPreference = "Continue"
+        $output = winget install -e --id $AppInfo.Winget --accept-package-agreements --accept-source-agreements --disable-interactivity 2>&1 | Out-String
+        $ErrorActionPreference = "Stop"
 
         if ($LASTEXITCODE -eq 0) {
             Write-Success "$($AppInfo.Name) installed"
@@ -889,6 +920,9 @@ function Main {
 
     # Step 1: Install uv
     Install-Uv
+
+    # Step 1.5: Install PowerShell 7 (required by $PROFILE setup and Windows Terminal config below)
+    Install-PowerShell7
 
     # Step 2: Install dotbot
     Install-Dotbot
