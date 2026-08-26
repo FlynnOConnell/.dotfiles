@@ -44,6 +44,15 @@ if [ -d "$HOME/.local/share/nvim-python" ]; then
     export PYTHON3_HOST_PROG="$HOME/.local/share/nvim-python/bin/python"
 fi
 
+# hpc environment (locations, PATH, transfer + scheduler helpers).
+# sourced before aliases and the prompt so $HPC_* is set for both; it is a no-op
+# on a machine that is not a cluster.
+HPC_SKIP_PROMPT=1   # starship and zoxide are initialised below, not twice
+for _hpcrc in "$HOME/.dotfiles/hpc/hpc.sh" "$HOME/.config/hpc/hpc.sh"; do
+    [ -r "$_hpcrc" ] && { . "$_hpcrc"; break; }
+done
+unset _hpcrc HPC_SKIP_PROMPT
+
 # source server aliases
 if [ -f ~/.aliases-server ]; then
     source ~/.aliases-server

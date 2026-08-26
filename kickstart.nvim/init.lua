@@ -696,15 +696,26 @@ require('lazy').setup({
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
+      --
+      -- mason fetches a lot of these through npm or cargo. asking for a tool
+      -- whose runtime is missing fails on every startup, which is what makes a
+      -- bare server (no node, no compiler) throw a wall of errors. so only ask
+      -- for what this machine can actually install.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
+        'stylua', -- prebuilt binary, no runtime needed
         -- ruff is installed via uv: uv tool install ruff
-        'markdownlint',
-        'matlab-language-server',
-        'prettier',
-        'rust-analyzer',
       })
+      if vim.fn.executable 'npm' == 1 then
+        vim.list_extend(ensure_installed, {
+          'markdownlint',
+          'matlab-language-server',
+          'prettier',
+        })
+      end
+      if vim.fn.executable 'cargo' == 1 then
+        vim.list_extend(ensure_installed, { 'rust-analyzer' })
+      end
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
@@ -773,9 +784,12 @@ require('lazy').setup({
           lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
         }
       end,
+      -- conform runs the first formatter it finds, so listing a tool that is
+      -- not installed is harmless - but flake8 is a linter and never formatted
+      -- anything. ruff is what actually gets installed here (uv tool install ruff).
       formatters_by_ft = {
         lua = { 'stylua' },
-        python = { 'flake8', 'black' },
+        python = { 'ruff_format', 'black' },
         javascript = { 'prettierd', 'prettier' },
       },
       stop_after_first_successful = true,
@@ -944,12 +958,25 @@ require('lazy').setup({
       -- Prefer git instead of curl in order to improve connectivity in some environments
       require('nvim-treesitter.install').prefer_git = true
 
+      -- building a parser needs either the tree-sitter CLI or a C compiler.
+      -- without one, every TSInstall fails with
+      --   Error during "tree-sitter build": ENOENT ... 'tree-sitter'
+      -- neovim already ships parsers for c, lua, markdown, query, vim and
+      -- vimdoc, so on a toolchain-less box we just use those and stay quiet.
+      local can_build = vim.fn.executable 'tree-sitter' == 1
+        or vim.fn.executable 'cc' == 1
+        or vim.fn.executable 'gcc' == 1
+        or vim.fn.executable 'clang' == 1
+      if not can_build then
+        return
+      end
+
       -- Install parsers (new API doesn't use ensure_installed in opts)
       local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'vim', 'vimdoc', 'python' }
       for _, parser in ipairs(parsers) do
         local ok, _ = pcall(vim.treesitter.language.inspect, parser)
         if not ok then
-          vim.cmd('TSInstall ' .. parser)
+          pcall(vim.cmd, 'TSInstall ' .. parser)
         end
       end
     end,

@@ -177,3 +177,9 @@ if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
 if (Get-Command zoxide -ErrorAction SilentlyContinue) {
     Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
 }
+
+# git bash on PATH, so .sh scripts (hpc/deploy.sh) run from powershell
+$GitBin = "C:\Program Files\Git\bin"
+if ((Test-Path $GitBin) -and ($env:Path -notlike "*$GitBin*")) {
+    $env:Path = "$env:Path;$GitBin"
+}

@@ -6,7 +6,12 @@ return {
     config = function()
       local lint = require 'lint'
 
-      lint.linters_by_ft = { markdown = { 'markdownlint' }, }
+      -- nvim-lint runs the linter on every BufEnter/BufWritePost, so a linter
+      -- that is not installed errors constantly. register only what exists.
+      lint.linters_by_ft = {}
+      if vim.fn.executable 'markdownlint' == 1 then
+        lint.linters_by_ft.markdown = { 'markdownlint' }
+      end
       -- lint.linters_by_ft = { python = { 'black' }, }
       -- To allow other plugins to add linters to require('lint').linters_by_ft,
       -- instead set linters_by_ft like this:
@@ -45,7 +50,10 @@ return {
       vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
         group = lint_augroup,
         callback = function()
-          require('lint').try_lint()
+          -- a missing or misbehaving linter should never interrupt editing
+          pcall(function()
+            require('lint').try_lint()
+          end)
         end,
       })
     end,

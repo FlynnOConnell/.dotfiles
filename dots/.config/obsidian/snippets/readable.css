@@ -10,8 +10,8 @@ body {
      Prose was rendering in JetBrainsMono (a monospace font), which is hard
      to read for long text. Switch reading/editor text to a real sans face.
      Code blocks & inline code keep the monospace font below. */
-  --font-text-theme: "Noto Sans", ui-sans-serif, sans-serif;
-  --font-text: "Noto Sans", ui-sans-serif, sans-serif;
+  --font-text-theme: "Segoe UI", "Noto Sans", sans-serif;
+  --font-text: "Segoe UI", "Noto Sans", sans-serif;
 
   /* --- Bold text ----------------------------------------------------------
      Catppuccin colors every **bold** word sapphire (blue). Use the normal
@@ -26,4 +26,9 @@ body {
   --code-normal: var(--text-normal);
   --code-comment: var(--text-muted);
   --code-punctuation: var(--text-normal);
+
+  /* --- Checked checkboxes ---------------------------------------------------
+     Catppuccin strikes through completed checklist items, which makes them
+     hard to read back later. Keep the done-color accent, drop the strike. */
+  --checklist-done-decoration: none;
 }

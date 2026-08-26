@@ -14,7 +14,10 @@
 
 - shell:
   -
-    command: git submodule update --init --recursive
+    # only dotbot, and never fatal: this config is also deployed by pushing a
+    # working copy without .git, and the server install gets dotbot from uv
+    # anyway. ohmyzsh is a desktop concern and is deliberately not initialised.
+    command: git submodule update --init dotbot 2>/dev/null || true
     description: installing submodules
     stdout: false
     stderr: false
@@ -67,6 +70,10 @@
     # reference
     ~/.config/cheatsheets:
       path: dots/.config/cheatsheets
+
+    # hpc environment (locations, transfer + scheduler helpers)
+    ~/.config/hpc:
+      path: hpc
 
     # shell prompt
     ~/.config/starship.toml:

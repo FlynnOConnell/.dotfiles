@@ -1,0 +1,111 @@
+{
+  // ---------------------------------------------------------------
+  // VSCodeVim -- port of ~/.dotfiles/dots/.ideavimrc + .config/vim/.vimrc
+  // extension: vscodevim.vim
+  // ---------------------------------------------------------------
+  "vim.leader": "<space>",
+  "vim.useSystemClipboard": true,
+  "vim.hlsearch": true,
+  "vim.incsearch": true,
+  "vim.ignorecase": true,
+  "vim.smartcase": true,
+  "vim.surround": true,
+  "vim.highlightedyank.enable": true,
+  "vim.foldfix": true,
+
+  // kj -> normal mode (learnvimscriptthehardway)
+  "vim.insertModeKeyBindings": [
+    { "before": ["k", "j"], "after": ["<Esc>"] }
+  ],
+
+  "vim.visualModeKeyBindingsNonRecursive": [
+    { "before": ["k", "j"], "after": ["<Esc>"] },
+    { "before": ["<C-j>"], "after": ["<Esc>"] },
+    { "before": ["<"], "commands": ["editor.action.outdentLines"] },
+    { "before": [">"], "commands": ["editor.action.indentLines"] },
+    { "before": ["<leader>", "s"], "after": ["y", ":", "%", "s", "/", "<C-r>", "\"", "/", "/", "g", "I", "c", "<left>", "<left>", "<left>", "<left>"] }
+  ],
+
+  "vim.normalModeKeyBindingsNonRecursive": [
+    // keep the cursor centered
+    { "before": ["j"], "after": ["j", "z", "z"] },
+    { "before": ["k"], "after": ["k", "z", "z"] },
+    { "before": ["n"], "after": ["n", "z", "z", "z", "v"] },
+    { "before": ["N"], "after": ["N", "z", "z", "z", "v"] },
+    { "before": ["<C-d>"], "after": ["<C-d>", "z", "z"] },
+    { "before": ["<C-u>"], "after": ["<C-u>", "z", "z"] },
+
+    // window / split management
+    { "before": ["<C-h>"], "commands": ["workbench.action.focusLeftGroup"] },
+    { "before": ["<C-l>"], "commands": ["workbench.action.focusRightGroup"] },
+    { "before": ["<C-k>"], "commands": ["workbench.action.focusAboveGroup"] },
+    { "before": ["<C-j>"], "commands": ["workbench.action.focusBelowGroup"] },
+
+    // file tree / explorer
+    { "before": ["\\"], "commands": ["workbench.view.explorer"] },
+    { "before": ["<BS>"], "commands": ["workbench.action.navigateBack"] },
+
+    // LSP (matches the ideavim / neovim bindings)
+    { "before": ["g", "d"], "commands": ["editor.action.revealDefinition"] },
+    { "before": ["g", "D"], "commands": ["editor.action.goToTypeDefinition"] },
+    { "before": ["g", "I"], "commands": ["editor.action.goToImplementation"] },
+    { "before": ["g", "r"], "commands": ["editor.action.goToReferences"] },
+    { "before": ["g", "n"], "commands": ["editor.action.marker.next"] },
+    { "before": ["g", "p"], "commands": ["editor.action.marker.prev"] },
+    { "before": ["g", "z"], "commands": ["workbench.action.toggleZenMode"] },
+    { "before": ["K"], "commands": ["editor.action.showHover"] },
+
+    { "before": ["<leader>", "r", "n"], "commands": ["editor.action.rename"] },
+    { "before": ["<leader>", "c", "a"], "commands": ["editor.action.quickFix"] },
+    { "before": ["<leader>", "e"], "commands": ["editor.action.marker.next"] },
+    { "before": ["<leader>", "d", "s"], "commands": ["workbench.action.gotoSymbol"] },
+    { "before": ["<leader>", "w", "s"], "commands": ["workbench.action.showAllSymbols"] },
+    { "before": ["<leader>", "f"], "commands": ["workbench.action.quickOpen"] },
+    { "before": ["<leader>", "x"], "commands": ["workbench.action.showAllEditors"] },
+    { "before": ["<leader>", "c"], "commands": ["workbench.action.showCommands"] },
+    { "before": ["<leader>", "w"], "commands": ["workbench.action.files.save"] },
+    { "before": ["<leader>", "q"], "commands": ["workbench.action.closeActiveEditor"] },
+
+    // folds
+    { "before": ["<leader>", "z", "o"], "commands": ["editor.unfoldAll"] },
+    { "before": ["<leader>", "z", "c"], "commands": ["editor.foldAll"] },
+    { "before": ["<leader>", "z", "r"], "commands": ["editor.unfold"] },
+    { "before": ["<leader>", "z", "m"], "commands": ["editor.fold"] },
+
+    // run / debug (,-prefixed, same as ideavim)
+    { "before": [",", "r"], "commands": ["workbench.action.debug.run"] },
+    { "before": [",", "d"], "commands": ["workbench.action.debug.start"] },
+    { "before": [",", "b"], "commands": ["editor.debug.action.toggleBreakpoint"] },
+    { "before": [",", "a"], "commands": ["workbench.debug.action.focusBreakpointsView"] },
+    { "before": [",", "s"], "commands": ["workbench.action.debug.stepOver"] },
+    { "before": [",", "i"], "commands": ["workbench.action.debug.stepInto"] },
+    { "before": [",", "o"], "commands": ["workbench.action.debug.stepOut"] },
+    { "before": [",", "c"], "commands": ["workbench.action.debug.continue"] }
+  ],
+
+  // let vim own these; leave copy/paste/find to the IDE
+  "vim.handleKeys": {
+    "<C-c>": false,
+    "<C-v>": false,
+    "<C-f>": false,
+    "<C-a>": false,
+    "<C-w>": false,
+    "<C-p>": false,
+    "<C-b>": false,
+    "<C-n>": false
+  },
+
+  // ---------------------------------------------------------------
+  // editor
+  // ---------------------------------------------------------------
+  "editor.lineNumbers": "relative",
+  "editor.cursorSurroundingLines": 8,
+  "editor.tabSize": 4,
+  "editor.insertSpaces": true,
+  "editor.renderLineHighlight": "line",
+  "editor.matchBrackets": "always",
+  "editor.minimap.enabled": false,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "workbench.colorTheme": "Default Dark Modern"
+}

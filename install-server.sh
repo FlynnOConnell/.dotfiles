@@ -51,6 +51,16 @@ command_exists() {
     command -v "$1" &>/dev/null
 }
 
+# latest release version for a repo, without any leading "v".
+# the api returns pretty-printed json for some repos and one long line for
+# others, so isolate the field with grep -o instead of trusting line structure -
+# a greedy sed over a single-line blob captures garbage.
+gh_latest_version() {
+    local json
+    json=$(curl -fsSL "https://api.github.com/repos/$1/releases/latest") || return 1
+    printf '%s' "$json" | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | cut -d'"' -f4 | sed 's/^v//'
+}
+
 ensure_dirs() {
     mkdir -p "$LOCAL_BIN"
     mkdir -p "$LOCAL_SHARE"
@@ -183,9 +193,15 @@ install_fzf() {
     fi
 
     info "installing fzf..."
-    local fzf_url="https://github.com/junegunn/fzf/releases/latest/download/fzf-${ARCH_SUFFIX}-${OS}.tar.gz"
 
-    if curl -fsSL "$fzf_url" | tar xz -C "$LOCAL_BIN" 2>/dev/null; then
+    # asset names are fzf-<version>-linux_<goarch>.tar.gz, not the arch triple
+    local fzf_arch="amd64"
+    [[ "$ARCH_SUFFIX" == "aarch64" ]] && fzf_arch="arm64"
+    local fzf_version
+    fzf_version=$(gh_latest_version junegunn/fzf)
+    local fzf_url="https://github.com/junegunn/fzf/releases/download/v${fzf_version}/fzf-${fzf_version}-${OS}_${fzf_arch}.tar.gz"
+
+    if [[ -n "$fzf_version" ]] && curl -fsSL "$fzf_url" | tar xz -C "$LOCAL_BIN" 2>/dev/null; then
         ok "fzf installed"
         return 0
     fi
@@ -214,7 +230,8 @@ install_ripgrep() {
 
     # get latest version
     local rg_version
-    rg_version=$(curl -fsSL "https://api.github.com/repos/BurntSushi/ripgrep/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+    rg_version=$(gh_latest_version BurntSushi/ripgrep)
+    [[ -n "$rg_version" ]] || { warn "could not determine rg version"; return 1; }
 
     local rg_url="https://github.com/BurntSushi/ripgrep/releases/download/${rg_version}/ripgrep-${rg_version}-${ARCH_SUFFIX}-unknown-linux-musl.tar.gz"
 
@@ -240,7 +257,8 @@ install_fd() {
     info "installing fd..."
 
     local fd_version
-    fd_version=$(curl -fsSL "https://api.github.com/repos/sharkdp/fd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"v?([^"]+)".*/\1/')
+    fd_version=$(gh_latest_version sharkdp/fd)
+    [[ -n "$fd_version" ]] || { warn "could not determine fd version"; return 1; }
 
     local fd_url="https://github.com/sharkdp/fd/releases/download/v${fd_version}/fd-v${fd_version}-${ARCH_SUFFIX}-unknown-linux-musl.tar.gz"
 
@@ -266,7 +284,8 @@ install_lazygit() {
     info "installing lazygit..."
 
     local lg_version
-    lg_version=$(curl -fsSL "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep '"tag_name"' | sed -E 's/.*"v?([^"]+)".*/\1/')
+    lg_version=$(gh_latest_version jesseduffield/lazygit)
+    [[ -n "$lg_version" ]] || { warn "could not determine lg version"; return 1; }
 
     local arch_name="$ARCH_SUFFIX"
     [[ "$arch_name" == "aarch64" ]] && arch_name="arm64"
@@ -329,7 +348,8 @@ install_bat() {
     info "installing bat..."
 
     local bat_version
-    bat_version=$(curl -fsSL "https://api.github.com/repos/sharkdp/bat/releases/latest" | grep '"tag_name"' | sed -E 's/.*"v?([^"]+)".*/\1/')
+    bat_version=$(gh_latest_version sharkdp/bat)
+    [[ -n "$bat_version" ]] || { warn "could not determine bat version"; return 1; }
 
     local bat_url="https://github.com/sharkdp/bat/releases/download/v${bat_version}/bat-v${bat_version}-${ARCH_SUFFIX}-unknown-linux-musl.tar.gz"
 
@@ -355,7 +375,8 @@ install_delta() {
     info "installing delta..."
 
     local delta_version
-    delta_version=$(curl -fsSL "https://api.github.com/repos/dandavison/delta/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+    delta_version=$(gh_latest_version dandavison/delta)
+    [[ -n "$delta_version" ]] || { warn "could not determine delta version"; return 1; }
 
     local delta_url="https://github.com/dandavison/delta/releases/download/${delta_version}/delta-${delta_version}-${ARCH_SUFFIX}-unknown-linux-musl.tar.gz"
 
@@ -381,7 +402,8 @@ install_eza() {
     info "installing eza..."
 
     local eza_version
-    eza_version=$(curl -fsSL "https://api.github.com/repos/eza-community/eza/releases/latest" | grep '"tag_name"' | sed -E 's/.*"v?([^"]+)".*/\1/')
+    eza_version=$(gh_latest_version eza-community/eza)
+    [[ -n "$eza_version" ]] || { warn "could not determine eza version"; return 1; }
 
     local arch_name="$ARCH_SUFFIX"
     local eza_url="https://github.com/eza-community/eza/releases/download/v${eza_version}/eza_${arch_name}-unknown-linux-musl.tar.gz"
@@ -434,80 +456,97 @@ install_uv_tools() {
 }
 
 show_menu() {
-    echo ""
-    echo "Optional Tools (installed to ~/.local/bin)"
-    echo ""
-    echo "  [1] neovim     - hyperextensible vim-based text editor"
-    echo "  [2] fzf        - command-line fuzzy finder"
-    echo "  [3] ripgrep    - fast regex search tool (rg)"
-    echo "  [4] fd         - fast find alternative"
-    echo "  [5] lazygit    - terminal UI for git"
-    echo "  [6] starship   - cross-shell prompt"
-    echo "  [7] zoxide     - smarter cd command"
-    echo "  [8] bat        - cat with syntax highlighting"
-    echo "  [9] delta      - git diff viewer"
-    echo "  [10] eza       - modern ls replacement"
-    echo ""
-    echo "  [A] All - install all tools"
-    echo "  [E] Essentials - neovim, fzf, ripgrep, fd, lazygit"
-    echo "  [N] None - skip tool installation"
-    echo ""
+    # menu goes to stderr and the answer is read from the terminal, so the
+    # caller can capture just the selection on stdout.
+    {
+        echo ""
+        echo "Optional Tools (installed to ~/.local/bin)"
+        echo ""
+        echo "  [1] neovim     - hyperextensible vim-based text editor"
+        echo "  [2] fzf        - command-line fuzzy finder"
+        echo "  [3] ripgrep    - fast regex search tool (rg)"
+        echo "  [4] fd         - fast find alternative"
+        echo "  [5] lazygit    - terminal UI for git"
+        echo "  [6] starship   - cross-shell prompt"
+        echo "  [7] zoxide     - smarter cd command"
+        echo "  [8] bat        - cat with syntax highlighting"
+        echo "  [9] delta      - git diff viewer"
+        echo "  [10] eza       - modern ls replacement"
+        echo ""
+        echo "  [A] All - install all tools"
+        echo "  [E] Essentials - neovim, fzf, ripgrep, fd, lazygit"
+        echo "  [N] None - skip tool installation"
+        echo ""
+        printf "Select tools (comma-separated numbers, A/E/N): "
+    } >&2
 
-    read -rp "Select tools (comma-separated numbers, A/E/N): " selection
-    selection="${selection:-N}"
-    selection=$(echo "$selection" | tr '[:lower:]' '[:upper:]')
+    local selection=""
+    { read -r selection </dev/tty; } 2>/dev/null || true
+    echo "${selection:-N}" | tr '[:lower:]' '[:upper:]'
+}
 
-    echo "$selection"
+# non-interactive selection: DOTFILES_TOOLS=all|essentials|none|1,3,5
+# used by hpc/deploy.sh and by `curl ... | bash`, where stdin is the script.
+resolve_tools() {
+    if [[ -n "${DOTFILES_TOOLS:-}" ]]; then
+        echo "$DOTFILES_TOOLS" | tr '[:lower:]' '[:upper:]'
+    elif [[ -t 0 ]] || (: </dev/tty) 2>/dev/null; then
+        # -r /dev/tty is not enough: it passes in contexts where opening the
+        # terminal still fails, which would print the menu and then die.
+        show_menu
+    else
+        warn "no terminal for the tool menu; set DOTFILES_TOOLS to install tools" >&2
+        echo "N"
+    fi
+}
+
+# tools are independent, and release URLs break or rate-limit from time to time.
+# a single failure must not abort the run, so each install is isolated and the
+# failures are collected and reported at the end.
+FAILED_TOOLS=()
+try_install() {
+    local name="$1"
+    if "install_${name}"; then
+        return 0
+    else
+        FAILED_TOOLS+=("$name")
+        return 0
+    fi
 }
 
 install_selected_tools() {
     local selection="$1"
+    local all=(neovim fzf ripgrep fd lazygit starship zoxide bat delta eza)
+    local essentials=(neovim fzf ripgrep fd lazygit)
+    local t
 
     case "$selection" in
         N|NONE)
             info "skipping tool installation"
-            return
+            return 0
             ;;
         A|ALL)
-            install_neovim
-            install_fzf
-            install_ripgrep
-            install_fd
-            install_lazygit
-            install_starship
-            install_zoxide
-            install_bat
-            install_delta
-            install_eza
-            return
+            for t in "${all[@]}"; do try_install "$t"; done
+            return 0
             ;;
         E|ESSENTIALS)
-            install_neovim
-            install_fzf
-            install_ripgrep
-            install_fd
-            install_lazygit
-            return
+            for t in "${essentials[@]}"; do try_install "$t"; done
+            return 0
             ;;
     esac
 
-    # parse comma-separated numbers
+    # comma-separated numbers, indexing into $all
+    local choice
     IFS=',' read -ra choices <<< "$selection"
     for choice in "${choices[@]}"; do
-        choice=$(echo "$choice" | tr -d ' ')
-        case "$choice" in
-            1) install_neovim ;;
-            2) install_fzf ;;
-            3) install_ripgrep ;;
-            4) install_fd ;;
-            5) install_lazygit ;;
-            6) install_starship ;;
-            7) install_zoxide ;;
-            8) install_bat ;;
-            9) install_delta ;;
-            10) install_eza ;;
-        esac
+        choice="${choice// /}"
+        if [[ "$choice" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#all[@]} )); then
+            try_install "${all[$((choice - 1))]}"
+        else
+            warn "ignoring unknown selection: $choice"
+        fi
     done
+    return 0
 }
 
 show_summary() {
@@ -529,6 +568,20 @@ show_summary() {
     echo "  Machine-specific customizations:"
     echo "    create ~/.bashrc.local for local overrides (not tracked)"
     echo ""
+    if [[ -d /biohpc || -d /lustre || -n "$(command -v sbatch || command -v qsub)" ]]; then
+        echo "  Cluster detected - the shell config loads hpc/hpc.sh automatically."
+        echo "    hpc-where    show site, locations, free space"
+        echo "    hpc-help     transfer + scheduler helpers"
+        echo "    if ~/.bashrc is not ours, run: bash ~/.dotfiles/hpc/setup.sh"
+        echo ""
+    fi
+
+    if (( ${#FAILED_TOOLS[@]} > 0 )); then
+        warn "these tools did not install: ${FAILED_TOOLS[*]}"
+        echo "    re-run to retry - release downloads fail transiently"
+        echo ""
+    fi
+
     echo -e "  ${YELLOW}NEXT STEPS:${NC}"
     echo "    1. restart your shell or run: source ~/.bashrc"
     echo "    2. open nvim and run :Lazy sync to install plugins"
@@ -557,7 +610,7 @@ main() {
     install_configs
 
     # tool selection
-    selection=$(show_menu)
+    selection=$(resolve_tools)
     install_selected_tools "$selection"
 
     # python setup
