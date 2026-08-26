@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=job
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=64G
+#SBATCH --time=08:00:00
+#SBATCH --output=%x-%j.out
+## uncomment and set for your cluster:
+##SBATCH --partition=
+##SBATCH --gres=gpu:1
+
+# same environment as a login shell (locations, PATH, uv settings)
+source "$HOME/.dotfiles/hpc/hpc.sh"
+
+# activate a venv if you use one
+# source "$HPC_USER/venvs/main/bin/activate"
+
+set -euo pipefail
+cd "${SLURM_SUBMIT_DIR:-$PWD}"
+
+# replace with your command
+echo "running on $(hostname) in $PWD"
