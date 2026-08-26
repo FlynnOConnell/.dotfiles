@@ -129,6 +129,39 @@ vim.opt.showmode = false
 --  See `:help 'clipboard'`
 vim.opt.clipboard = 'unnamedplus'
 
+-- Clipboard on servers and over ssh.
+--  Headless boxes have no xclip/wl-copy/pbcopy, and Neovim only enables its own
+--  OSC 52 fallback when it can prove the terminal supports it, which it cannot
+--  do through tmux or most ssh sessions. So decide it here: in any remote
+--  session, or on any box with no local clipboard tool, a yank writes an OSC 52
+--  escape that the terminal in front of you (Windows Terminal, kitty, wezterm,
+--  iTerm2) turns into a real system clipboard entry.
+--  Paste reads the unnamed register so it never blocks waiting on a terminal
+--  reply; to paste *into* nvim from the host, use the terminal's own paste.
+do
+  local function have(exe)
+    return vim.fn.executable(exe) == 1
+  end
+
+  local remote = vim.env.SSH_TTY or vim.env.SSH_CONNECTION or vim.env.SSH_CLIENT
+  local native = have 'win32yank.exe'
+    or have 'pbcopy'
+    or (vim.env.WAYLAND_DISPLAY ~= nil and have 'wl-copy')
+    or (vim.env.DISPLAY ~= nil and (have 'xclip' or have 'xsel'))
+
+  local ok, osc52 = pcall(require, 'vim.ui.clipboard.osc52')
+  if ok and (remote or not native) then
+    local function paste()
+      return vim.fn.getreg('', 1, true)
+    end
+    vim.g.clipboard = {
+      name = 'OSC 52',
+      copy = { ['+'] = osc52.copy '+', ['*'] = osc52.copy '*' },
+      paste = { ['+'] = paste, ['*'] = paste },
+    }
+  end
+end
+
 -- Enable break indent
 vim.opt.breakindent = true
 
