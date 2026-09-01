@@ -39,16 +39,57 @@ Remove-Item Alias:cat -Force -ErrorAction SilentlyContinue
 function cat { bat --paging=never @args }
 
 # === rm (unix-style) ===
-Remove-Item Alias:rm -ErrorAction SilentlyContinue
+# Remove-Item -Recurse -Force is not enough on Windows: it refuses read-only files
+# (git objects, node_modules), trips over long paths, and prompts on non-empty dirs.
+# This clears attributes first, deletes via .NET, then falls back to `rd /s /q`.
+if (Test-Path Alias:rm) { Remove-Item Alias:rm -Force }
 function rm {
     param(
-        [switch]$r, [switch]$f, [switch]$rf,
+        [switch]$r, [switch]$f, [switch]$rf, [switch]$fr,
         [Parameter(ValueFromRemainingArguments)][string[]]$paths
     )
-    $recurse = $r -or $rf
-    $force = $f -or $rf
+    $recurse = $r -or $rf -or $fr
+    $force   = $f -or $rf -or $fr
+
     foreach ($path in $paths) {
-        Remove-Item $path -Recurse:$recurse -Force:$force -ErrorAction $(if($force){'SilentlyContinue'}else{'Stop'})
+        if ($path -eq '--') { continue }
+
+        # Test-Path first: Resolve-Path pushes to $Error even when silenced
+        if (-not (Test-Path -Path $path)) {
+            if (-not $force) { Write-Error "rm: $path : No such file or directory" }
+            continue
+        }
+        $targets = @(Resolve-Path -Path $path)
+
+        foreach ($target in $targets) {
+            $full = $target.ProviderPath
+            $isDir = Test-Path -LiteralPath $full -PathType Container
+            if ($isDir -and -not $recurse) {
+                Write-Error "rm: $path : is a directory (use -r)"
+                continue
+            }
+            try {
+                if ($isDir) {
+                    Get-ChildItem -LiteralPath $full -Recurse -Force -ErrorAction SilentlyContinue |
+                        Where-Object { $_.Attributes -band [IO.FileAttributes]::ReadOnly } |
+                        ForEach-Object { $_.Attributes = $_.Attributes -band -bnot [IO.FileAttributes]::ReadOnly }
+                    [IO.Directory]::Delete($full, $true)
+                } else {
+                    $item = Get-Item -LiteralPath $full -Force
+                    if ($item.Attributes -band [IO.FileAttributes]::ReadOnly) {
+                        $item.Attributes = $item.Attributes -band -bnot [IO.FileAttributes]::ReadOnly
+                    }
+                    [IO.File]::Delete($full)
+                }
+            } catch {
+                # long paths and lingering handles: cmd uses a different path API
+                if ($isDir) { cmd /c "rd /s /q `"$full`"" 2>$null }
+                else        { cmd /c "del /f /q `"$full`"" 2>$null }
+                if ((Test-Path -LiteralPath $full) -and -not $force) {
+                    Write-Error "rm: $path : $($_.Exception.Message)"
+                }
+            }
+        }
     }
 }
 

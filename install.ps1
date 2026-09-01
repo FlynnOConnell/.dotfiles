@@ -723,22 +723,8 @@ function ll {
 # la - All files
 function la { Get-ChildItem -Force @args }
 
-# Unix-style rm (supports -r, -rf, -f flags)
-Remove-Item Alias:rm -ErrorAction SilentlyContinue
-function rm {
-    param(
-        [switch]`$r,
-        [switch]`$f,
-        [switch]`$rf,
-        [Parameter(ValueFromRemainingArguments)]
-        [string[]]`$paths
-    )
-    `$recurse = `$r -or `$rf
-    `$force = `$f -or `$rf
-    foreach (`$path in `$paths) {
-        Remove-Item `$path -Recurse:`$recurse -Force:`$force -ErrorAction `$(if(`$force){'SilentlyContinue'}else{'Stop'})
-    }
-}
+# Unix-style rm is defined by the dotfiles profile sourced below. Defining it here
+# too left a stale `Remove-Item Alias:rm` that errored on every shell start.
 
 # Quick navigation
 function .. { Set-Location .. }
