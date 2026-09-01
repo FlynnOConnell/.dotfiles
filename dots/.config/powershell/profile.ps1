@@ -155,6 +155,7 @@ function nvim-lsp {
 }
 
 # === Starship prompt ===
+# Must come before zoxide: starship replaces `prompt`, zoxide only wraps it.
 if (Get-Command starship -ErrorAction SilentlyContinue) {
     Invoke-Expression (&starship init powershell)
 }

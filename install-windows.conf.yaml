@@ -44,6 +44,9 @@
     # Development tools
     ~/.config/lazygit:
       path: dots/.config/lazygit
+    # lazygit on Windows reads %LOCALAPPDATA%\lazygit, not ~/.config/lazygit
+    ~/AppData/Local/lazygit/config.yml:
+      path: dots/.config/lazygit/config.yml
     ~/.config/github-copilot:
       path: dots/.config/github-copilot
 

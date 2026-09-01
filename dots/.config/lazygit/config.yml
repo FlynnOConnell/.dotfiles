@@ -45,10 +45,10 @@ gui:
   skipRewordInEditorWarning: false # for skipping the confirmation before launching the reword editor
   border: 'rounded' # one of 'single' | 'double' | 'rounded' | 'hidden'
 git:
-  paging:
-    colorArg: always
-    pager: delta --paging=never -n -s
-    useConfig: false
+  pagers:
+    - colorArg: always
+      pager: delta --paging=never -n -s
+      useConfig: false
   commit:
     signOff: false
     verbose: default # one of 'default' | 'always' | 'never'
@@ -74,11 +74,12 @@ git:
   autoFetch: true
   autoRefresh: true
   branchLogCmd: 'git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium {{branchName}} --'
-  allBranchesLogCmd: 'git log --graph --all --color=always --abbrev-commit --decorate --date=relative  --pretty=medium'
   overrideGpg: false # prevents lazygit from spawning a separate process when using GPG
   disableForcePushing: false
   parseEmoji: false
   diffContextSize: 3 # how many lines of context are shown around a change in diffs
+  allBranchesLogCmds:
+    - git log --graph --all --color=always --abbrev-commit --decorate --date=relative  --pretty=medium
 os:
   editPreset: 'nvim' # see 'Configuring File Editing' section
   edit: ''
@@ -175,7 +176,7 @@ keybinding:
     viewResetOptions: 'D'
     fetch: 'f'
     toggleTreeView: '`'
-    openMergeTool: 'M'
+    openMergeOptions: 'M'
     openStatusFilter: '<c-b>'
   branches:
     createPullRequest: 'o'

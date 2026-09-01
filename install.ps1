@@ -53,6 +53,7 @@
 #   ~/.bashrc           -> dots/.bashrc
 #   ~/.aliases          -> dots/.aliases
 #   ~/.config/lazygit   -> dots/.config/lazygit
+#   %LOCALAPPDATA%\lazygit\config.yml -> dots/.config/lazygit/config.yml (what lazygit actually reads on Windows)
 #   ~/.config/starship.toml -> dots/.config/starship/starship.toml
 #   ~/.config/btop      -> dots/.config/btop
 #   ~/.config/fastfetch -> dots/.config/fastfetch
@@ -208,6 +209,15 @@ foreach (`$link in `$configLinks.GetEnumerator()) {
         Write-Host "[OK] ~/.config/`$(`$link.Key) linked" -ForegroundColor Green
     }
 }
+
+# lazygit on Windows reads %LOCALAPPDATA%\lazygit\config.yml, NOT ~/.config/lazygit
+`$lgDir = Join-Path `$env:LOCALAPPDATA 'lazygit'
+if (-not (Test-Path `$lgDir)) { New-Item -ItemType Directory -Path `$lgDir -Force | Out-Null }
+`$lgLink = Join-Path `$lgDir 'config.yml'
+`$lgTarget = Join-Path `$dotfiles 'dots/.config/lazygit/config.yml'
+if (Test-Path `$lgLink) { Remove-Item -Force `$lgLink }
+New-Item -ItemType SymbolicLink -Path `$lgLink -Target `$lgTarget -Force | Out-Null
+Write-Host "[OK] %LOCALAPPDATA%\lazygit\config.yml linked" -ForegroundColor Green
 
 Write-Host ""
 Write-Host "Symlinks created successfully!" -ForegroundColor Green
@@ -745,15 +755,11 @@ function gco { git checkout @args }
 function gb { git branch @args }
 function glog { git log --oneline --graph --decorate -20 @args }
 
-# Zoxide initialization (if installed)
-if (Get-Command zoxide -ErrorAction SilentlyContinue) {
-    Invoke-Expression (& { (zoxide init powershell | Out-String) })
-}
-
-# Starship prompt (if installed)
-if (Get-Command starship -ErrorAction SilentlyContinue) {
-    Invoke-Expression (&starship init powershell)
-}
+# zoxide and starship are initialized by the dotfiles profile sourced below.
+# Do NOT init them here: zoxide installs its directory-tracking hook by wrapping
+# `prompt`, and starship replaces `prompt` outright, so starship must run first.
+# Initializing zoxide twice is also a no-op (it guards on $__zoxide_hooked), which
+# would leave the hook permanently clobbered and the database empty.
 
 # Source notes functions (gd, gw, gn) from dotfiles
 `$notesProfile = "$notesProfilePath"
@@ -839,6 +845,19 @@ function Install-WindowsTerminalConfig {
             $settings.defaultProfile = $pwsh7Guid
             $modified = $true
             Write-Info "Set PowerShell 7 as default profile"
+        }
+
+        # Open a single new window on launch. "persistedWindowLayout" restores every
+        # window from the previous session, which reopens a pile of terminals at startup.
+        if ($settings.PSObject.Properties.Name -contains "firstWindowPreference") {
+            if ($settings.firstWindowPreference -ne "defaultProfile") {
+                $settings.firstWindowPreference = "defaultProfile"
+                $modified = $true
+                Write-Info "Disabled persisted window layout (was reopening multiple windows)"
+            }
+        } else {
+            $settings | Add-Member -NotePropertyName "firstWindowPreference" -NotePropertyValue "defaultProfile" -Force
+            $modified = $true
         }
 
         # Set default font to Nerd Font
