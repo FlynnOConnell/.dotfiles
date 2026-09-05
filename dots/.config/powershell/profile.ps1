@@ -4,8 +4,13 @@
 $env:Path = "$env:USERPROFILE\.local\bin;$env:Path"
 
 # === Network drives (RBO-S1) ===
+# Mapping synchronously blocked shell startup for ~3s whenever RBO-S1 was slow or
+# unreachable. Fire it off detached instead: /persistent:yes means it only has to
+# succeed once, and failures (off-network, VPN down) are silently discarded.
 if (!(Test-Path Y:)) {
-    net use Y: \\RBO-S1\mbospace /user:foconnell "foconnell@RU2$" /persistent:yes 2>$null
+    Start-Process -FilePath net.exe -WindowStyle Hidden `
+        -ArgumentList 'use', 'Y:', '\\RBO-S1\mbospace', '/user:foconnell', 'foconnell@RU2$', '/persistent:yes' `
+        -ErrorAction SilentlyContinue
 }
 
 # === PSReadLine ===
@@ -217,6 +222,7 @@ if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
 
 # === zoxide (smart cd) - must be last, after starship and any other prompt hooks ===
 if (Get-Command zoxide -ErrorAction SilentlyContinue) {
+    $env:_ZO_DOCTOR = 0   # skip the "configuration issue" check, saves a subprocess and a spurious warning
     Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
 }
 
