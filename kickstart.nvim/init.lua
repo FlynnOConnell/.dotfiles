@@ -807,16 +807,7 @@ require('lazy').setup({
     },
     opts = {
       notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        return {
-          timeout_ms = 500,
-          lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
-        }
-      end,
+      -- no format on save: only <leader>f formats, so a saved file never picks up unrelated reformatting
       -- conform runs the first formatter it finds, so listing a tool that is
       -- not installed is harmless - but flake8 is a linter and never formatted
       -- anything. ruff is what actually gets installed here (uv tool install ruff).
