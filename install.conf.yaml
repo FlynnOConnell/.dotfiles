@@ -73,3 +73,7 @@
     command: git submodule update --init --recursive
     description: Installing submodules
     stdout: true
+  -
+    command: python3 agents/sync_skills.py || python agents/sync_skills.py
+    description: Installing agent skills
+    stdout: true

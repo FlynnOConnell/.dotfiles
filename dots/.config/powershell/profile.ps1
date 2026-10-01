@@ -7,15 +7,23 @@ $env:Path = "$env:USERPROFILE\.local\bin;$env:Path"
 # Mapping synchronously blocked shell startup for ~3s whenever RBO-S1 was slow or
 # unreachable. Fire it off detached instead: /persistent:yes means it only has to
 # succeed once, and failures (off-network, VPN down) are silently discarded.
-if (!(Test-Path Y:)) {
+# Off-network the mapping never lands, so retry at most hourly instead of paying a
+# process spawn on every shell.
+$DotCache = "$env:LOCALAPPDATA\dotfiles"
+$YMark = "$DotCache\ymap"
+if (!(Test-Path Y:) -and (!(Test-Path $YMark) -or (Get-Item $YMark).LastWriteTime -lt [datetime]::Now.AddHours(-1))) {
+    if (!(Test-Path $DotCache)) { New-Item -ItemType Directory -Path $DotCache -Force | Out-Null }
+    Set-Content -Path $YMark -Value '' -Force
     Start-Process -FilePath net.exe -WindowStyle Hidden `
         -ArgumentList 'use', 'Y:', '\\RBO-S1\mbospace', '/user:foconnell', 'foconnell@RU2$', '/persistent:yes' `
         -ErrorAction SilentlyContinue
 }
 
 # === PSReadLine ===
-if (Get-Module -ListAvailable -Name PSReadLine) {
-    Import-Module PSReadLine
+# Get-Module -ListAvailable stats every directory in $env:PSModulePath (one of which is
+# OneDrive-backed) just to learn what the console host already loaded.
+if ($Host.Name -eq 'ConsoleHost') {
+    Import-Module PSReadLine -ErrorAction SilentlyContinue
     Set-PSReadLineOption -EditMode Windows
     Set-PSReadLineOption -PredictionSource History
     Set-PSReadLineOption -PredictionViewStyle ListView
@@ -200,14 +208,34 @@ function nvim-lsp {
     $cheat | bat --language=markdown --style=plain
 }
 
-# === Starship prompt ===
-# Must come before zoxide: starship replaces `prompt`, zoxide only wraps it.
-if (Get-Command starship -ErrorAction SilentlyContinue) {
-    Invoke-Expression (&starship init powershell)
+# === Tool init (starship, zoxide) ===
+# `starship init powershell` only prints a shim that re-launches starship with
+# --print-full-init, so each shell paid 2 starship spawns plus 1 for zoxide. On a cold
+# machine Defender scans every one of those. Cache the generated code instead and run
+# refresh-shell after upgrading either tool.
+$ShellInit = "$DotCache\shell-init.ps1"
+
+function refresh-shell {
+    if (!(Test-Path $DotCache)) { New-Item -ItemType Directory -Path $DotCache -Force | Out-Null }
+    $sb = [System.Text.StringBuilder]::new()
+    # starship must be emitted before zoxide: starship replaces `prompt` outright,
+    # zoxide only wraps whatever prompt already exists
+    if (Get-Command starship -ErrorAction SilentlyContinue) {
+        [void]$sb.AppendLine((& starship init powershell --print-full-init | Out-String))
+    }
+    if (Get-Command zoxide -ErrorAction SilentlyContinue) {
+        [void]$sb.AppendLine('$env:_ZO_DOCTOR = 0')
+        [void]$sb.AppendLine((& zoxide init powershell --cmd cd | Out-String))
+    }
+    [System.IO.File]::WriteAllText($ShellInit, $sb.ToString())
+    Write-Host "rebuilt $ShellInit"
 }
 
+if (!(Test-Path $ShellInit)) { refresh-shell }
+. $ShellInit
+
 # === Startup: fastfetch + quick reference ===
-if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
+if ($Host.Name -eq 'ConsoleHost' -and -not $env:DOTFILES_NO_FETCH) {
     fastfetch
     Write-Host ""
     Write-Host "  quick reference" -ForegroundColor Cyan
@@ -217,13 +245,8 @@ if (Get-Command fastfetch -ErrorAction SilentlyContinue) {
     Write-Host "    on           browse notes (fzf)        lg          lazygit" -ForegroundColor Gray
     Write-Host "    gsync        sync notes + dotfiles     nvim-keys   show nvim keybindings" -ForegroundColor Gray
     Write-Host "    nvim-lsp     lsp cheat sheet           nvim-keys -filter lsp" -ForegroundColor Gray
+    Write-Host "    refresh-shell  rebuild cached starship/zoxide init after upgrading them" -ForegroundColor Gray
     Write-Host ""
-}
-
-# === zoxide (smart cd) - must be last, after starship and any other prompt hooks ===
-if (Get-Command zoxide -ErrorAction SilentlyContinue) {
-    $env:_ZO_DOCTOR = 0   # skip the "configuration issue" check, saves a subprocess and a spurious warning
-    Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
 }
 
 # git bash on PATH, so .sh scripts (hpc/deploy.sh) run from powershell

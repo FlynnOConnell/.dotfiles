@@ -45,9 +45,9 @@ gui:
   skipRewordInEditorWarning: false # for skipping the confirmation before launching the reword editor
   border: 'rounded' # one of 'single' | 'double' | 'rounded' | 'hidden'
 git:
-  pagers:
+  diffRenderers:
     - colorArg: always
-      pager: delta --paging=never -n -s
+      command: delta --paging=never -n -s
       useConfig: false
   commit:
     signOff: false
@@ -56,19 +56,25 @@ git:
     # only applicable to unix users
     manualCommit: false
     # extra args passed to `git merge`, e.g. --no-ff
+
     args: ''
   log:
     # one of date-order, author-date-order, topo-order or default.
+
     # topo-order makes it easier to read the git log graph, but commits may not
+
     # appear chronologically. See https://git-scm.com/docs/git-log#_commit_ordering
     order: 'topo-order'
     # one of always, never, when-maximised
+
     # this determines whether the git graph is rendered in the commits panel
     showGraph: 'always'
     # displays the whole git graph by default in the commits panel (equivalent to passing the `--all` argument to `git log`)
+
     showWholeGraph: false
   skipHookPrefix: WIP
   # The main branches. We colour commits green if they belong to one of these branches,
+
   # so that you can easily see which commits are unique to your branch (coloured in yellow)
   mainBranches: [master, main]
   autoFetch: true
@@ -95,6 +101,7 @@ update:
   days: 14 # how often an update is checked for
 confirmOnQuit: false
 # determines whether hitting 'esc' will quit the application when there is nothing to cancel/close
+
 quitOnTopLevelReturn: false
 disableStartupPopups: false
 notARepository: 'prompt' # one of: 'prompt' | 'create' | 'skip' | 'quit'
@@ -210,7 +217,7 @@ keybinding:
     pasteCommits: 'v'
     tagCommit: 'T'
     checkoutCommit: '<space>'
-    resetCherryPick: '<c-R>'
+    resetCherryPick: '<c-r>'
     copyCommitMessageToClipboard: '<c-y>'
     openLogMenu: '<c-l>'
     viewBisectOptions: 'b'
