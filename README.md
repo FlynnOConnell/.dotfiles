@@ -21,6 +21,17 @@ servers and Windows; the omarchy desktop has its own small script.
 ./install        # runs install-omarchy.sh on an omarchy machine
 ```
 
+On a new omarchy machine, this logs into GitHub, clones the dotfiles and notes
+into `~/repos`, and installs with `--fresh` (omarchy's defaults are moved to
+`~/.dotfiles-backup/` instead of overwriting the repo):
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/FlynnOConnell/.dotfiles/master/bootstrap-omarchy.sh)
+```
+
+Per-machine files (`monitors.lua`) live in `omarchy/hosts/<hostname>/`. A
+machine without its own copy adopts its live one there; commit it.
+
 Omarchy is the source of truth. Anything omarchy ships that isn't in
 `omarchy/` stays as omarchy's default and isn't tracked. To start tracking
 another config, copy it into `omarchy/` at the same path under `~` and add it
