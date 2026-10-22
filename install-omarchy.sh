@@ -7,11 +7,18 @@
 # then relinked, so nothing is lost and `git diff` shows what changed.
 #
 # Everything omarchy ships that isn't listed here is left as omarchy's default.
+#
+# --fresh is for a new machine, where the live files are omarchy's defaults:
+# they're moved to ~/.dotfiles-backup/ instead of adopted over the repo copies.
 
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$REPO/omarchy"
+HOST="$(uname -n)"
+FRESH=0
+[[ ${1:-} == --fresh ]] && FRESH=1
+BACKUP="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 # paths relative to $HOME, mirrored under omarchy/
 FILES=(
@@ -20,7 +27,6 @@ FILES=(
   .config/hypr/bindings.lua
   .config/hypr/hyprland.lua
   .config/hypr/input.lua
-  .config/hypr/monitors.lua
   .config/omarchy/shell.json
   .config/omarchy/extensions/omarchy-menu.jsonc
   .config/omarchy/defaults/agent
@@ -31,6 +37,12 @@ FILES=(
   .config/btop/btop.conf
   .local/bin/utsw-vpn
   .claude/settings.json
+)
+
+# per-machine files, mirrored under omarchy/hosts/<hostname>/. a machine
+# without its own copy yet adopts whatever it has live.
+HOST_FILES=(
+  .config/hypr/monitors.lua
 )
 
 # extra packages on top of omarchy's; installed only when missing
@@ -44,13 +56,21 @@ link() { # link <repo path> <live path>
   if [[ -L $dst && $(readlink -f "$dst") == "$(readlink -f "$src")" ]]; then
     return
   fi
-  if [[ -e $dst && ! -L $dst ]]; then
+  if [[ ! -e $src && ! -e $dst ]]; then
+    return
+  fi
+  if [[ -e $dst && ! -L $dst && $FRESH == 1 && -e $src ]]; then
+    mkdir -p "$(dirname "$BACKUP/${dst#$HOME/}")"
+    mv "$dst" "$BACKUP/${dst#$HOME/}"
+    echo "backup $dst -> $BACKUP"
+  elif [[ -e $dst && ! -L $dst ]]; then
     if [[ -d $dst ]]; then
       echo "skip $dst: is a real directory, move it aside first" >&2
       return
     fi
     if ! cmp -s "$dst" "$src"; then
       echo "adopt $dst -> ${src#$REPO/}"
+      mkdir -p "$(dirname "$src")"
       cp -a "$dst" "$src"
     fi
   fi
@@ -61,6 +81,10 @@ link() { # link <repo path> <live path>
 
 for f in "${FILES[@]}"; do
   link "$SRC/$f" "$HOME/$f"
+done
+
+for f in "${HOST_FILES[@]}"; do
+  link "$SRC/hosts/$HOST/$f" "$HOME/$f"
 done
 
 link "$REPO/nvim" "$HOME/.config/nvim"
