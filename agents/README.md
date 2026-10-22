@@ -1,23 +1,44 @@
 # agents
 
-Coding-agent skills, and the script that installs them into every agent on the machine.
+Coding-agent skills, and the script that installs the ones I've chosen.
 
-Deployed automatically by dotbot (`install.sh` / `install.ps1`). To run it on its own:
+## Choosing skills
+
+Everything is picked in `skills.conf`:
+
+- `source <dir>` — where skills come from: `skills/` here, plus omarchy's
+  `/usr/share/omarchy/default/agents/skills` (`omarchy`, `diagnose-crash`).
+- `agent <name>` — which agents get them. Currently only `claude`; unlisted
+  agents (codex, opencode, ...) have anything this script installed removed.
+- one skill name per line — comment it out and re-run to uninstall it.
 
 ```bash
-python agents/sync_skills.py            # install into every detected agent
-python agents/sync_skills.py --list     # known agents, and which are detected here
+python agents/sync_skills.py            # apply skills.conf
+python agents/sync_skills.py --list     # known agents: selected / detected
 python agents/sync_skills.py --dry-run  # show what would change
-python agents/sync_skills.py --all      # write every target, installed or not
 ```
 
-Standard library only. Windows, macOS, and Linux. Repeat runs are no-ops.
+`./install` runs it too. Standard library only; Windows, macOS, and Linux.
+
+### Plugin skills
+
+Skills published as Claude Code plugins (e.g. fastplotlib) are managed by
+Claude Code, declared in `omarchy/.claude/settings.json`:
+
+```bash
+claude plugin marketplace add fastplotlib/claude-skills
+claude plugin install fastplotlib@fastplotlib-skills   # or: claude plugin disable / uninstall
+```
+
+Both commands write `extraKnownMarketplaces` / `enabledPlugins` into
+`~/.claude/settings.json`, which is a symlink into this repo, so the change
+shows up in `git diff`.
 
 ## What it does
 
 Agents disagree about how they load instructions, so the script covers both conventions.
 
-**Skill directories.** Each `skills/<name>/` is linked into every agent skills directory that exists — `~/.claude/skills`, `~/.codex/skills`, `~/.agents/skills`, `~/.config/opencode/skills`, `~/.gemini/skills`, `~/.cursor/skills`. Links are live, so editing a skill here updates every agent at once. Symlink where possible; on Windows without Developer Mode it falls back to a directory junction, which needs no admin rights.
+**Skill directories.** Each enabled skill is linked into the selected agents' skills directories — `~/.claude/skills`, `~/.codex/skills`, `~/.agents/skills`, `~/.config/opencode/skills`, `~/.gemini/skills`, `~/.cursor/skills`. Links are live, so editing a skill here updates every agent at once. Symlink where possible; on Windows without Developer Mode it falls back to a directory junction, which needs no admin rights.
 
 **A digest file**, for agents that read a single instructions file instead — `~/.codex/AGENTS.md`, `~/.copilot/copilot-instructions.md`, `~/.gemini/GEMINI.md`, `~/.config/opencode/AGENTS.md`, `~/.cursor/AGENTS.md`. The always-on skills are inlined in full and the rest indexed by path. The generated text sits inside a managed block:
 
@@ -28,7 +49,7 @@ Agents disagree about how they load instructions, so the script covers both conv
 
 Anything written above or below that block survives a resync.
 
-Only targets whose parent directory already exists get written, so this installs for the agents actually present. Install a new agent, re-run, and it gets picked up.
+Without any `agent` lines, every agent whose config directory exists is used.
 
 ## Configuration
 
@@ -39,7 +60,7 @@ At the top of `sync_skills.py`:
 
 ## Adding a skill
 
-Create `skills/<name>/SKILL.md` and re-run the script. The description is what the agent matches on, so make it say when to use the skill.
+Create `skills/<name>/SKILL.md`, add its name to `skills.conf`, and re-run the script. The description is what the agent matches on, so make it say when to use the skill.
 
 ```markdown
 ---
