@@ -1,28 +1,43 @@
 # dotfiles
 
-A set of dotfiles and install scripts with cross-platform support for Linux, Windows, and WSL.
+Dotfiles and install scripts for an omarchy desktop, headless linux / HPC
+servers, and Windows. Uses [dotbot](https://github.com/anishathalye/dotbot) for
+servers and Windows; the omarchy desktop has its own small script.
 
-**Goal:** Platform-independent configuration that works seamlessly across Linux (i3wm) and Windows (komorebi) with matching keybindings.
+## Layout
 
-- Uses [dotbot](https://github.com/anishathalye/dotbot) for installation
-- Consistent vim-style keybindings (hjkl) across all platforms
-- Window manager configs that match between i3 and komorebi
+| Path | Used by |
+|---|---|
+| `omarchy/` | omarchy desktop. Mirrors `~`; only the files I've changed from omarchy's defaults |
+| `nvim/` | neovim everywhere (omarchy's LazyVim + my plugins). Linked to `~/.config/nvim` |
+| `dots/` | shell, vim, tmux, lazygit, btop, etc. for servers and Windows |
+| `hpc/` | cluster environment, see below |
+| `agents/` | coding-agent skills; which ones and for which agents is chosen in `agents/skills.conf` |
+| `legacy/` | pre-omarchy configs (i3, kickstart.nvim, kitty, macOS, ...) kept for reference, see `legacy/README.md` |
 
-## Linux Only
-- [i3 desktop environment](https://i3wm.org/)
-- [polybar](https://github.com/polybar/polybar)
-- [x-settings](https://wiki.archlinux.org/title/Xsettingsd)
-- [bottom](https://github.com/ClementTsang/bottom)
-- [rofi app manager](https://github.com/davatorium/rofi)
-- [picom x11 compositor](https://github.com/yshui/picom)
-- [flameshot - screenshot util](https://flameshot.org/)
-- [dunst](https://dunst-project.org/)
-- [tmux + tmux-sessionizer + tpm](https://github.com/tmux/tmux/wiki)
-- [kitty terminal emulator](https://sw.kovidgoyal.net/kitty/)
-- [zsh shell + oh-my-zsh](https://ohmyz.sh/)
-- [neovim + ideavim configs](https://github.com/tmux/tmux/wiki)
-- [neofetch](https://github.com/dylanaraps/neofetch)
-  
+## Omarchy desktop
+
+```bash
+./install        # runs install-omarchy.sh on an omarchy machine
+```
+
+Omarchy is the source of truth. Anything omarchy ships that isn't in
+`omarchy/` stays as omarchy's default and isn't tracked. To start tracking
+another config, copy it into `omarchy/` at the same path under `~` and add it
+to `FILES` in `install-omarchy.sh`.
+
+Omarchy sometimes rewrites a config by replacing the file, which breaks the
+symlink. Re-running `./install` adopts the live copy back into the repo before
+relinking, so check `git diff` afterwards.
+
+Extra packages (currently keymapp) are listed in `PACKAGES` / `PACKAGES_AUR`
+at the top of `install-omarchy.sh` and installed if missing. Agent skills are
+chosen in `agents/skills.conf`, see `agents/README.md`.
+
+`nvim/lua/plugins/theme.lua` is an untracked symlink to the active omarchy
+theme, created by the install. Without it (servers), LazyVim's default theme
+is used.
+
 ## Windows Only
 - [PowerShell 7](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.3)
 - [komorebi - Tiling Window Manager](https://github.com/LGUG2Z/komorebi)
@@ -54,11 +69,11 @@ A set of dotfiles and install scripts with cross-platform support for Linux, Win
 
 📖 **See:**
 - `dots/.config/komorebi/README-WINDOWS.md` - Detailed Windows setup and troubleshooting
-- `KEYBINDINGS.md` - Complete keybinding reference for both platforms
+- `legacy/keybinds.md` - old i3/komorebi keybinding reference
 
 ### Keybinding Philosophy
 
-Keybindings are designed to match between i3 (Linux) and komorebi (Windows):
+komorebi keybindings follow the old i3 layout:
 - **Windows key** (Super/Mod4) for all window management operations
 - **Alt** for application launchers
 - **Vim-style hjkl** for directional navigation and movement
