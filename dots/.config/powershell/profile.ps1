@@ -22,7 +22,7 @@ if (!(Test-Path Y:) -and (!(Test-Path $YMark) -or (Get-Item $YMark).LastWriteTim
 # === PSReadLine ===
 # Get-Module -ListAvailable stats every directory in $env:PSModulePath (one of which is
 # OneDrive-backed) just to learn what the console host already loaded.
-if ($Host.Name -eq 'ConsoleHost') {
+if ($Host.Name -eq 'ConsoleHost' -and -not [Console]::IsOutputRedirected) {
     Import-Module PSReadLine -ErrorAction SilentlyContinue
     Set-PSReadLineOption -EditMode Windows
     Set-PSReadLineOption -PredictionSource History
@@ -235,7 +235,7 @@ if (!(Test-Path $ShellInit)) { refresh-shell }
 . $ShellInit
 
 # === Startup: fastfetch + quick reference ===
-if ($Host.Name -eq 'ConsoleHost' -and -not $env:DOTFILES_NO_FETCH) {
+if ($Host.Name -eq 'ConsoleHost' -and -not [Console]::IsOutputRedirected -and -not $env:DOTFILES_NO_FETCH) {
     fastfetch
     Write-Host ""
     Write-Host "  quick reference" -ForegroundColor Cyan
