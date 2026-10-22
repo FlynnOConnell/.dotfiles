@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
+# omarchy desktop -> install-omarchy.sh; servers use install-server.sh, windows install.ps1.
 
 set -e
 
-CONFIG="install.conf.yaml"
-DOTBOT_DIR="dotbot"
-
-DOTBOT_BIN="bin/dotbot"
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-cd "${BASEDIR}"
-git -C "${DOTBOT_DIR}" submodule sync --quiet --recursive
-git submodule update --init --recursive "${DOTBOT_DIR}"
+if command -v omarchy >/dev/null; then
+  exec "$BASEDIR/install-omarchy.sh" "$@"
+fi
 
-"${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
+echo "not an omarchy machine. use one of:" >&2
+echo "  ./install-server.sh        headless linux / hpc" >&2
+echo "  ./install.ps1              windows" >&2
+echo "  legacy/install-i3.conf.yaml  old i3 desktop (archived, paths not updated)" >&2
+exit 1

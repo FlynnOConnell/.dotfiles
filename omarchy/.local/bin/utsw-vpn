@@ -1,0 +1,28 @@
+#!/bin/bash
+# UTSW GlobalProtect VPN via gpclient (yuezk/GlobalProtect-openconnect).
+# Sign-in is Microsoft SSO in the default browser; 1Password's extension fills it.
+
+PORTAL=myutswvpn.swmed.edu
+USER_NAME=Flynn.OConnell@UTSouthwestern.edu
+
+case "$1" in
+  connect)
+    if pgrep -x gpclient >/dev/null; then
+      notify-send "UTSW VPN" "Already connected"
+      exit 0
+    fi
+    sudo -E gpclient connect --browser default --background --cookie-cache \
+      -u "$USER_NAME" "$PORTAL" &&
+      notify-send "UTSW VPN" "Connected"
+    ;;
+  disconnect)
+    pkexec gpclient disconnect && notify-send "UTSW VPN" "Disconnected"
+    ;;
+  status)
+    pgrep -x gpclient >/dev/null
+    ;;
+  *)
+    echo "usage: utsw-vpn connect|disconnect|status" >&2
+    exit 1
+    ;;
+esac
