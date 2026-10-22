@@ -1,0 +1,12 @@
+tt.*
+.tests
+doc/tags
+debug
+.repro
+foo.*
+*.log
+data
+__pycache__
+*.bak.*
+# symlink to the active omarchy theme, created by install-omarchy.sh
+lua/plugins/theme.lua

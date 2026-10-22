@@ -37,7 +37,7 @@
 
     # neovim configuration
     ~/.config/nvim:
-      path: kickstart.nvim
+      path: nvim
 
     # vim configurations
     ~/.vimrc:
