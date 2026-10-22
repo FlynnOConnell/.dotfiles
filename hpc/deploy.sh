@@ -34,9 +34,9 @@ here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 echo "==> $HOST ($MODE, tools=$TOOLS)"
 
-# desktop-only bulk to leave behind: wallpapers, fonts, icons, the vendored
-# binaries in dots/.local/bin (~60 MB, unused by the server config) and ohmyzsh.
-EXCLUDES=(.git wallpapers dots/.wallpapers dots/.fonts dots/.icons dots/.local/bin ohmyzsh)
+# desktop-only bulk to leave behind: wallpapers, fonts, the
+# legacy/ archive and ohmyzsh.
+EXCLUDES=(.git wallpapers dots/.fonts legacy ohmyzsh)
 
 push_worktree() {
     if command -v rsync >/dev/null 2>&1; then
