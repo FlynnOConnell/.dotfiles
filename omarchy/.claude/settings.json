@@ -18,6 +18,9 @@
       }
     ]
   },
+  "enabledPlugins": {
+    "fastplotlib@fastplotlib-skills": true
+  },
   "extraKnownMarketplaces": {
     "fastplotlib-skills": {
       "source": {
@@ -26,10 +29,17 @@
       }
     }
   },
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh",
+      "autoCompactWindow": 400000
+    },
+    "claude-opus-4-8": {
+      "autoCompactWindow": 400000
+    }
+  },
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
-  "enabledPlugins": {
-    "fastplotlib@fastplotlib-skills": true
-  }
+  "switchModelsOnFlag": true
 }

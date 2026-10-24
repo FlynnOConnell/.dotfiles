@@ -30,7 +30,9 @@ bash <(curl -fsSL https://raw.githubusercontent.com/FlynnOConnell/.dotfiles/mast
 ```
 
 Per-machine files (`monitors.lua`) live in `omarchy/hosts/<hostname>/`. A
-machine without its own copy adopts its live one there; commit it.
+machine without its own copy adopts its live one there; commit it. Give every
+machine a unique hostname (`hostnamectl set-hostname NAME`); the bootstrap
+asks for one if the current hostname already has a folder.
 
 Omarchy is the source of truth. Anything omarchy ships that isn't in
 `omarchy/` stays as omarchy's default and isn't tracked. To start tracking

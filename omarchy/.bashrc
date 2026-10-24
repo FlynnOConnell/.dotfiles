@@ -17,6 +17,9 @@ source "$OMARCHY_PATH/default/bash/rc"
 
 alias lg='lazygit'
 
+# 1Password shell plugins (gh via `op plugin init gh`)
+[[ -f ~/.config/op/plugins.sh ]] && source ~/.config/op/plugins.sh
+
 # ve: fuzzy-pick and activate a uv venv from ~/envs/* or ./.venv
 #   ve            pick with fzf
 #   ve pml        activate ~/envs/pml directly

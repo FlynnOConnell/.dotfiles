@@ -42,3 +42,6 @@ o.window({ title = "^sciview$" }, {
   tag = "-default-opacity",
   opacity = "1 1",
 })
+
+-- games open on workspace 4: CS2 (native) and Proton games (steam_app_<id>)
+o.window({ class = "^(cs2|steam_app_[0-9]+)$" }, { workspace = "4" })

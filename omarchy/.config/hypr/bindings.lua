@@ -37,6 +37,10 @@ o.bind("SUPER + L", "Focus on right window", hl.dsp.focus({ direction = "r" }))
 o.bind("SUPER + K", "Focus on above window", hl.dsp.focus({ direction = "u" }))
 o.bind("SUPER + J", "Focus on below window", hl.dsp.focus({ direction = "d" }))
 
+-- Send the current workspace to the left/right monitor (shorter than SUPER+SHIFT+ALT+arrows).
+o.bind("SUPER + ALT + H", "Move workspace to left monitor", hl.dsp.workspace.move({ monitor = "l" }))
+o.bind("SUPER + ALT + L", "Move workspace to right monitor", hl.dsp.workspace.move({ monitor = "r" }))
+
 
 -- Screen recording menu, or stop if recording (was: SUPER+SHIFT+P Google Photos).
 hl.unbind("SUPER + SHIFT + P")
