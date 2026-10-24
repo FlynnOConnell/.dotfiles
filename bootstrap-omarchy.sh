@@ -6,7 +6,7 @@
 set -euo pipefail
 
 REPOS="$HOME/repos"
-CLONE=(.dotfiles arctic-lake arctic-lake-private)
+CLONE=(.dotfiles arctic-lake arctic-lake-private home_hub)
 
 command -v gh >/dev/null || omarchy-pkg-add github-cli
 # --git-protocol ssh offers to generate and upload an ssh key
@@ -18,7 +18,19 @@ for r in "${CLONE[@]}"; do
   [[ -d $REPOS/$r ]] || gh repo clone "FlynnOConnell/$r" "$REPOS/$r"
 done
 
+# per-host files are keyed by hostname, so a name already in hosts/ would
+# hand this machine another machine's monitors.lua
+HOST="$(uname -n)"
+while [[ -d $REPOS/.dotfiles/omarchy/hosts/$HOST ]]; do
+  read -rp "omarchy/hosts/$HOST/ already exists. new hostname (empty to reuse it): " name </dev/tty
+  [[ -z $name ]] && break
+  hostnamectl set-hostname "$name"
+  HOST="$name"
+done
+
 "$REPOS/.dotfiles/install-omarchy.sh" --fresh
+# private fleet-hub layer (ssh aliases, claude/MCP, and hub screen access)
+[[ -x "$REPOS/home_hub/install-hub.sh" ]] && "$REPOS/home_hub/install-hub.sh" --fresh
 hyprctl reload >/dev/null || true
 
 echo
