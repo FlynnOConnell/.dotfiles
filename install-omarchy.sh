@@ -87,6 +87,9 @@ for f in "${HOST_FILES[@]}"; do
   link "$SRC/hosts/$HOST/$f" "$HOME/$f"
 done
 
+# open images with imv's own folder launcher, so arrow keys step through the folder
+xdg-mime default imv-dir.desktop image/png image/jpeg image/gif image/bmp image/webp image/tiff
+
 link "$REPO/nvim" "$HOME/.config/nvim"
 # nvim follows the active omarchy theme; untracked, see nvim/.gitignore
 ln -sfn "$HOME/.local/state/omarchy/current/theme/neovim.lua" "$REPO/nvim/lua/plugins/theme.lua"
