@@ -59,7 +59,7 @@ o.bind("SUPER + SHIFT + C", "Outlook Calendar", "omarchy-launch-or-focus-webapp 
 o.bind("SUPER + SHIFT + ALT + E", "New Outlook email", { webapp = "https://outlook.office.com/mail/deeplink/compose" })
 
 -- Stream the lab workstation (pml-w1) with Moonlight, focusing the stream if it's already open.
-o.bind("SUPER + SHIFT + ALT + W", "pml-w1 (Moonlight)", "omarchy-launch-or-focus Moonlight 'uwsm-app -- moonlight stream 100.117.75.71 Desktop'")
+o.bind("SUPER + R", "pml-w1 (Moonlight)", "omarchy-launch-or-focus Moonlight 'uwsm-app -- moonlight stream 100.117.75.71 Desktop'")
 
 -- Moonlight: tiled on workspace 3 instead of omarchy's forced fullscreen.
 o.window("com.moonlight_stream.Moonlight", { fullscreen = false, tile = true, workspace = "3" })
@@ -67,7 +67,7 @@ o.window("com.moonlight_stream.Moonlight", { fullscreen = false, tile = true, wo
 -- Moonlight keyboard mode: toggles whether keys go to the stream or to this machine
 -- (Moonlight's own Ctrl+Alt+Shift+Z). dont_inhibit so it still fires while Moonlight
 -- has the keyboard grabbed.
-o.bind("SUPER + CTRL + ESCAPE", "Moonlight: toggle keys local/remote", function()
+o.bind("SUPER + Z", "Moonlight: toggle keys local/remote", function()
   local moonlight = hl.get_windows({ class = "com.moonlight_stream.Moonlight" })[1]
   if not moonlight then
     return
