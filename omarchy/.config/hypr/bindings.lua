@@ -60,3 +60,21 @@ o.bind("SUPER + SHIFT + ALT + E", "New Outlook email", { webapp = "https://outlo
 
 -- Stream the lab workstation (pml-w1) with Moonlight, focusing the stream if it's already open.
 o.bind("SUPER + SHIFT + ALT + W", "pml-w1 (Moonlight)", "omarchy-launch-or-focus Moonlight 'uwsm-app -- moonlight stream 100.117.75.71 Desktop'")
+
+-- Moonlight: tiled on workspace 3 instead of omarchy's forced fullscreen.
+o.window("com.moonlight_stream.Moonlight", { fullscreen = false, tile = true, workspace = "3" })
+
+-- Moonlight keyboard mode: toggles whether keys go to the stream or to this machine
+-- (Moonlight's own Ctrl+Alt+Shift+Z). dont_inhibit so it still fires while Moonlight
+-- has the keyboard grabbed.
+o.bind("SUPER + CTRL + ESCAPE", "Moonlight: toggle keys local/remote", function()
+  local moonlight = hl.get_windows({ class = "com.moonlight_stream.Moonlight" })[1]
+  if not moonlight then
+    return
+  end
+  hl.dispatch(hl.dsp.focus({ window = "address:" .. moonlight.address }))
+  hl.dispatch(hl.dsp.send_key_state({ mods = "CTRL ALT SHIFT", key = "Z", state = "down" }))
+  hl.timer(function()
+    hl.dispatch(hl.dsp.send_key_state({ mods = "CTRL ALT SHIFT", key = "Z", state = "up" }))
+  end, { timeout = 50, type = "oneshot" })
+end, { dont_inhibit = true })
