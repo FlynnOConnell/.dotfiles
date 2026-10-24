@@ -13,8 +13,6 @@ source "$OMARCHY_PATH/default/bash/rc"
 # Make an alias for invoking commands you use constantly
 # alias p='python'
 
-. "$HOME/.local/share/../bin/env"
-
 alias lg='lazygit'
 
 # 1Password shell plugins (gh via `op plugin init gh`)
