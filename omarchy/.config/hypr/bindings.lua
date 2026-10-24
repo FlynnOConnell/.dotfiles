@@ -57,3 +57,6 @@ hl.unbind("SUPER + SHIFT + ALT + E")
 o.bind("SUPER + SHIFT + E", "Outlook Mail", "omarchy-launch-or-focus-webapp 'Mail.*Outlook' 'https://outlook.office.com/mail/'")
 o.bind("SUPER + SHIFT + C", "Outlook Calendar", "omarchy-launch-or-focus-webapp 'Calendar.*Outlook' 'https://outlook.office.com/calendar/'")
 o.bind("SUPER + SHIFT + ALT + E", "New Outlook email", { webapp = "https://outlook.office.com/mail/deeplink/compose" })
+
+-- Stream the lab workstation (pml-w1) with Moonlight, focusing the stream if it's already open.
+o.bind("SUPER + SHIFT + ALT + W", "pml-w1 (Moonlight)", "omarchy-launch-or-focus Moonlight 'uwsm-app -- moonlight stream 100.117.75.71 Desktop'")
