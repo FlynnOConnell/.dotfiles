@@ -31,7 +31,7 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help=(
             "Output directory where MinerU results will be written. "
-            "Recommended: agent_assets/<project_name>/pdf_conversions."
+            "Recommended: <root>/<A>/<B>/pdf_conversions."
         ),
     )
     parser.add_argument(

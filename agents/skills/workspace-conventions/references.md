@@ -2,7 +2,7 @@
 
 ## Variables
 - `<temp_data_dir>`: /n/netscratch/bsabatini_lab/Lab/rhakim/temp
-- `<agent_assets_meta_directory>`: `~/agent_assets/<repo>/`
+- `<root>`: `$AGENT_ASSETS_ROOT`, or `~/agent_assets` when unset (`echo "${AGENT_ASSETS_ROOT:-$HOME/agent_assets}"`)
 
 Cluster/partition details: load `job-dispatch`.
 

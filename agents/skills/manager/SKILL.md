@@ -52,7 +52,7 @@ Don't default to single-agent dispatches. Match the pattern to the work:
 ## Context discipline
 
 - **Stay terse.** Decisions and outcomes only. Use absolute paths. Note loaded skills.
-- **Keep subagent reports slim.** In every dispatch, at dispatch time,construct the artifact path where substantive findings go: `agent_assets/<topic>/artifacts/reports/<HHMM>_<role>_<slug>.md`, specify this to the subagent, and log the path in `MEMORIES.md` under `## Subagent Dispatch Log`.
+- **Keep subagent reports slim.** In every dispatch, at dispatch time,construct the artifact path where substantive findings go: `<root>/<A>/<B>/artifacts/reports/<HHMM>_<role>_<slug>.md`, specify this to the subagent, and log the path in `MEMORIES.md` under `## Subagent Dispatch Log`.
 - **Prepare for compaction** (when context is ~200k tokens). Keep `MEMORIES.md` current enough to recover from it alone.
 
 ## MEMORIES.md

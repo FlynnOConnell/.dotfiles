@@ -1,9 +1,10 @@
 # Files you make for me
 
 Anything I'll want to open (plots, reports, notes, exported data, scripts I'll run myself) goes in
-`~/agent_assets/<repo>/<topic>/artifacts/`, following the `workspace-conventions` skill. `<repo>`
-is the git repo's directory name, or the working directory's name outside a repo. When you tell me
-where something is, give the `~/agent_assets/...` path.
+`<root>/<A>/<B>/artifacts/`, following the `workspace-conventions` skill. `<root>` is
+`$AGENT_ASSETS_ROOT`, or `~/agent_assets` when that's unset. `<A>` is the pipeline or project the
+work belongs to, `<B>` the topic folder. When you tell me where something is, give the full path
+(e.g. `~/agent_assets/...`).
 
 Keep the session scratchpad for throwaway intermediates I'll never open.
 

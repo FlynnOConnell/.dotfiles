@@ -8,7 +8,7 @@ description: Extract scientific journal article PDFs to lossless Markdown using 
 Goal: convert PDFs to Markdown as losslessly as possible (no summarization). This skill assumes a conda env named `mineru` already exists. If it doesn’t, **stop** and tell the user what is missing (create the env + install MinerU) and do not attempt installs.
 
 ## PDF placement
-Save the source PDF under `agent_assets/<project_name>/artifacts/pdf_conversions/` before extraction. Use the same basename throughout the conversion outputs.
+Save the source PDF under `<root>/<A>/<B>/artifacts/pdf_conversions/` before extraction. Use the same basename throughout the conversion outputs.
 
 ## Method differences (choose based on PDF type)
 - `txt`: Use for digital PDFs with selectable text. Fastest and most faithful for journals/preprints.
@@ -20,17 +20,17 @@ Save the source PDF under `agent_assets/<project_name>/artifacts/pdf_conversions
 SKILLS_DIR="$(readlink -f .agent/skills)"
 conda activate mineru
 python "$SKILLS_DIR/read-pdf-mineru/scripts/mineru_extract.py" \
-  --filepath_pdf agent_assets/<project_name>/artifacts/pdf_conversions/<paper>.pdf \
-  --output_dir agent_assets/<project_name>/pdf_conversions \
+  --filepath_pdf <root>/<A>/<B>/artifacts/pdf_conversions/<paper>.pdf \
+  --output_dir <root>/<A>/<B>/pdf_conversions \
   --method txt
 ```
 
 If `.agent/skills` is unavailable, set `SKILLS_DIR` to your central skills checkout and reuse the same command.
 
 ## Default execution mode: dispatch via sbatch
-Use Slurm by default. Follow the `workspace-conventions` skill's `references.md` for partition/cpu/mem/account values. Create a small dispatch script in `agent_assets/<project_name>/code/` and submit it.
+Use Slurm by default. Follow the `workspace-conventions` skill's `references.md` for partition/cpu/mem/account values. Create a small dispatch script in `<root>/<A>/<B>/code/` and submit it.
 
-Example `agent_assets/<project_name>/code/mineru_dispatch.sbatch`:
+Example `<root>/<A>/<B>/code/mineru_dispatch.sbatch`:
 ```bash
 #!/usr/bin/env bash
 #SBATCH --account=<account_name>
@@ -39,8 +39,8 @@ Example `agent_assets/<project_name>/code/mineru_dispatch.sbatch`:
 #SBATCH --gres=gpu:1
 #SBATCH -c <cpu>
 #SBATCH --mem=<mem>
-#SBATCH --output=agent_assets/<project_name>/artifacts/mineru_%j.out
-#SBATCH --error=agent_assets/<project_name>/artifacts/mineru_%j.err
+#SBATCH --output=<root>/<A>/<B>/artifacts/mineru_%j.out
+#SBATCH --error=<root>/<A>/<B>/artifacts/mineru_%j.err
 
 set -euo pipefail
 
@@ -49,14 +49,14 @@ conda activate mineru
 
 SKILLS_DIR="$(readlink -f .agent/skills)"
 python "$SKILLS_DIR/read-pdf-mineru/scripts/mineru_extract.py" \
-  --filepath_pdf agent_assets/<project_name>/artifacts/pdf_conversions/<paper>.pdf \
-  --output_dir agent_assets/<project_name>/pdf_conversions \
+  --filepath_pdf <root>/<A>/<B>/artifacts/pdf_conversions/<paper>.pdf \
+  --output_dir <root>/<A>/<B>/pdf_conversions \
   --method txt
 ```
 
 Submit with:
 ```bash
-sbatch agent_assets/<project_name>/code/mineru_dispatch.sbatch
+sbatch <root>/<A>/<B>/code/mineru_dispatch.sbatch
 ```
 
 ## Local fallback (no sbatch)
@@ -70,8 +70,8 @@ source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate mineru
 SKILLS_DIR="$(readlink -f .agent/skills)"
 python "$SKILLS_DIR/read-pdf-mineru/scripts/mineru_extract.py" \
-  --filepath_pdf agent_assets/<project_name>/artifacts/pdf_conversions/<paper>.pdf \
-  --output_dir agent_assets/<project_name>/pdf_conversions \
+  --filepath_pdf <root>/<A>/<B>/artifacts/pdf_conversions/<paper>.pdf \
+  --output_dir <root>/<A>/<B>/pdf_conversions \
   --method txt
 ```
 
@@ -83,17 +83,17 @@ python "$SKILLS_DIR/read-pdf-mineru/scripts/mineru_extract.py" \
 - Optional: `--preview-lines N` to print the first N lines of each `.md` for quick context loading.
 
 ## Recommended output layout
-Use `agent_assets/<project_name>/pdf_conversions/` so outputs are easy to find and reuse.
+Use `<root>/<A>/<B>/pdf_conversions/` so outputs are easy to find and reuse.
 
 ## Output sanity check
 After completion, confirm extraction:
 ```bash
-find agent_assets/<project_name>/pdf_conversions -type f -name "*.md"
+find <root>/<A>/<B>/pdf_conversions -type f -name "*.md"
 ```
 
 ## Streamlined error feedback
 - Check job state: `squeue -j <jobid>`
-- Stream logs: `tail -f agent_assets/<project_name>/artifacts/mineru_<jobid>.err`
+- Stream logs: `tail -f <root>/<A>/<B>/artifacts/mineru_<jobid>.err`
 - If `.err` is empty, also check `.out`.
 
 ## Seamless handoff (read Markdown into context)
@@ -101,7 +101,7 @@ After extraction, open the printed `.md` file and read it into context. If multi
 
 Example:
 ```bash
-sed -n '1,200p' agent_assets/<project_name>/pdf_conversions/<basename>/<subdir>/<basename>.md
+sed -n '1,200p' <root>/<A>/<B>/pdf_conversions/<basename>/<subdir>/<basename>.md
 ```
 
 ## If something is missing
