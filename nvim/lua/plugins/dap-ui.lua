@@ -1,36 +1,14 @@
 -- The panels no longer open when debugging starts: the code shows values
--- inline, and popups cover the rest (,V variables, ,v one
--- value, ,f frames, ,D the debug REPL). ,u still
--- opens the full panel set laid out below: variables get most of the left
--- column, the bottom is only the debug REPL.
+-- inline, the bottom row has the console and the call stack
+-- (config/dap_layout.lua), and popups cover the rest (,V variables, ,v one
+-- value). ,u adds a left column of variables, watches and breakpoints; it
+-- leaves the console and the stack alone, so there is only ever one of each.
 return {
   "rcarriga/nvim-dap-ui",
   keys = {
     { "<leader>du", false },
     { "<leader>de", false },
-    {
-      ",u",
-      function()
-        -- the panels include the console: swap the standalone one out while
-        -- they're open, and back in when they close
-        local dap, dapui = require("dap"), require("dapui")
-        local opening = vim.tbl_isempty(vim.tbl_filter(function(win)
-          return vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "dapui_scopes"
-        end, vim.api.nvim_tabpage_list_wins(0)))
-        if opening then
-          dap.repl.close()
-          dapui.open({})
-        else
-          dapui.close({})
-          if dap.session() then
-            local win = vim.api.nvim_get_current_win()
-            dap.repl.open({ height = 12 }, "botright split")
-            vim.api.nvim_set_current_win(win)
-          end
-        end
-      end,
-      desc = "All debug panels",
-    },
+    { ",u", function() require("dapui").toggle({}) end, desc = "Variables / watches / breakpoints panels" },
     { ",e", function() require("dapui").eval() end, desc = "Evaluate", mode = { "n", "x" } },
   },
   -- LazyVim's config also opens the panels on every session start; this one
@@ -55,20 +33,9 @@ return {
         position = "left",
         size = 50,
         elements = {
-          { id = "scopes", size = 0.6 },
-          { id = "stacks", size = 0.2 },
-          { id = "watches", size = 0.1 },
-          { id = "breakpoints", size = 0.1 },
-        },
-      },
-      {
-        -- just the debug REPL (`dap >`), full width: the console element is
-        -- empty when attached to the IPython REPL, and launched programs
-        -- print here instead (console = "internalConsole", python-envs.lua)
-        position = "bottom",
-        size = 12,
-        elements = {
-          { id = "repl", size = 1 },
+          { id = "scopes", size = 0.7 },
+          { id = "watches", size = 0.15 },
+          { id = "breakpoints", size = 0.15 },
         },
       },
     },

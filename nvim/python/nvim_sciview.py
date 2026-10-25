@@ -7,8 +7,9 @@ Arrays arrive from python/nvim_sciview_send.py over a unix socket.
   1D     trace plot and histogram
   2D+    image with colormap and contrast; a slider per leading axis (axis 0
          is time: play/pause); hovering a pixel plots its trace over axis 0
-Left column: the paused frame's variables (sent by nvim on every pause; click
-an array to load it: the viewer asks nvim over its RPC socket, --nvim), then
+Left column: the call stack and the paused frame's variables (sent by nvim on
+every pause and frame change; click a frame to move the debugger there, an
+array to load it: the viewer asks nvim over its RPC socket, --nvim), then
 every array shown so far.
 
 Future: on-demand frames for arrays too big to send whole (a frame server in
@@ -289,7 +290,9 @@ class Viewer:
         self.current = -1
         self.incoming: queue.Queue = queue.Queue()
         self.nvim = nvim  # the nvim that started us: asked for clicked variables
-        self.frame_vars: dict | None = None  # {"stop", "frame", "location", "variables"}
+        # {"stop", "frame", "frame_id", "location", "stack", "variables"}; "stop"
+        # names the pause and frame, so another frame's objects aren't reused
+        self.frame_vars: dict | None = None
         self.running = False  # the program resumed: the variables are stale
         self.pending: str | None = None  # a clicked variable on its way
         self.status = ""
@@ -297,6 +300,7 @@ class Viewer:
         self.children: dict[str, list | str] = {}
         self.force_open: set[str] = set()  # testing: rows opened as if clicked
         self.styled = False
+        self.scrolled_to = None  # the frame the stack list last scrolled to
 
     def call_nvim(self, function: str, expr: str, on_error):
         """Call require'config.sciview'.<function>(expr) in the nvim that started us."""
@@ -329,6 +333,13 @@ class Viewer:
 
         self.call_nvim("children", expr, failed)
 
+    def select_frame(self, frame_id: int):
+        """Ask nvim to move to this frame (like ,k / ,j); its variables follow."""
+        def failed(text):
+            self.status = text
+
+        self.call_nvim("select_frame", str(frame_id), failed)
+
     # -- socket: one message per connection, reply "ok" once loaded ---------
     def serve(self, path: str):
         server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -355,6 +366,9 @@ class Viewer:
                     conn.sendall(b"ok\n")
                     return
                 if message.get("kind") == "children":
+                    if self.frame_vars and message.get("stop") not in (None, self.frame_vars.get("stop")):
+                        conn.sendall(b"ok\n")  # for a frame no longer shown
+                        return
                     rows = message.get("children") or []
                     # nvim's json writes an empty lua table as {}
                     self.children[message["parent"]] = rows if isinstance(rows, list) else (message.get("error") or "no attributes")
@@ -445,6 +459,9 @@ class Viewer:
         imgui.text_colored(color("dim"), frame["location"])
         if self.status:
             imgui.text_colored(color("error") if self.status.startswith("could") else color("dim"), self.status)
+        if frame.get("stack"):
+            heading("CALL STACK")
+            self.stack_rows(frame["stack"], frame.get("frame_id"))
         heading("VARIABLES")
         if not frame["variables"]:
             imgui.text_disabled("none defined yet")
@@ -459,6 +476,37 @@ class Viewer:
             imgui.end_table()
         if self.running:
             imgui.end_disabled()
+
+    def stack_rows(self, stack: list, current):
+        """The stopped thread's frames, outermost first (like nvim's stack
+        pane): click one to go there. Long stacks scroll, kept on the current."""
+        row = imgui.get_text_line_height_with_spacing()
+        height = min(len(stack), 8) * row + px(4)
+        imgui.begin_child("##stack", imgui.ImVec2(0, height))
+        if self.running or not self.nvim:
+            imgui.begin_disabled()
+        for f in stack:
+            here = f["id"] == current
+            # a full-width row to click, with the name and location drawn over it
+            start = imgui.get_cursor_pos()
+            clicked, _ = imgui.selectable(f"##frame{f['id']}", here, imgui.SelectableFlags_.allow_overlap)
+            if clicked and not here:
+                self.select_frame(f["id"])
+            if imgui.is_item_hovered():
+                imgui.set_tooltip(f"{f['name']}\n{f['location']}")
+            if here and self.scrolled_to != (self.frame_vars or {}).get("stop"):
+                imgui.set_scroll_here_y(0.5)
+                self.scrolled_to = (self.frame_vars or {}).get("stop")
+            imgui.set_cursor_pos(start)
+            if here:
+                bold(f"> {f['name']}", "accent")
+            else:
+                imgui.text_colored(color("dim" if f.get("subtle") else "fg"), f"  {f['name']}")
+            imgui.same_line()
+            imgui.text_colored(color("dim"), f["location"])
+        if self.running or not self.nvim:
+            imgui.end_disabled()
+        imgui.end_child()
 
     def load(self, expr: str, loaded):
         if self.running:

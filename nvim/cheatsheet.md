@@ -10,6 +10,7 @@
 | `,o` | Step over                  | F8            |
 | `,i` | Step into                  | F7            |
 | `,O` | Step out                   | Shift+F8      |
+| `,s` | Run to here and stop (while paused; skips other breakpoints) | Alt+F9 |
 | `,C` | Run to cursor (not paused: runs the cell, or reruns the last) | Alt+F9 |
 | `,q` | Terminate                  | Ctrl+F2       |
 | `,p` | Pause                      | Pause         |
@@ -34,11 +35,12 @@
 | `,v` | Summary: type, shape, dtype, min/max/mean/std | View as Array |
 | `,m` | Viewer + variable explorer (on a variable: show it) | SciView |
 | `,e` | Eval word / visual selection                  | Alt+F8        |
-| `,k` | Up the call stack                             | Frames        |
+| `,k` | Up the call stack (toward the caller)         | Frames        |
 | `,j` | Down the call stack                           | Frames        |
+| `<CR>` | In the call stack pane (or viewer): go to frame | Frames      |
 | `,f` | Stack frames popup, Enter jumps               | Frames        |
-| `,D` | Debug console (`dap >`, program output)       | Console       |
-| `,u` | All panels, when you want the full view       | Debug tab     |
+| `,D` | Hide / show the console + call stack row      | Console       |
+| `,u` | Variables / watches / breakpoints column      | Debug tab     |
 
 ## Tests (pytest via neotest)
 

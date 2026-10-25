@@ -158,15 +158,10 @@ return {
         end
       end
 
-      -- the debug console (program output, `dap >` prompt) opens along the
-      -- bottom whenever debugging starts; ,D hides / shows it
-      dap.listeners.after.event_initialized["open_console"] = function()
-        local win = vim.api.nvim_get_current_win()
-        dap.repl.open({ height = 12 }, "botright split")
-        if vim.api.nvim_win_is_valid(win) then
-          vim.api.nvim_set_current_win(win) -- stay in the code
-        end
-      end
+      -- the debug console (program output, `dap >` prompt) and the call
+      -- stack open along the bottom whenever debugging starts; ,D hides /
+      -- shows them. Frames always show in a code window, never the console.
+      require("config.dap_layout").setup()
 
       -- say what the exception was, not just where
       dap.listeners.after.event_stopped["exception_message"] = function(session, body)
@@ -275,7 +270,7 @@ return {
         },
         { ",k", function() dap().up() end, desc = "Up the stack" },
         { ",j", function() dap().down() end, desc = "Down the stack" },
-        { ",D", function() dap().repl.toggle({ height = 12 }, "botright split") end, desc = "Debug console" },
+        { ",D", function() require("config.dap_layout").toggle() end, desc = "Debug console + call stack" },
         { ",dd", function() require("config.run_configs").open() end, desc = "Run configs (saved commands)" },
         {
           ",dc",
@@ -301,6 +296,16 @@ return {
           end
         end,
         desc = "Run to Cursor (runs the cell if not paused)",
+      },
+      {
+        -- "run this and stop": from where it's paused down to the cursor
+        -- line, stopping before it runs; other breakpoints on the way are
+        -- skipped (,C, but only while paused)
+        ",s",
+        function()
+          require("dap").run_to_cursor()
+        end,
+        desc = "Run to here and stop",
       },
       {
         -- type, shape, dtype and min/max/mean/std of the expression under the

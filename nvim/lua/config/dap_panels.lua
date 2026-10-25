@@ -1,4 +1,5 @@
--- The debug console and the ,u panels as tinted panels with a title bar.
+-- The debug console, the call stack and the ,u panels as tinted panels with a
+-- title bar.
 -- Splits can't have borders (only floats can), so each panel gets a darker
 -- background, a " Title " bar in the float border's color and a matching
 -- divider instead.
@@ -6,6 +7,7 @@ local M = {}
 
 local titles = {
   ["dap-repl"] = "Debug console",
+  dap_callstack = "Call stack",
   dapui_scopes = "Variables",
   dapui_stacks = "Call stack",
   dapui_watches = "Watches",
@@ -28,7 +30,14 @@ local function highlights()
   vim.api.nvim_set_hl(0, "DapPanelBar", { bg = panel })
   vim.api.nvim_set_hl(0, "DapPanelTitle", { fg = panel, bg = accent, bold = true })
   vim.api.nvim_set_hl(0, "DapPanelSeparator", { fg = accent })
+  -- the debugger's state on the console's bar (config/dap_layout.lua)
+  for state, from in pairs({ Running = "DiagnosticWarn", Paused = "DiagnosticOk", Failed = "DiagnosticError", Ended = "Comment" }) do
+    vim.api.nvim_set_hl(0, "DapStatus" .. state, { fg = hl(from).fg, bg = panel, bold = state ~= "Ended" })
+  end
 end
+
+-- after the title: the console's bar also says what the debugger is doing
+local status = { ["dap-repl"] = " %{%v:lua.require'config.dap_layout'.status_bar()%}" }
 
 local function style(buf)
   local title = titles[vim.bo[buf].filetype]
@@ -37,7 +46,7 @@ local function style(buf)
   end
   for _, win in ipairs(vim.fn.win_findbuf(buf)) do
     if vim.api.nvim_win_get_config(win).relative == "" then -- splits only, not popups
-      vim.wo[win].winbar = "%#DapPanelTitle# " .. title .. " %#DapPanelBar#"
+      vim.wo[win].winbar = "%#DapPanelTitle# " .. title .. " %#DapPanelBar#" .. (status[vim.bo[buf].filetype] or "")
       vim.wo[win].winhighlight = table.concat({
         "Normal:DapPanel",
         "NormalNC:DapPanel",

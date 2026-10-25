@@ -4,8 +4,10 @@
 --                  with no expr, just open the viewer
 --   request(name)  the same, called by the viewer when a variable is clicked
 --   children(expr) the attributes of an object opened in the viewer
+--   select_frame(id) go to that frame of the call stack (clicked in the viewer)
 -- While the viewer is open, every pause (and frame change) also sends it the
--- frame's variables, so it works as a variable explorer.
+-- call stack and the frame's variables, so it works as a variable explorer
+-- that follows ,k / ,j, and moves the debugger to a frame clicked there.
 -- The viewer (python/nvim_sciview.py) is its own process, using the active
 -- env's python; python/nvim_sciview_send.py runs inside the paused program.
 local M = {}
@@ -140,8 +142,14 @@ local function message(msg)
   end)
 end
 
--- the paused frame's variables, for the viewer's explorer panel
+-- which pause and frame values belong to: the viewer forgets opened objects
+-- and loaded arrays from another one
 local stop_id, pushed = 0, nil
+local function stop_key(frame)
+  return stop_id .. ":" .. frame.id
+end
+
+-- the paused frame's variables and the call stack, for the viewer's explorer
 function M.push_variables()
   local session = require("dap").session()
   local frame = session and session.current_frame
@@ -152,13 +160,25 @@ function M.push_variables()
     if not up then
       return
     end
+    local layout = require("config.dap_layout")
+    local stack = {}
+    for _, f in ipairs(layout.frames(session)) do
+      stack[#stack + 1] = {
+        id = f.id,
+        name = f.name,
+        location = layout.frame_location(f),
+        subtle = f.presentationHint == "subtle" or f.presentationHint == "label",
+      }
+    end
     require("config.dap_popups").frame_listing(session, frame, function(variables)
       local file = frame.source and (frame.source.path or frame.source.name) or ""
       message({
         kind = "variables",
-        stop = stop_id,
+        stop = stop_key(frame),
         frame = frame.name,
+        frame_id = frame.id,
         location = vim.fn.fnamemodify(file, ":t") .. ":" .. tostring(frame.line),
+        stack = stack,
         variables = variables,
       })
     end)
@@ -181,11 +201,28 @@ function M.children(expr)
     local session = require("dap").session()
     local frame = session and session.current_frame
     if not (session and session.stopped_thread_id and frame) then
-      return message({ kind = "children", stop = stop_id, parent = expr, children = {}, error = "not paused" })
+      return message({ kind = "children", parent = expr, children = {}, error = "not paused" })
     end
     require("config.dap_popups").children_listing(session, frame, expr, function(children, err)
-      message({ kind = "children", stop = stop_id, parent = expr, children = children, error = err })
+      message({ kind = "children", stop = stop_key(frame), parent = expr, children = children, error = err })
     end)
+  end)
+  return ""
+end
+
+-- called by the viewer when a frame of its call stack is clicked: the same
+-- as ,k / ,j to it (the code window follows, the variables are sent again)
+function M.select_frame(id)
+  vim.schedule(function()
+    local session = require("dap").session()
+    if not (session and session.stopped_thread_id) then
+      return
+    end
+    for _, frame in ipairs(require("config.dap_layout").frames(session)) do
+      if frame.id == tonumber(id) then
+        return session:_frame_set(frame)
+      end
+    end
   end)
   return ""
 end
@@ -197,7 +234,7 @@ end
 -- a frame's scopes are fetched when it's shown (a pause, ,k/,j)
 dap.listeners.after.scopes["sciview"] = function(session, _, _, request)
   local frame = session.current_frame
-  local key = frame and (stop_id .. ":" .. frame.id)
+  local key = frame and stop_key(frame)
   if frame and request and request.frameId == frame.id and key ~= pushed then
     pushed = key
     vim.schedule(M.push_variables)
