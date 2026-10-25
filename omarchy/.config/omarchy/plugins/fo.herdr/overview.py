@@ -146,14 +146,21 @@ def summarize_transcript(filepath: str) -> dict:
     """
     summary = {"prompt": "", "ms_prompt": None, "recap": "", "reply": ""}
     for line in iterate_lines_reversed(filepath=filepath, bytes_max=BYTES_TRANSCRIPT_SCAN):
-        if b'"isSidechain":true' in line:
+        ## NOTE: the substring test only spares parsing big records (tool results, api requests) that can't match
+        if not (b'"away_summary"' in line or b'"type":"assistant"' in line or b'"origin":{"kind":"human"}' in line):
             continue
-        if b'"subtype":"away_summary"' in line and summary["recap"] == "":
-            summary["recap"] = clean_text(json.loads(line)["content"])
-        elif b'"type":"assistant"' in line and b'"type":"text"' in line and summary["reply"] == "":
-            summary["reply"] = clean_text(text_of_content(json.loads(line)["message"]["content"]))
-        elif b'"origin":{"kind":"human"}' in line:
+        ## NOTE: Claude may be writing the last line right now
+        try:
             record = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if record.get("isSidechain"):
+            continue
+        if record.get("subtype") == "away_summary" and summary["recap"] == "":
+            summary["recap"] = clean_text(record["content"])
+        elif record["type"] == "assistant" and summary["reply"] == "":
+            summary["reply"] = clean_text(text_of_content(record["message"]["content"]))
+        elif record["type"] == "user" and record.get("origin", {}).get("kind") == "human":
             summary["prompt"] = clean_text(text_of_content(record["message"]["content"]))
             summary["ms_prompt"] = int(datetime.datetime.fromisoformat(record["timestamp"]).timestamp() * 1000)
             break
