@@ -36,7 +36,10 @@ FILES=(
   .config/lazygit/config.yml
   .config/btop/btop.conf
   .local/bin/utsw-vpn
+  .config/systemd/user/sshfs@.service
+  .config/systemd/user/bt-connect@.service
   .claude/settings.json
+  .claude/CLAUDE.md
 )
 
 # per-machine files, mirrored under omarchy/hosts/<hostname>/. a machine

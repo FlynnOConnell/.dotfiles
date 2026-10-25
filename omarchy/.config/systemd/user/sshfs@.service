@@ -1,0 +1,17 @@
+# Mounts a tailnet machine's home at ~/<host>, e.g.
+#   systemctl --user enable --now sshfs@pml-w1
+# Logs in through the 1Password SSH agent, so it keeps retrying until 1Password is unlocked.
+
+[Unit]
+Description=sshfs mount of %i at ~/%i
+After=network-online.target
+
+[Service]
+ExecStartPre=/usr/bin/mkdir -p %h/%i
+ExecStart=/usr/bin/sshfs -f %i.tail0ea452.ts.net: %h/%i -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,BatchMode=yes,StrictHostKeyChecking=accept-new
+ExecStop=/usr/bin/fusermount3 -u %h/%i
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=default.target

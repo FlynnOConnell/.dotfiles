@@ -59,4 +59,5 @@ $RECYCLE.BIN/
 dots/.config/lazygit/state.yml
 dots/.config/tmux/plugins
 CLAUDE.md
+!omarchy/.claude/CLAUDE.md
 agents/AGENTS.md

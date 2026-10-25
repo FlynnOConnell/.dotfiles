@@ -1,0 +1,20 @@
+# Connects a paired Bluetooth device after login, e.g. the headphones:
+#   systemctl --user enable --now bt-connect@E4:58:BC:44:F8:78
+# BlueZ only reconnects after a link drop while it's running, so a device that gave
+# up during a reboot stays disconnected. This retries for about ten minutes.
+# bluetoothctl exits 0 even when the connect fails, so success is checked separately.
+
+[Unit]
+Description=Bluetooth connect to %i
+After=bluetooth.target
+StartLimitIntervalSec=10min
+StartLimitBurst=20
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'bluetoothctl --timeout 15 connect %i; bluetoothctl info %i | grep -q "Connected: yes"'
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=default.target

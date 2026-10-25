@@ -2,7 +2,7 @@
 
 ## Variables
 - `<temp_data_dir>`: /n/netscratch/bsabatini_lab/Lab/rhakim/temp
-- `<agent_assets_meta_directory>`: '/n/holylabs/kempner_rhakim_lab/Lab/rhakim/agent_assets/<repo>/'
+- `<agent_assets_meta_directory>`: `~/agent_assets/<repo>/`
 
 Cluster/partition details: load `job-dispatch`.
 
