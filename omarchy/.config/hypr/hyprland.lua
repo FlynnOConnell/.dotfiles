@@ -43,5 +43,68 @@ o.window({ title = "^sciview$" }, {
   opacity = "1 1",
 })
 
+-- SUPER+H/J/K/L never cross between tiled and floating windows, so the viewer
+-- gets its own keys. Hidden means parked on special:sciview, which is never
+-- shown. sciview is global so nvim can call it: hyprctl dispatch sciview.reveal
+sciview = {}
+
+local function sciview_window()
+  return hl.get_windows({ class = "sciview" })[1]
+end
+
+local function sciview_here(viewer)
+  return viewer.workspace.id == hl.get_active_workspace().id
+end
+
+local function sciview_move(viewer, workspace)
+  hl.dispatch(hl.dsp.window.move({ workspace = workspace, follow = false, window = "address:" .. viewer.address }))
+end
+
+local function sciview_focus(window)
+  hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
+end
+
+-- ,m in nvim: a hidden viewer (or one on another workspace) comes back here,
+-- leaving focus in the editor
+function sciview.reveal()
+  local viewer = sciview_window()
+  if viewer and not sciview_here(viewer) then
+    sciview_move(viewer, tostring(hl.get_active_workspace().id))
+  end
+end
+
+-- show and focus the viewer; when it's focused, hide it
+function sciview.toggle()
+  local viewer = sciview_window()
+  if not viewer then
+    return hl.exec_cmd(o.notify("sciview isn't running: ,m in nvim starts it"))
+  end
+  if viewer.active then
+    return sciview_move(viewer, "special:sciview")
+  end
+  sciview.reveal()
+  sciview_focus(viewer)
+end
+
+-- focus the viewer, or from it the window used before it, leaving it shown
+function sciview.swap()
+  local viewer = sciview_window()
+  if not (viewer and viewer.active) then
+    return sciview.toggle()
+  end
+  local previous
+  for _, window in ipairs(hl.get_workspace_windows(viewer.workspace.id)) do
+    if window.address ~= viewer.address and (not previous or window.focus_history_id < previous.focus_history_id) then
+      previous = window
+    end
+  end
+  if previous then
+    sciview_focus(previous)
+  end
+end
+
+o.bind("SUPER + M", "sciview: show and focus / hide", sciview.toggle)
+o.bind("SUPER + ALT + M", "sciview: focus it / back to the editor", sciview.swap)
+
 -- games open on workspace 4: CS2 (native) and Proton games (steam_app_<id>)
 o.window({ class = "^(cs2|steam_app_[0-9]+)$" }, { workspace = "4" })
