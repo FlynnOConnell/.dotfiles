@@ -10,13 +10,14 @@
 | `,o` | Step over                  | F8            |
 | `,i` | Step into                  | F7            |
 | `,O` | Step out                   | Shift+F8      |
-| `,s` | Run to here and stop (while paused; skips other breakpoints) | Alt+F9 |
+| `,s` | Run to here and stop, skipping other breakpoints; not debugging: pick a `,dd` command (last one first) | Alt+F9 |
 | `,C` | Run to cursor (not paused: runs the cell, or reruns the last) | Alt+F9 |
 | `,q` | Terminate                  | Ctrl+F2       |
 | `,p` | Pause                      | Pause         |
 | `,l` | Re-run last session        | Ctrl+F5       |
 | `,dc` | Debug current file         | Shift+F9      |
-| `,dd` | Run configs: saved commands, `<CR>` debugs, `dd` `yyp` edit | Run configurations |
+| `,dd` | Run configs: saved commands, `<CR>` debugs, `dd` `yyp` edit; `<Tab>` to Variables (`SAMPLE = ~/data/x.tif`, used as `$SAMPLE`); a `# name` line above a command names it | Run configurations |
+| `,dv` | The same run configs in the viewer: a form per command from its `--help`, data locations with file pickers; Debug, Run to nvim cursor, Run, Copy | Edit Configurations |
 
 ## Debug: breakpoints
 
@@ -33,11 +34,12 @@
 | `,V` | All your variables in this frame (tree)          | Variables |
 | `<CR>` `h` `s` | In a tree: expand, collapse/parent, summary   |           |
 | `,v` | Summary: type, shape, dtype, min/max/mean/std | View as Array |
-| `,m` | Viewer + variable explorer (on a variable: show it) | SciView |
+| `,m` | Viewer: stack, variables, step buttons (on a variable: show it) | SciView |
 | `,e` | Eval word / visual selection                  | Alt+F8        |
 | `,k` | Up the call stack (toward the caller)         | Frames        |
 | `,j` | Down the call stack                           | Frames        |
 | `<CR>` | In the call stack pane (or viewer): go to frame | Frames      |
+| `,g` | Go to the paused line (the arrow), from anywhere | Alt+F10 (Show Execution Point) |
 | `,f` | Stack frames popup, Enter jumps               | Frames        |
 | `,D` | Hide / show the console + call stack row      | Console       |
 | `,u` | Variables / watches / breakpoints column      | Debug tab     |

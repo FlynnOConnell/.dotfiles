@@ -6,6 +6,8 @@
 --   open() / close() / toggle()   the bottom row (,D; opens when debugging starts)
 --   switchbuf(buf, line, col)     where nvim-dap shows a frame: always a code
 --                                 window, never the console or a panel
+--   pause()                       pause the main thread (,p)
+--   goto_current()                back to the arrow, from anywhere (,g)
 -- The console is nvim-dap's REPL: one buffer, only ever hidden and shown again,
 -- so its history stays and there is never a second one.
 local M = {}
@@ -55,6 +57,27 @@ end
 function M.frames(session)
   local thread = session and session.stopped_thread_id and session.threads[session.stopped_thread_id]
   return vim.iter(thread and thread.frames or {}):rev():totable()
+end
+
+-- pause the main thread (,p and the viewer's button); dap.pause() asks
+-- which one first, as torch and friends run several
+function M.pause()
+  local dap = require("dap")
+  local session = dap.session()
+  if not session then
+    return
+  end
+  session:request("threads", nil, function(err, resp)
+    local id
+    for _, thread in ipairs(not err and resp and resp.threads or {}) do
+      if thread.name == "MainThread" or not id then
+        id = thread.id
+      end
+    end
+    if id then
+      dap.pause(id)
+    end
+  end)
 end
 
 local function select_frame(frame)
@@ -217,6 +240,27 @@ function M.toggle()
   end
 end
 
+-- the code window you were last in, else the biggest one
+local function last_code_win()
+  if code_win and is_code_win(code_win) and api.nvim_win_get_tabpage(code_win) == api.nvim_get_current_tabpage() then
+    return code_win
+  end
+  local best, area = nil, 0
+  for _, win in ipairs(api.nvim_tabpage_list_wins(0)) do
+    local size = api.nvim_win_get_width(win) * api.nvim_win_get_height(win)
+    if is_code_win(win) and size > area then
+      best, area = win, size
+    end
+  end
+  return best
+end
+
+-- the window you're in if it shows code, else the code window you were last in
+function M.code_win()
+  local current = api.nvim_get_current_win()
+  return is_code_win(current) and current or last_code_win()
+end
+
 function M.switchbuf(bufnr, line, column)
   local current = api.nvim_get_current_win()
   local target
@@ -229,24 +273,8 @@ function M.switchbuf(bufnr, line, column)
   if not target and is_code_win(current) then
     target = current
   end
-  if
-    not target
-    and code_win
-    and is_code_win(code_win)
-    and api.nvim_win_get_tabpage(code_win) == api.nvim_get_current_tabpage()
-  then
-    target = code_win
-  end
-  if not target then -- the biggest code window, else a new one above the bottom row
-    local area = 0
-    for _, win in ipairs(api.nvim_tabpage_list_wins(0)) do
-      local size = api.nvim_win_get_width(win) * api.nvim_win_get_height(win)
-      if is_code_win(win) and size > area then
-        target, area = win, size
-      end
-    end
-  end
-  if not target then
+  target = target or last_code_win()
+  if not target then -- no code window left: a new one above the bottom row
     target = api.nvim_open_win(bufnr, false, { split = "above", win = -1 })
   end
   api.nvim_win_set_buf(target, bufnr)
@@ -258,6 +286,24 @@ function M.switchbuf(bufnr, line, column)
   if not is_panel(api.nvim_win_get_buf(current)) then
     api.nvim_set_current_win(target)
   end
+end
+
+-- back to the arrow (the frame it's paused in, or the one ,k / ,j moved to)
+-- from anywhere: the console, the stack pane, another file (,g)
+function M.goto_current()
+  local session = require("dap").session()
+  local frame = session and session.stopped_thread_id and session.current_frame
+  if not frame then
+    return vim.notify("not paused", vim.log.levels.INFO)
+  end
+  -- from a panel the jump would leave the cursor there: go to the code first
+  if not is_code_win(api.nvim_get_current_win()) then
+    local win = last_code_win()
+    if win then
+      api.nvim_set_current_win(win)
+    end
+  end
+  session:_frame_set(frame)
 end
 
 local function highlights()

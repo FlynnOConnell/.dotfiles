@@ -5,6 +5,8 @@
 --   request(name)  the same, called by the viewer when a variable is clicked
 --   children(expr) the attributes of an object opened in the viewer
 --   select_frame(id) go to that frame of the call stack (clicked in the viewer)
+--   control(action) the viewer's toolbar: continue, pause, terminate,
+--                  step_over, step_into, step_out
 -- While the viewer is open, every pause (and frame change) also sends it the
 -- call stack and the frame's variables, so it works as a variable explorer
 -- that follows ,k / ,j, and moves the debugger to a frame clicked there.
@@ -61,9 +63,18 @@ local function theme()
   }
 end
 
+-- a viewer hidden with Super+M (or left on another workspace) comes back next
+-- to the editor, without taking focus: sciview.reveal in hypr/hyprland.lua
+local function reveal()
+  if vim.env.HYPRLAND_INSTANCE_SIGNATURE then
+    vim.system({ "hyprctl", "dispatch", "sciview.reveal" })
+  end
+end
+
 local function ensure_viewer(cb)
   reachable(function(up)
     if up then
+      reveal()
       return cb()
     end
     local stderr = {}
@@ -227,6 +238,26 @@ function M.select_frame(id)
   return ""
 end
 
+-- called by the viewer's toolbar: the same as ,c ,p ,q ,o ,i ,O (without a
+-- session, nothing: continue would start a run and ask which one, in nvim)
+function M.control(action)
+  vim.schedule(function()
+    local dap = require("dap")
+    local actions = {
+      continue = dap.continue,
+      pause = require("config.dap_layout").pause,
+      terminate = dap.terminate,
+      step_over = dap.step_over,
+      step_into = dap.step_into,
+      step_out = dap.step_out,
+    }
+    if dap.session() and actions[action] then
+      actions[action]()
+    end
+  end)
+  return ""
+end
+
 local dap = require("dap")
 dap.listeners.after.event_stopped["sciview"] = function()
   stop_id = stop_id + 1
@@ -240,10 +271,26 @@ dap.listeners.after.scopes["sciview"] = function(session, _, _, request)
     vim.schedule(M.push_variables)
   end
 end
-for _, event in ipairs({ "event_continued", "event_terminated", "event_exited" }) do
+dap.listeners.after.event_continued["sciview"] = function()
+  message({ kind = "running" })
+end
+for _, event in ipairs({ "event_terminated", "disconnect" }) do
   dap.listeners.after[event]["sciview"] = function()
-    message({ kind = "running" })
+    vim.defer_fn(function()
+      -- a child session (a subprocess) ending isn't the end of the run
+      if not dap.session() then
+        message({ kind = "ended" })
+      end
+    end, 100)
   end
+end
+
+-- ,dv: the viewer's run configs page, on this project (config/run_configs.lua)
+function M.open_configs()
+  local state = vim.json.decode(require("config.run_configs").viewer_state())
+  ensure_viewer(function()
+    message({ kind = "configs", root = state.root, store = state.store })
+  end)
 end
 
 -- no `expr` (nothing under the cursor): just open the viewer, whose explorer

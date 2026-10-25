@@ -245,33 +245,13 @@ return {
           desc = "Conditional breakpoint",
         },
         { ",l", function() dap().run_last() end, desc = "Rerun last" },
-        {
-          ",p",
-          function()
-            -- pause the main thread; dap.pause() asks which one first, as
-            -- torch and friends run several
-            local session = dap().session()
-            if not session then
-              return
-            end
-            session:request("threads", nil, function(err, resp)
-              local id
-              for _, thread in ipairs(not err and resp and resp.threads or {}) do
-                if thread.name == "MainThread" or not id then
-                  id = thread.id
-                end
-              end
-              if id then
-                dap().pause(id)
-              end
-            end)
-          end,
-          desc = "Pause",
-        },
+        { ",p", function() require("config.dap_layout").pause() end, desc = "Pause" },
+        { ",g", function() require("config.dap_layout").goto_current() end, desc = "Go to the paused line (the arrow)" },
         { ",k", function() dap().up() end, desc = "Up the stack" },
         { ",j", function() dap().down() end, desc = "Down the stack" },
         { ",D", function() require("config.dap_layout").toggle() end, desc = "Debug console + call stack" },
         { ",dd", function() require("config.run_configs").open() end, desc = "Run configs (saved commands)" },
+        { ",dv", function() require("config.sciview").open_configs() end, desc = "Run configs in the viewer (a form)" },
         {
           ",dc",
           function()
@@ -298,12 +278,19 @@ return {
         desc = "Run to Cursor (runs the cell if not paused)",
       },
       {
-        -- "run this and stop": from where it's paused down to the cursor
-        -- line, stopping before it runs; other breakpoints on the way are
-        -- skipped (,C, but only while paused)
+        -- "run this and stop" at the cursor line, before it runs; other
+        -- breakpoints on the way are skipped. Paused: from where it is.
+        -- Not debugging: asks which ,dd command to start, the last one first
         ",s",
         function()
-          require("dap").run_to_cursor()
+          local session = require("dap").session()
+          if not session then
+            require("config.run_configs").run_to_here()
+          elseif session.stopped_thread_id then
+            require("dap").run_to_cursor()
+          else
+            vim.notify("still running: ,p pauses it, or set a breakpoint", vim.log.levels.INFO)
+          end
         end,
         desc = "Run to here and stop",
       },

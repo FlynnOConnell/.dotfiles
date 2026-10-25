@@ -7,10 +7,13 @@ Arrays arrive from python/nvim_sciview_send.py over a unix socket.
   1D     trace plot and histogram
   2D+    image with colormap and contrast; a slider per leading axis (axis 0
          is time: play/pause); hovering a pixel plots its trace over axis 0
-Left column: the call stack and the paused frame's variables (sent by nvim on
+Left column: the debugger's controls (continue, pause, stop, step over / into /
+out, the same as ,c ,p ,q ,o ,i ,O in nvim), the call stack and the paused frame's variables (sent by nvim on
 every pause and frame change; click a frame to move the debugger there, an
 array to load it: the viewer asks nvim over its RPC socket, --nvim), then
-every array shown so far.
+every array shown so far. The gear on the toolbar (,dv in nvim) opens the run
+configs page: the saved commands of ,dd as forms read off each one's --help,
+the project's data locations, and buttons to debug or run them in nvim.
 
 Future: on-demand frames for arrays too big to send whole (a frame server in
 the debugged program), GPU tensors shared without a CPU copy (CUDA IPC).
@@ -20,6 +23,8 @@ import argparse
 import json
 import os
 import queue
+import re
+import shutil
 import socket
 import subprocess
 import threading
@@ -27,9 +32,21 @@ import time
 
 import numpy as np
 from imgui_bundle import hello_imgui, imgui, immapp, immvision, implot
+from imgui_bundle import portable_file_dialogs as pfd
 
+import nvim_sciview_form as cli
 import nvim_sciview_send as send
 
+# the toolbar: (action sent to nvim, codicon, name, nvim key, color, usable when)
+CONTROLS = [
+    ("continue", "\ueacf", "Continue", ",c", "ok", "paused"),
+    ("pause", "\uead1", "Pause", ",p", "number", "running"),
+    ("terminate", "\uead7", "Stop", ",q", "error", "live"),
+    ("step_over", "\uead6", "Step over", ",o", "accent", "paused"),
+    ("step_into", "\uead4", "Step into", ",i", "accent", "paused"),
+    ("step_out", "\uead5", "Step out", ",O", "accent", "paused"),
+]
+GEAR = "\ueb51"
 COLORMAPS = ["Gray", "Viridis", "Magma", "Inferno", "Plasma", "Turbo", "Parula", "Cividis", "Hot", "Jet"]
 # sizes below are at 1x; px() scales them by the display scale (HiDPI)
 UI_SCALE = 1.0
@@ -294,6 +311,7 @@ class Viewer:
         # names the pause and frame, so another frame's objects aren't reused
         self.frame_vars: dict | None = None
         self.running = False  # the program resumed: the variables are stale
+        self.ended = False  # the run finished: nothing to step
         self.pending: str | None = None  # a clicked variable on its way
         self.status = ""
         # opened objects: expr -> list of child rows, or "loading" / error text
@@ -301,6 +319,14 @@ class Viewer:
         self.force_open: set[str] = set()  # testing: rows opened as if clicked
         self.styled = False
         self.scrolled_to = None  # the frame the stack list last scrolled to
+        self.configs = ConfigsPage(self)
+        self.page_open = False  # the run configs page instead of the shown array
+        self.page_request: dict | None = None  # open it on this project (from nvim)
+
+    @property
+    def stale(self) -> bool:
+        """The variables are from an earlier pause: the program resumed or ended."""
+        return self.running or self.ended
 
     def call_nvim(self, function: str, expr: str, on_error):
         """Call require'config.sciview'.<function>(expr) in the nvim that started us."""
@@ -315,6 +341,31 @@ class Viewer:
                 on_error(f"could not reach nvim: {error}")
 
         threading.Thread(target=run, daemon=True).start()
+
+    def ask_nvim(self, function: str, arg: str | None = None) -> dict:
+        """v:lua.<function>(arg) in nvim, answered in JSON. Blocks: call it off the ui thread."""
+        call = f"v:lua.{function}({'' if arg is None else json.dumps(arg)})"
+        done = subprocess.run(["nvim", "--server", self.nvim, "--remote-expr", call],
+                              capture_output=True, text=True, timeout=10, check=True)
+        return json.loads(done.stdout)
+
+    def toggle_page(self):
+        if self.page_open:
+            self.configs.close()
+            self.page_open = False
+            return
+        self.page_open = True
+        if not self.nvim:
+            self.configs.open(self.configs.root or os.getcwd())
+            return
+
+        def ask():  # nvim's current project
+            try:
+                self.page_request = self.ask_nvim("require'config.run_configs'.viewer_state")
+            except Exception as error:
+                self.configs.status = (f"could not reach nvim: {error}", "error")
+
+        threading.Thread(target=ask, daemon=True).start()
 
     def request(self, expr: str):
         """Ask nvim to send `expr` from the paused frame (like ,m)."""
@@ -362,7 +413,7 @@ class Viewer:
                 if message.get("kind") == "variables":
                     if not self.frame_vars or self.frame_vars.get("stop") != message.get("stop"):
                         self.children = {}  # a new pause: attribute values may have changed
-                    self.frame_vars, self.running = message, False
+                    self.frame_vars, self.running, self.ended = message, False, False
                     conn.sendall(b"ok\n")
                     return
                 if message.get("kind") == "children":
@@ -376,8 +427,13 @@ class Viewer:
                         self.children[message["parent"]] = message["error"]
                     conn.sendall(b"ok\n")
                     return
-                if message.get("kind") == "running":
-                    self.running = True
+                if message.get("kind") == "configs":
+                    self.page_request = message
+                    conn.sendall(b"ok\n")
+                    return
+                if message.get("kind") in ("running", "ended"):
+                    self.running = message["kind"] == "running"
+                    self.ended = message["kind"] == "ended"
                     conn.sendall(b"ok\n")
                     return
                 path = message["path"]
@@ -403,6 +459,12 @@ class Viewer:
             self.current = len(self.items) - 1
             if item.label == self.pending:
                 self.pending, self.status = None, ""
+            if self.page_open:  # a new array (,m): show it
+                self.toggle_page()
+        if self.page_request:
+            request, self.page_request = self.page_request, None
+            self.configs.open(request.get("root"), request.get("store"))
+            self.page_open = True
 
         # drag its right edge to widen the explorer
         imgui.push_style_color(imgui.Col_.child_bg, color("bg", toward="raised", t=0.25))
@@ -427,7 +489,9 @@ class Viewer:
         imgui.same_line()
 
         imgui.begin_child("##view", imgui.ImVec2(0, 0), imgui.ChildFlags_.always_use_window_padding)
-        if self.current < 0:
+        if self.page_open:
+            self.configs.draw()
+        elif self.current < 0:
             self.empty_view()
         else:
             item = self.items[self.current]
@@ -446,14 +510,57 @@ class Viewer:
                     item.error = f"{type(error).__name__}: {error}"
         imgui.end_child()
 
+    def control(self, action: str):
+        """Ask nvim to continue / pause / stop / step (its listeners update us)."""
+        def failed(text):
+            self.status = text
+
+        self.call_nvim("control", action, failed)
+
+    def controls(self):
+        """The toolbar: codicons from the nerd font, names without it."""
+        state = {"paused": self.frame_vars is not None and not self.stale, "running": self.running}
+        state["live"] = state["paused"] or state["running"]
+        for i, (action, icon, name, key, role, usable) in enumerate(CONTROLS):
+            if i:
+                imgui.same_line(0, px(4))
+            enabled = state[usable] and self.nvim is not None
+            if not enabled:
+                imgui.begin_disabled()
+            imgui.push_style_color(imgui.Col_.text, color(role))
+            label = icon if "regular" in fonts else name
+            if imgui.button(f"{label}##{action}", imgui.ImVec2(px(34) if "regular" in fonts else 0, px(28))):
+                self.control(action)
+            imgui.pop_style_color()
+            if not enabled:
+                imgui.end_disabled()
+            if imgui.is_item_hovered(imgui.HoveredFlags_.allow_when_disabled):
+                imgui.set_tooltip(f"{name}  ({key} in nvim)")
+        # the run configs page, apart from the stepping buttons
+        imgui.same_line(0, px(14))
+        imgui.push_style_color(imgui.Col_.text, color("accent" if self.page_open else "fg"))
+        if self.page_open:
+            imgui.push_style_color(imgui.Col_.button, color("selection"))
+        if imgui.button(f"{GEAR if 'regular' in fonts else 'Configs'}##configs",
+                        imgui.ImVec2(px(34) if "regular" in fonts else 0, px(28))):
+            self.toggle_page()
+        imgui.pop_style_color(2 if self.page_open else 1)
+        if imgui.is_item_hovered():
+            imgui.set_tooltip("Run configs and data locations  (,dv in nvim)")
+        imgui.spacing()
+
     def variables_panel(self):
+        self.controls()
         frame = self.frame_vars
         if frame is None:
             pill("waiting", "dim")
             imgui.spacing()
             imgui.text_wrapped("Variables appear here when the debugger pauses.")
             return
-        pill("running" if self.running else "paused", "number" if self.running else "ok")
+        if self.ended:
+            pill("finished", "dim")
+        else:
+            pill("running" if self.running else "paused", "number" if self.running else "ok")
         imgui.same_line()
         bold(frame["frame"], "accent")
         imgui.text_colored(color("dim"), frame["location"])
@@ -465,7 +572,7 @@ class Viewer:
         heading("VARIABLES")
         if not frame["variables"]:
             imgui.text_disabled("none defined yet")
-        if self.running:
+        if self.stale:
             imgui.begin_disabled()
         flags = imgui.TableFlags_.row_bg | imgui.TableFlags_.resizable | imgui.TableFlags_.no_borders_in_body_until_resize
         if imgui.begin_table("##vars", 2, flags):
@@ -474,7 +581,7 @@ class Viewer:
             imgui.table_setup_column("value", imgui.TableColumnFlags_.width_stretch)
             self.variable_rows(frame["variables"], frame["stop"])
             imgui.end_table()
-        if self.running:
+        if self.stale:
             imgui.end_disabled()
 
     def stack_rows(self, stack: list, current):
@@ -483,7 +590,7 @@ class Viewer:
         row = imgui.get_text_line_height_with_spacing()
         height = min(len(stack), 8) * row + px(4)
         imgui.begin_child("##stack", imgui.ImVec2(0, height))
-        if self.running or not self.nvim:
+        if self.stale or not self.nvim:
             imgui.begin_disabled()
         for f in stack:
             here = f["id"] == current
@@ -504,12 +611,12 @@ class Viewer:
                 imgui.text_colored(color("dim" if f.get("subtle") else "fg"), f"  {f['name']}")
             imgui.same_line()
             imgui.text_colored(color("dim"), f["location"])
-        if self.running or not self.nvim:
+        if self.stale or not self.nvim:
             imgui.end_disabled()
         imgui.end_child()
 
     def load(self, expr: str, loaded):
-        if self.running:
+        if self.stale:
             return
         if loaded is not None:
             self.current = loaded  # already loaded at this pause
@@ -545,7 +652,7 @@ class Viewer:
                 row_tooltip(hovered, expr, summary)
                 if opened:
                     children = self.children.get(expr)
-                    if children is None and not self.running:
+                    if children is None and not self.stale:
                         self.open_children(expr)
                     elif isinstance(children, str):
                         imgui.table_next_row()
@@ -573,8 +680,7 @@ class Viewer:
 
     def empty_view(self):
         avail = imgui.get_content_region_avail()
-        lines = ["nothing shown yet", "",
-                 "click an array or object on the left,", "or press ,m on a variable in nvim"]
+        lines = ["nothing shown yet", "", "Click a variable to display it"]
         imgui.set_cursor_pos_y(imgui.get_cursor_pos_y() + avail.y * 0.4)
         for i, line in enumerate(lines):
             width = imgui.calc_text_size(line).x
@@ -751,6 +857,799 @@ class Viewer:
                 implot.end_plot()
 
 
+# -- the run configs page: the gear on the toolbar, ,dv in nvim ---------------
+# the store config/run_configs.lua (,dd) keeps: per project root, its saved
+# lines, and under "variables" its `NAME = value` data locations
+VARIABLE = re.compile(r"^\s*(?:export\s+)?\$?([A-Za-z_]\w*)\s*=\s*(.*?)\s*$")  # run_configs.lua's parse_variables
+NO_HELP = "doesn't look like it reads arguments, so --help would run it"
+# the buttons under a config: (action for run_configs.from_viewer, codicon, name, color, tooltip)
+ACTIONS = [
+    ("debug", "", "Debug", "accent", "Debug it in nvim  (<CR> in ,dd)"),
+    ("run_to_cursor", "", "Run to nvim cursor", "ok",
+     "Debug it, stopping only at the line nvim's cursor is on  (,s)"),
+    ("run", "", "Run", "number", "Run it without the debugger, in an nvim terminal"),
+    ("copy", "", "Copy as shell command", "fg",
+     "The command with its $NAMEs filled in, for a terminal or a SLURM script"),
+]
+ICONS = {"add": "", "copy": "", "delete": "", "close": "", "reload": "",
+         "file": "", "folder": ""}
+
+
+def icon(name: str, text: str) -> str:
+    return ICONS[name] if "regular" in fonts else text
+
+
+def tilde(path: str) -> str:
+    home = os.path.expanduser("~")
+    return "~" + path[len(home):] if path == home or path.startswith(home + "/") else path
+
+
+def default_store() -> str:
+    data = os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
+    return os.path.join(data, "nvim", "run_configs.json")
+
+
+def as_list(value) -> list:
+    return value if isinstance(value, list) else []  # nvim's json writes an empty table as {}
+
+
+def entries_of(lines: list) -> list[dict]:
+    """Saved lines -> configs {name, line} and notes {note}: a # line right
+    above a command is its name (run_configs.lua's named())."""
+    entries = []
+    for line in lines:
+        if not isinstance(line, str) or not line.strip():
+            continue
+        if line.lstrip().startswith("#"):
+            entries.append({"note": line})
+        elif entries and "note" in entries[-1]:
+            entries.append({"name": entries.pop()["note"].lstrip()[1:].strip(), "line": line})
+        else:
+            entries.append({"name": "", "line": line})
+    return entries
+
+
+def lines_of(entries: list[dict]) -> list[str]:
+    lines = []
+    for entry in entries:
+        if "note" in entry:
+            lines.append(entry["note"])
+        elif entry["line"].strip():  # a config with no command yet isn't saved
+            lines += ([f"# {entry['name'].strip()}"] if entry["name"].strip() else []) + [entry["line"].strip()]
+    return lines
+
+
+def locations_of(lines: list) -> list[dict]:
+    """`NAME = value` lines -> {name, value}; other lines kept as {raw}."""
+    locations = []
+    for line in lines:
+        if not isinstance(line, str) or not line.strip():
+            continue
+        found = VARIABLE.match(line)
+        if found:
+            value = found.group(2)
+            if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+                value = value[1:-1]
+            locations.append({"name": found.group(1), "value": value})
+        else:
+            locations.append({"raw": line})
+    return locations
+
+
+def variable_lines(locations: list[dict]) -> list[str]:
+    return [loc["raw"] if "raw" in loc else f"{loc['name']} = {loc['value']}"
+            for loc in locations if "raw" in loc or loc["name"]]
+
+
+def script_parses_args(path: str) -> bool:
+    try:
+        with open(path, errors="replace") as f:
+            return bool(cli.PARSES_ARGS.search(f.read(512_000)))
+    except OSError:
+        return False
+
+
+def reads_arguments(how: dict) -> bool:
+    """Whether `command --help` only prints help: an env command (masknmf,
+    pytest), an installed module, or a project file that parses its
+    arguments. A plain script would just run."""
+    if how.get("installed"):
+        return True
+    cwd = how.get("cwd") or "."
+    if how.get("module"):
+        parts = how["module"].split(".")
+        for base in (cwd, os.path.join(cwd, "src")):
+            for path in (os.path.join(base, *parts) + ".py", os.path.join(base, *parts, "__main__.py")):
+                if os.path.isfile(path):
+                    return script_parses_args(path)
+        return True  # not the project's: an installed tool
+    path = os.path.join(cwd, how.get("program") or "")
+    return os.path.isfile(path) and script_parses_args(path)
+
+
+def program(line: str) -> str:
+    """Which program a line runs: its first word, or -m and the module."""
+    tokens = cli.split(line)
+    return cli.join(tokens[:2] if tokens[:1] == ["-m"] else tokens[:1])
+
+
+def copy_text(text: str) -> bool:
+    """To the Wayland clipboard; False if there's no wl-copy (imgui's then)."""
+    if os.environ.get("WAYLAND_DISPLAY") and shutil.which("wl-copy"):
+        subprocess.run(["wl-copy"], input=text, text=True, timeout=5)
+        return True
+    return False
+
+
+class ConfigsPage:
+    """The saved commands of config/run_configs.lua (,dd) as forms, and the
+    project's data locations. Reads and writes the same store as ,dd; each
+    form comes from the command's --help (nvim_sciview_form), and the buttons
+    go through nvim (run_configs.from_viewer), which fills in $NAMEs the way
+    ,dd does."""
+
+    def __init__(self, viewer: "Viewer"):
+        self.viewer = viewer
+        self.root: str | None = None
+        self.store = default_store()
+        self.entries: list[dict] = []  # entries_of() the project's lines
+        self.locations: list[dict] = []
+        self.selected = 0  # index into configs()
+        self.mtime = None  # the store's, when last read or written
+        self.checked = 0.0  # when the store's mtime was last looked at
+        self.dirty_at: float | None = None  # edited, not saved yet
+        self.specs: dict = {}  # (root, help line) -> cli.Spec, "loading", or why there's none
+        self.known: dict = {}  # line -> the Spec its form was drawn with
+        self.forced: set = set()  # programs whose --help is read even though they look unsafe
+        self.editing: dict = {}  # field id -> its text while typed in
+        self.front: dict = {}  # (config, spec) -> names shown above "more flags"
+        self.filter = ""
+        self.dialog = None  # (portable file dialog, what to do with the path)
+        self.clipboard: str | None = None  # for imgui's clipboard, set on the ui thread
+        self.status = ("", "dim")
+        self.exists: dict = {}  # path -> (it exists, when checked)
+        self.deleting = False
+
+    # -- the store --------------------------------------------------------
+    def configs(self) -> list[dict]:
+        return [e for e in self.entries if "line" in e]
+
+    def open(self, root: str | None = None, store: str | None = None):
+        if self.dirty_at:
+            self.save()
+        if store:
+            self.store = store
+        if root and root != self.root:
+            self.root, self.selected, self.status = root, 0, ("", "dim")
+            self.editing.clear()
+        self.load()
+
+    def close(self):
+        if self.dirty_at:
+            self.save()
+
+    def read(self) -> dict:
+        try:
+            with open(self.store) as f:
+                data = json.load(f)
+            return data if isinstance(data, dict) else {}
+        except (OSError, ValueError):
+            return {}
+
+    def load(self):
+        configs = self.configs()
+        current = configs[self.selected] if 0 <= self.selected < len(configs) else None
+        data = self.read()
+        try:
+            self.mtime = os.stat(self.store).st_mtime_ns
+        except OSError:
+            self.mtime = None
+        variables = data.get("variables") if isinstance(data.get("variables"), dict) else {}
+        self.entries = entries_of(as_list(data.get(self.root)))
+        self.locations = locations_of(as_list(variables.get(self.root)))
+        configs = self.configs()
+        if current:  # stay on it if it's still there
+            same = [i for i, e in enumerate(configs) if e["line"] == current["line"] or (
+                current["name"] and e["name"] == current["name"])]
+            self.selected = same[0] if same else min(self.selected, max(len(configs) - 1, 0))
+        self.dirty_at = None
+
+    def save(self):
+        if not self.root:
+            return
+        data = self.read()
+        lines, variables = lines_of(self.entries), variable_lines(self.locations)
+        if lines:
+            data[self.root] = lines
+        else:
+            data.pop(self.root, None)
+        per_root = data.get("variables") if isinstance(data.get("variables"), dict) else {}
+        if variables:
+            per_root[self.root] = variables
+        else:
+            per_root.pop(self.root, None)
+        data["variables"] = per_root
+        try:
+            os.makedirs(os.path.dirname(self.store), exist_ok=True)
+            with open(self.store + ".tmp", "w") as f:
+                json.dump(data, f)
+            os.replace(self.store + ".tmp", self.store)
+            self.mtime = os.stat(self.store).st_mtime_ns
+        except OSError as error:
+            self.status = (f"could not save: {error}", "error")
+        self.dirty_at = None
+        # why a --help couldn't be read may be fixed now (a data location added)
+        for key in [k for k, v in self.specs.items() if k[0] == self.root and isinstance(v, str) and v != "loading"]:
+            del self.specs[key]
+
+    def touch(self):
+        self.dirty_at = time.monotonic()
+
+    def poll(self):
+        """Each frame: a file dialog's answer, saving after edits, and ,dd's
+        edits (the store changed on disk)."""
+        if self.dialog and self.dialog[0].ready(0):
+            dialog, done = self.dialog
+            self.dialog = None
+            result = dialog.result()
+            path = result[0] if isinstance(result, list) and result else result if isinstance(result, str) else ""
+            if path:
+                done(tilde(path))
+        if self.clipboard is not None:
+            imgui.set_clipboard_text(self.clipboard)
+            self.clipboard = None
+        now = time.monotonic()
+        if self.dirty_at and now - self.dirty_at > 0.5 and not imgui.is_any_item_active():
+            self.save()
+        if now - self.checked > 1.0 and not self.dirty_at:
+            self.checked = now
+            try:
+                mtime = os.stat(self.store).st_mtime_ns
+            except OSError:
+                mtime = None
+            if mtime != self.mtime:
+                self.load()
+
+    def projects(self) -> list[str]:
+        data = self.read()
+        roots = {k for k in data if k not in ("variables", "last")}
+        if isinstance(data.get("variables"), dict):
+            roots |= set(data["variables"])
+        return sorted(roots | ({self.root} if self.root else set()), key=lambda r: os.path.basename(r).lower())
+
+    # -- --help -----------------------------------------------------------
+    def spec(self, entry: dict):
+        """The Spec to draw entry's form with, and a note about its --help:
+        "loading", or why there's none."""
+        line = entry["line"]
+        if not cli.split(line):
+            return None, None
+        last = entry.get("spec") or self.known.get(line)
+        # a new command: its own --help, not the last one's
+        key_line = cli.help_line(cli.parse_line(line, last), last) if last and not entry.get("fresh") else line
+        key = (self.root, key_line)
+        entry["help_key"] = key_line
+        got = self.specs.get(key)
+        if got is None:
+            self.read_help(key_line)
+            got = "loading"
+        if isinstance(got, cli.Spec):
+            entry["spec"], self.known[line] = got, got
+            entry.pop("fresh", None)
+            if got.whole_line:  # also filed under the part of the line it depends on, as later edits ask for it
+                self.specs.setdefault((self.root, cli.help_line(cli.parse_line(line, got), got)), got)
+            return got, None
+        return last, got
+
+    def read_help(self, line: str):
+        key, forced = (self.root, line), program(line) in self.forced
+        self.specs[key] = "loading"
+
+        def run():
+            try:
+                self.specs[key] = self.fetch_help(key[0], line, forced)
+            except Exception as error:
+                self.specs[key] = f"could not read --help: {error}"
+
+        threading.Thread(target=run, daemon=True).start()
+
+    def fetch_help(self, root: str, line: str, forced: bool):
+        if not self.viewer.nvim:
+            return "started without --nvim: can't read --help"
+        def resolve(line):
+            return self.viewer.ask_nvim("require'config.run_configs'.from_viewer",
+                                        json.dumps({"action": "resolve", "root": root, "line": line}))
+
+        asked = line
+        how = resolve(line)
+        if "not set" in how.get("error", ""):  # an undefined $NAME needn't keep the form away
+            line = cli.join([t for t in cli.split(line) if "$" not in t])
+            how = resolve(line)
+        if how.get("error"):
+            return how["error"]
+        if not forced and not reads_arguments(how):
+            return NO_HELP
+        argv, env = how["argv"], {**os.environ, **(how.get("env") or {})}
+        head = 3 if how.get("module") else 2  # python -m module, python program
+        leading = []
+        for arg in argv[head:]:
+            if arg.startswith("-"):
+                break
+            leading.append(arg)
+        # the whole line (masknmf's flags depend on --pipeline), else less of it
+        for attempt in dict.fromkeys(map(tuple, (argv, argv[:head] + leading, argv[:head]))):
+            whole = list(attempt) == argv and line == asked
+            try:
+                done = subprocess.run([*attempt, "--help"], cwd=how.get("cwd"), env=env, capture_output=True,
+                                      text=True, timeout=90, stdin=subprocess.DEVNULL)
+            except subprocess.TimeoutExpired:
+                return "--help took over 90 s"
+            spec = (cli.parse_help(done.stdout) or cli.parse_help(done.stderr)) if done.returncode == 0 else None
+            if spec:
+                spec.whole_line = whole
+                return spec
+        return "no argparse --help: edit the command line below"
+
+    # -- actions ----------------------------------------------------------
+    def act(self, action: str, entry: dict):
+        if self.dirty_at:
+            self.save()  # nvim reads the data locations from the store
+        request = {"action": "resolve" if action == "copy" else action, "root": self.root,
+                   "line": entry["line"], "name": entry["name"].strip() or None}
+        self.status = ("asking nvim...", "dim")
+
+        def run():
+            try:
+                answer = self.viewer.ask_nvim("require'config.run_configs'.from_viewer", json.dumps(request))
+            except Exception as error:
+                self.status = (f"could not reach nvim: {error}", "error")
+                return
+            if answer.get("error"):
+                self.status = (answer["error"], "error")
+            elif action == "copy":
+                if not copy_text(answer["shell"]):
+                    self.clipboard = answer["shell"]
+                self.status = (f"copied: {answer['shell']}", "ok")
+            else:
+                self.status = (answer.get("ok", ""), "ok")
+
+        threading.Thread(target=run, daemon=True).start()
+
+    def put(self, entry: dict, arg: cli.Arg, token: str):
+        """A picked data location or path into a field: added to one taking
+        several values, else in place of its value."""
+        spec = entry.get("spec")
+        parsed = cli.parse_line(entry["line"], spec)
+        values = parsed.values.get(arg.name, []) if arg.several else []
+        parsed.values[arg.name] = [*values, token]
+        entry["line"] = cli.to_line(parsed, spec)
+        self.editing.clear()
+        self.touch()
+
+    def choose(self, title: str, start: str, folder: bool, done):
+        """A file or folder dialog (zenity); `done(path)` once it's answered."""
+        start = os.path.expanduser(start or "")
+        if start and not os.path.isdir(start):
+            start = os.path.dirname(start)
+        start = start if os.path.isdir(start) else (self.root or os.path.expanduser("~"))
+        dialog = pfd.select_folder(title, start) if folder else pfd.open_file(title, start)
+        self.dialog = (dialog, done)
+
+    def path_exists(self, value: str) -> bool:
+        cached = self.exists.get(value)
+        if cached and time.monotonic() - cached[1] < 2.0:
+            return cached[0]
+        found = os.path.exists(os.path.expanduser(value))
+        self.exists[value] = (found, time.monotonic())
+        return found
+
+    # -- drawing ----------------------------------------------------------
+    def text_field(self, fid: str, text: str, hint: str, width: float) -> tuple[bool, str]:
+        """An input that keeps what you type while you're in it (the line is
+        re-read from the fields every frame, which would eat a trailing space)."""
+        shown = self.editing.get(fid, text)
+        imgui.set_next_item_width(width)
+        changed, new = imgui.input_text_with_hint(f"##{fid}", hint, shown)
+        if imgui.is_item_active():
+            self.editing[fid] = new
+        else:
+            self.editing.pop(fid, None)
+        return changed, new
+
+    def draw(self):
+        self.poll()
+        bold("Run configs", "accent")
+        imgui.same_line(0, px(12))
+        if self.root:
+            imgui.set_next_item_width(px(260))
+            if imgui.begin_combo("##project", os.path.basename(self.root) or self.root):
+                for root in self.projects():
+                    if imgui.selectable(f"{os.path.basename(root)}   {tilde(root)}", root == self.root)[0]:
+                        self.open(root)
+                imgui.end_combo()
+            if imgui.is_item_hovered():
+                imgui.set_tooltip(f"{tilde(self.root)}\nsaved with ,dd's commands in {tilde(self.store)}")
+        else:
+            imgui.text_colored(color("dim"), "asking nvim which project...")
+        imgui.same_line(imgui.get_window_width() - px(52))
+        if imgui.button(f"{icon('close', 'x')}##close_page", imgui.ImVec2(px(30), 0)):
+            self.viewer.toggle_page()
+        if imgui.is_item_hovered():
+            imgui.set_tooltip("Back to the arrays  (or the gear)")
+        if not self.root:
+            return
+
+        row = imgui.get_frame_height_with_spacing()
+        data_height = (min(max(len(self.locations), 1), 6) + 2.6) * row
+        avail = imgui.get_content_region_avail()
+        imgui.begin_child("##configs_top", imgui.ImVec2(0, max(avail.y - data_height, row * 8)))
+        self.config_list()
+        imgui.same_line()
+        imgui.begin_child("##form", imgui.ImVec2(0, 0), imgui.ChildFlags_.always_use_window_padding)
+        self.config_form()
+        imgui.end_child()
+        imgui.end_child()
+        self.data_locations()
+
+    def config_list(self):
+        configs = self.configs()
+        imgui.push_style_color(imgui.Col_.child_bg, color("bg", toward="raised", t=0.25))
+        imgui.begin_child("##list", imgui.ImVec2(px(230), 0),
+                          imgui.ChildFlags_.borders | imgui.ChildFlags_.resize_x | imgui.ChildFlags_.always_use_window_padding)
+        imgui.pop_style_color()
+        imgui.text_colored(color("dim"), "CONFIGS")
+        imgui.same_line(imgui.get_window_width() - px(104))
+        if imgui.small_button(f"{icon('add', '+')}##add_config"):
+            self.entries.append({"name": "new config", "line": ""})
+            self.selected = len(self.configs()) - 1
+            self.touch()
+        if imgui.is_item_hovered():
+            imgui.set_tooltip("New config")
+        current = configs[self.selected] if 0 <= self.selected < len(configs) else None
+        imgui.same_line()
+        if current is None:
+            imgui.begin_disabled()
+        if imgui.small_button(f"{icon('copy', 'copy')}##duplicate"):
+            copy = {"name": (current["name"] or "config") + " copy", "line": current["line"]}
+            self.entries.insert(self.entries.index(current) + 1, copy)
+            self.selected += 1
+            self.touch()
+        if imgui.is_item_hovered(imgui.HoveredFlags_.allow_when_disabled):
+            imgui.set_tooltip("Duplicate")
+        imgui.same_line()
+        if imgui.small_button(f"{icon('delete', '-')}##delete"):
+            imgui.open_popup("delete config")
+        if imgui.is_item_hovered(imgui.HoveredFlags_.allow_when_disabled):
+            imgui.set_tooltip("Delete")
+        if current is None:
+            imgui.end_disabled()
+        if imgui.begin_popup("delete config"):
+            imgui.text(f"Delete \"{current['name'] or current['line']}\"?" if current else "")
+            if imgui.button("Delete") and current:
+                self.entries.remove(current)
+                self.selected = max(0, min(self.selected, len(self.configs()) - 1))
+                self.touch()
+                imgui.close_current_popup()
+            imgui.same_line()
+            if imgui.button("Cancel"):
+                imgui.close_current_popup()
+            imgui.end_popup()
+        imgui.spacing()
+        for i, entry in enumerate(configs):
+            label = entry["name"].strip() or entry["line"].strip() or "(empty)"
+            if imgui.selectable(f"{label}##config{i}", i == self.selected)[0]:
+                self.selected = i
+            if imgui.is_item_hovered() and entry["line"]:
+                imgui.set_tooltip(entry["line"])
+        if not configs:
+            imgui.text_wrapped("None yet: + adds one, or ,dd in nvim.")
+        imgui.end_child()
+
+    def config_form(self):
+        configs = self.configs()
+        if not configs:
+            imgui.text_colored(color("dim"), "No run configs for this project yet.")
+            return
+        self.selected = max(0, min(self.selected, len(configs) - 1))
+        entry = configs[self.selected]
+        uid = id(entry)
+        width = imgui.get_content_region_avail().x
+        label_width = px(180)
+
+        flags = imgui.TableFlags_.sizing_fixed_fit | imgui.TableFlags_.no_borders_in_body
+        if imgui.begin_table("##head", 2, flags):
+            imgui.table_setup_column("label", imgui.TableColumnFlags_.width_fixed, label_width)
+            imgui.table_setup_column("field", imgui.TableColumnFlags_.width_stretch)
+            self.label("Name", "Shown in the list; saved as a # line above the command, so ,dd shows it too")
+            changed, text = self.text_field(f"{uid}:name", entry["name"], "a name for the list", -1)
+            if changed:
+                entry["name"] = text
+                self.touch()
+            spec, note = self.spec(entry)
+            parsed = cli.parse_line(entry["line"], spec)
+            self.label("Command", "The program and its subcommands: masknmf run, scripts/foo.py, -m package.module")
+            reload_width = px(34)
+            changed, text = self.text_field(f"{uid}:command", cli.join(parsed.command), "masknmf run, a script, or -m module",
+                                            imgui.get_content_region_avail().x - reload_width - px(8))
+            if changed:
+                parsed.command = cli.split(text)
+                entry["line"] = cli.to_line(parsed, spec)
+                entry["fresh"] = True
+                self.touch()
+            imgui.same_line()
+            if imgui.button(f"{icon('reload', 'reload')}##help{uid}", imgui.ImVec2(reload_width, 0)):
+                for key in [k for k, v in self.specs.items() if k[0] == self.root and v != "loading"]:
+                    del self.specs[key]
+                entry["fresh"] = True
+            if imgui.is_item_hovered():
+                imgui.set_tooltip("Read its --help again (after changing the code that parses its arguments)")
+            imgui.end_table()
+        if note == "loading":
+            imgui.text_colored(color("dim"), f"reading {cli.join(parsed.command)} --help...")
+        elif note:
+            imgui.text_colored(color("number" if note == NO_HELP else "error"),
+                               f"{cli.join(parsed.command) or 'it'} {note}" if note == NO_HELP else note)
+            if note == NO_HELP:
+                imgui.same_line()
+                if imgui.small_button("read it anyway"):
+                    self.forced.add(program(entry["line"]))
+                    self.specs.pop((self.root, entry.get("help_key")), None)
+
+        if spec:
+            self.fields(entry, spec, parsed, label_width)
+
+        heading("COMMAND LINE")
+        imgui.set_next_item_width(-1)
+        fid = f"{uid}:line"
+        shown = self.editing.get(fid, entry["line"])
+        changed, text = imgui.input_text_multiline(f"##{fid}", shown, imgui.ImVec2(-1, imgui.get_text_line_height() * 3 + px(10)),
+                                                   imgui.InputTextFlags_.word_wrap if hasattr(imgui.InputTextFlags_, "word_wrap") else 0)
+        if imgui.is_item_active():
+            self.editing[fid] = text
+        else:
+            self.editing.pop(fid, None)
+        if changed:
+            entry["line"] = " ".join(text.split("\n"))
+            self.touch()
+        imgui.spacing()
+        usable = bool(self.viewer.nvim and cli.split(entry["line"]))
+        for i, (action, glyph, name, role, tip) in enumerate(ACTIONS):
+            if i:
+                imgui.same_line()
+            if not usable:
+                imgui.begin_disabled()
+            imgui.push_style_color(imgui.Col_.text, color(role))
+            if imgui.button(f"{glyph}  {name}" if "regular" in fonts else name, imgui.ImVec2(0, px(28))):
+                self.act(action, entry)
+            imgui.pop_style_color()
+            if not usable:
+                imgui.end_disabled()
+            if imgui.is_item_hovered(imgui.HoveredFlags_.allow_when_disabled):
+                imgui.set_tooltip(tip if self.viewer.nvim else "started without --nvim")
+        text, role = self.status
+        if text:
+            imgui.push_style_color(imgui.Col_.text, color(role))
+            imgui.text_wrapped(text)
+            imgui.pop_style_color()
+
+    def label(self, text: str, tip: str, role: str = "fg"):
+        imgui.table_next_row()
+        imgui.table_next_column()
+        imgui.align_text_to_frame_padding()
+        imgui.text_colored(color(role), text)
+        if imgui.is_item_hovered() and tip:
+            imgui.set_tooltip(tip)
+        imgui.table_next_column()
+
+    def fields(self, entry: dict, spec: cli.Spec, parsed: cli.Form, label_width: float):
+        """A row per argument: the positionals, required and set ones first
+        (as of when the config was picked, so a field doesn't jump while you
+        fill it in), the rest under "more flags"."""
+        key = (id(entry), id(spec))
+        if key not in self.front:
+            self.front[key] = {a.name for a in spec.args if a.positional or a.required or a.name in parsed.values}
+        front = self.front[key]
+        flags = imgui.TableFlags_.sizing_fixed_fit | imgui.TableFlags_.no_borders_in_body | imgui.TableFlags_.row_bg
+        heading("ARGUMENTS")
+        changed = False
+        if imgui.begin_table("##fields", 2, flags):
+            imgui.table_setup_column("label", imgui.TableColumnFlags_.width_fixed, label_width)
+            imgui.table_setup_column("field", imgui.TableColumnFlags_.width_stretch)
+            for arg in spec.args:
+                if arg.name in front:
+                    changed |= self.field(entry, spec, parsed, arg)
+            self.label("extra args", "Anything the --help doesn't list, passed on as typed")
+            fid = f"{id(entry)}:extra"
+            moved, text = self.text_field(fid, cli.join(parsed.extra), "passed on as typed", -1)
+            if moved:
+                parsed.extra, changed = cli.split(text), True
+            imgui.end_table()
+        more = [a for a in spec.args if a.name not in front]
+        if "more flags" in self.viewer.force_open:  # testing
+            imgui.set_next_item_open(True, imgui.Cond_.once)
+        if more and imgui.tree_node_ex(f"more flags ({len(more)})##more{id(entry)}", imgui.TreeNodeFlags_.span_avail_width):
+            if len(more) > 10:
+                imgui.set_next_item_width(px(240))
+                _, self.filter = imgui.input_text_with_hint("##filter", "filter", self.filter)
+            wanted = self.filter.lower()
+            groups = {a.group for a in more}
+            if imgui.begin_table("##more_fields", 2, flags):
+                imgui.table_setup_column("label", imgui.TableColumnFlags_.width_fixed, label_width - imgui.get_style().indent_spacing)
+                imgui.table_setup_column("field", imgui.TableColumnFlags_.width_stretch)
+                group = None
+                for arg in more:
+                    if wanted and wanted not in arg.name.lower() and wanted not in arg.help.lower():
+                        continue
+                    if len(groups) > 2 and arg.group != group:
+                        group = arg.group
+                        imgui.table_next_row()
+                        imgui.table_next_column()
+                        imgui.text_colored(color("dim"), group)
+                    changed |= self.field(entry, spec, parsed, arg)
+                imgui.end_table()
+            imgui.tree_pop()
+        if changed:
+            entry["line"] = cli.to_line(parsed, spec)
+            self.touch()
+
+    def field(self, entry: dict, spec: cli.Spec, parsed: cli.Form, arg: cli.Arg) -> bool:
+        """One argument's row: a checkbox (a switch), a dropdown (choices), or
+        text with a picker for data locations, files and folders."""
+        values = parsed.values.get(arg.name)
+        missing = arg.required and not values and arg.nargs != "0"
+        tip = "\n".join(filter(None, [
+            arg.help,
+            "also " + ", ".join(f for f in arg.flags if f != parsed.used.get(arg.name, arg.name)) if len(arg.flags) > 1 else "",
+            "required" if arg.required else "",
+        ]))
+        self.label(parsed.used.get(arg.name, arg.name), tip, "error" if missing else "fg" if values is not None else "dim")
+        fid = f"{id(entry)}:{arg.name}"
+
+        def set_values(new):
+            if new is None:
+                parsed.values.pop(arg.name, None)
+                parsed.used.pop(arg.name, None)
+                parsed.joined.discard(arg.name)
+            else:
+                parsed.values[arg.name] = new
+
+        if arg.nargs == "0":
+            clicked, on = imgui.checkbox(f"##{fid}", values is not None)
+            if clicked:
+                set_values([] if on else None)
+            return clicked
+        unset = f"default: {arg.default}" if arg.default not in (None, "None", "") else "not set"
+        if arg.choices and not arg.several:
+            imgui.set_next_item_width(-1)
+            changed = False
+            if imgui.begin_combo(f"##{fid}", values[0] if values else unset):
+                if imgui.selectable(unset, not values)[0]:
+                    set_values(None)
+                    changed = True
+                for choice in arg.choices + ([values[0]] if values and values[0] not in arg.choices else []):
+                    if imgui.selectable(choice, values == [choice])[0]:
+                        set_values([choice])
+                        changed = True
+                imgui.end_combo()
+            return changed
+        # a number takes no path: no picker
+        pick = not re.fullmatch(r"-?[\d.]+(?:e-?\d+)?", arg.default or "")
+        hint = unset if unset != "not set" else (arg.metavar or "value")
+        if arg.several:
+            hint += "  (several: space separated)"
+        changed, text = self.text_field(fid, cli.join(values or []), hint,
+                                        imgui.get_content_region_avail().x - (px(42) if pick else 0))
+        if changed:
+            tokens = cli.split(text)
+            set_values(tokens if tokens else None)
+        if pick:
+            imgui.same_line()
+            self.picker(fid, entry, arg)
+        return changed
+
+    def picker(self, fid: str, entry: dict, arg: cli.Arg):
+        if self.dialog:
+            imgui.begin_disabled()
+        if imgui.button(f"{icon('folder', '...')}##pick{fid}", imgui.ImVec2(px(34), 0)):
+            imgui.open_popup(f"pick##{fid}")
+        if self.dialog:
+            imgui.end_disabled()
+        if imgui.is_item_hovered():
+            imgui.set_tooltip("A data location, a file or a folder" + ("  (added to the others)" if arg.several else ""))
+        if imgui.begin_popup(f"pick##{fid}"):
+            imgui.text_colored(color("dim"), "DATA LOCATIONS")
+            named = [loc for loc in self.locations if loc.get("name")]
+            for loc in named:
+                if imgui.selectable(f"${loc['name']}##{fid}{loc['name']}")[0]:
+                    self.put(entry, arg, "$" + loc["name"])
+                imgui.same_line()
+                imgui.text_colored(color("dim"), loc["value"])
+            if not named:
+                imgui.text_disabled("none yet: add them below the form")
+            imgui.separator()
+            if imgui.selectable(f"{icon('file', '')} File...")[0]:
+                self.choose(arg.name, "", False, lambda path: self.put(entry, arg, path))
+            if imgui.selectable(f"{icon('folder', '')} Folder...")[0]:
+                self.choose(arg.name, "", True, lambda path: self.put(entry, arg, path))
+            imgui.end_popup()
+
+    def data_locations(self):
+        heading("DATA LOCATIONS")
+        if imgui.small_button(f"{icon('add', '+')} Add##location"):
+            taken = {loc.get("name") for loc in self.locations}
+            name = next(n for n in (f"DATA{k}" if k else "DATA" for k in range(1000)) if n not in taken)
+            self.locations.append({"name": name, "value": ""})
+            self.touch()
+        imgui.same_line(0, px(12))
+        imgui.text_colored(color("dim"), "a field's folder button picks one, or type $NAME in a command (,dd: Variables)")
+        named = [loc for loc in self.locations if "raw" not in loc]
+        flags = imgui.TableFlags_.sizing_fixed_fit | imgui.TableFlags_.no_borders_in_body | imgui.TableFlags_.row_bg
+        imgui.begin_child("##locations", imgui.ImVec2(0, 0))
+        if imgui.begin_table("##location_rows", 3, flags):
+            imgui.table_setup_column("name", imgui.TableColumnFlags_.width_fixed, px(170))
+            imgui.table_setup_column("path", imgui.TableColumnFlags_.width_stretch)
+            imgui.table_setup_column("buttons", imgui.TableColumnFlags_.width_fixed, px(124))
+            names = [loc["name"] for loc in named]
+            for k, loc in enumerate(named):
+                imgui.table_next_row()
+                imgui.table_next_column()
+                lid = f"location{k}"
+                twice = names.count(loc["name"]) > 1
+                if twice or not loc["name"]:
+                    imgui.push_style_color(imgui.Col_.text, color("error"))
+                changed, text = self.text_field(f"{lid}:name", loc["name"], "NAME", -1)
+                if twice or not loc["name"]:
+                    imgui.pop_style_color()
+                if imgui.is_item_hovered():
+                    imgui.set_tooltip("used twice: the first one counts" if twice else f"${loc['name']} in a command")
+                if changed:
+                    name = re.sub(r"\W", "", text)
+                    loc["name"] = "_" + name if name[:1].isdigit() else name
+                    self.touch()
+                imgui.table_next_column()
+                gone = bool(loc["value"]) and not self.path_exists(loc["value"])
+                note_width = imgui.calc_text_size("not found").x + px(10) if gone else 0
+                changed, text = self.text_field(f"{lid}:value", loc["value"], "a file or folder: ~/data/movie.tif",
+                                                imgui.get_content_region_avail().x - note_width)
+                if changed:
+                    loc["value"] = text.strip()
+                    self.touch()
+                if gone:
+                    imgui.same_line()
+                    imgui.text_colored(color("error"), "not found")
+                imgui.table_next_column()
+
+                def set_value(path, loc=loc):
+                    loc["value"] = path
+                    self.editing.clear()
+                    self.touch()
+
+                if self.dialog:
+                    imgui.begin_disabled()
+                if imgui.button(f"{icon('file', 'file')}##{lid}file", imgui.ImVec2(px(34), 0)):
+                    self.choose(loc["name"] or "file", loc["value"], False, set_value)
+                if imgui.is_item_hovered(imgui.HoveredFlags_.allow_when_disabled):
+                    imgui.set_tooltip("Pick a file")
+                imgui.same_line(0, px(4))
+                if imgui.button(f"{icon('folder', 'dir')}##{lid}folder", imgui.ImVec2(px(34), 0)):
+                    self.choose(loc["name"] or "folder", loc["value"], True, set_value)
+                if imgui.is_item_hovered(imgui.HoveredFlags_.allow_when_disabled):
+                    imgui.set_tooltip("Pick a folder")
+                if self.dialog:
+                    imgui.end_disabled()
+                imgui.same_line(0, px(4))
+                if imgui.button(f"{icon('delete', 'x')}##{lid}remove", imgui.ImVec2(px(34), 0)):
+                    self.locations.remove(loc)
+                    self.editing.clear()
+                    self.touch()
+                if imgui.is_item_hovered():
+                    imgui.set_tooltip("Remove")
+            imgui.end_table()
+        if not named:
+            imgui.text_disabled("None yet: + Add, then pick a file or folder.")
+        imgui.end_child()
+
+
 def already_running(path: str) -> bool:
     try:
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
@@ -772,6 +1671,7 @@ def main():
     parser.add_argument("--test-size", help="testing: WxH window size (logical, before the dpi factor)")
     parser.add_argument("--test-click", help="testing: click this variable once the variables arrive")
     parser.add_argument("--test-open", action="append", default=[], help="testing: open this row of the explorer (repeatable)")
+    parser.add_argument("--test-configs", action="store_true", help="testing: start on the run configs page")
     args = parser.parse_args()
 
     path = send.socket_path()
@@ -782,6 +1682,8 @@ def main():
         os.unlink(path)  # left by a viewer that didn't exit cleanly
     viewer = Viewer(args.nvim)
     threading.Thread(target=viewer.serve, args=(path,), daemon=True).start()
+    if args.test_configs:
+        viewer.toggle_page()
 
     if args.theme:
         THEME.update({k: v for k, v in json.loads(args.theme).items() if isinstance(v, str) and v.startswith("#")})
