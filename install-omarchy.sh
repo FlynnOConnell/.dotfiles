@@ -29,6 +29,7 @@ FILES=(
   .config/hypr/input.lua
   .config/omarchy/shell.json
   .config/omarchy/extensions/omarchy-menu.jsonc
+  .config/omarchy/plugins/fo.herdr
   .config/omarchy/defaults/agent
   .config/git/config
   .config/herdr/config.toml

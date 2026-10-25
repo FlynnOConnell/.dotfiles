@@ -90,3 +90,6 @@ o.bind("SUPER + Z", "Moonlight: toggle keys local/remote", function()
     hl.dispatch(hl.dsp.send_key_state({ mods = "CTRL ALT SHIFT", key = "Z", state = "up" }))
   end, { timeout = 50, type = "oneshot" })
 end, { dont_inhibit = true })
+
+-- Herdr agents panel (the fo.herdr bar widget): what every agent is doing, Enter jumps to one.
+o.bind("SUPER + A", "Herdr agents", "omarchy-shell fo.herdr toggle")

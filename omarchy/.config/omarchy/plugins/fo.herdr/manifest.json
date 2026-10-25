@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "fo.herdr",
+  "name": "Herdr agents",
+  "version": "1.0.0",
+  "author": "fo",
+  "description": "Every herdr agent's status and what it's doing, from the bar.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Herdr agents",
+    "description": "Counts the agents waiting on you; the panel lists each one's status, place and latest recap. Click one to jump to it.",
+    "category": "AI",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {}
+  }
+}

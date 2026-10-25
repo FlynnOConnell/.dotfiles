@@ -107,3 +107,8 @@ tab_bar_right = [{ type = "zoom" }, { type = "hostname" }]
 # and it resolves on the server so remote sessions name the remote host.
 window_title = "{hostname}: {workspace}"
 agent_panel_sort = "spaces"
+
+# An agent finishing or waiting for approval in a pane you're not looking at
+# pops up as an Omarchy notification, even with herdr's window hidden.
+[ui.toast]
+delivery = "system"
