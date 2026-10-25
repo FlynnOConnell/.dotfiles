@@ -37,9 +37,20 @@ o.bind("SUPER + L", "Focus on right window", hl.dsp.focus({ direction = "r" }))
 o.bind("SUPER + K", "Focus on above window", hl.dsp.focus({ direction = "u" }))
 o.bind("SUPER + J", "Focus on below window", hl.dsp.focus({ direction = "d" }))
 
+-- Workspace layout toggle, moved off SUPER+L.
+o.bind("SUPER + SHIFT + L", "Toggle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
+-- Dwindle split toggle and the keybindings viewer, moved off SUPER+J and SUPER+K.
+o.bind("SUPER + SHIFT + J", "Toggle window split", hl.dsp.layout("togglesplit"))
+o.bind("SUPER + SHIFT + K", "Keybindings", "omarchy-menu-keybindings")
+
 -- Send the current workspace to the left/right monitor (shorter than SUPER+SHIFT+ALT+arrows).
 o.bind("SUPER + ALT + H", "Move workspace to left monitor", hl.dsp.workspace.move({ monitor = "l" }))
 o.bind("SUPER + ALT + L", "Move workspace to right monitor", hl.dsp.workspace.move({ monitor = "r" }))
+-- Same on SUPER+SHIFT+arrows (was: swap window left/right).
+hl.unbind("SUPER + SHIFT + LEFT")
+hl.unbind("SUPER + SHIFT + RIGHT")
+o.bind("SUPER + SHIFT + LEFT", "Move workspace to left monitor", hl.dsp.workspace.move({ monitor = "l" }))
+o.bind("SUPER + SHIFT + RIGHT", "Move workspace to right monitor", hl.dsp.workspace.move({ monitor = "r" }))
 
 
 -- Screen recording menu, or stop if recording (was: SUPER+SHIFT+P Google Photos).
