@@ -77,7 +77,8 @@ o.window("com.moonlight_stream.Moonlight", { fullscreen = false, tile = true, wo
 
 -- Moonlight keyboard mode: toggles whether keys go to the stream or to this machine
 -- (Moonlight's own Ctrl+Alt+Shift+Z). dont_inhibit so it still fires while Moonlight
--- has the keyboard grabbed.
+-- has the keyboard grabbed. Needs Moonlight's "Capture system keyboard shortcuts" on
+-- Always, which install-omarchy.sh sets.
 o.bind("SUPER + Z", "Moonlight: toggle keys local/remote", function()
   local moonlight = hl.get_windows({ class = "com.moonlight_stream.Moonlight" })[1]
   if not moonlight then

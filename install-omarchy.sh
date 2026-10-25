@@ -93,6 +93,21 @@ done
 # open images with imv's own folder launcher, so arrow keys step through the folder
 xdg-mime default imv-dir.desktop image/png image/jpeg image/gif image/bmp image/webp image/tiff
 
+# moonlight: always capture system shortcuts, so SUPER+Z (bindings.lua) can hand SUPER+1 etc.
+# to the stream. its conf also holds per-machine pairing, so only this one key is managed.
+# restart moonlight to pick it up; it rewrites the key if changed in its settings page.
+if command -v moonlight >/dev/null; then
+  moonlight_conf="$HOME/.config/Moonlight Game Streaming Project/Moonlight.conf"
+  mkdir -p "$(dirname "$moonlight_conf")"
+  if grep -q '^capturesyskeys=' "$moonlight_conf" 2>/dev/null; then
+    sed -i 's/^capturesyskeys=.*/capturesyskeys=2/' "$moonlight_conf"
+  elif grep -q '^\[General\]' "$moonlight_conf" 2>/dev/null; then
+    sed -i '/^\[General\]/a capturesyskeys=2' "$moonlight_conf"
+  else
+    printf '[General]\ncapturesyskeys=2\n' >>"$moonlight_conf"
+  fi
+fi
+
 link "$REPO/nvim" "$HOME/.config/nvim"
 # nvim follows the active omarchy theme; untracked, see nvim/.gitignore
 ln -sfn "$HOME/.local/state/omarchy/current/theme/neovim.lua" "$REPO/nvim/lua/plugins/theme.lua"
