@@ -38,6 +38,7 @@ FILES=(
   .config/btop/btop.conf
   .local/bin/utsw-vpn
   .local/bin/slack-attention
+  .local/bin/moonlight-stream
   .config/systemd/user/sshfs@.service
   .config/systemd/user/bt-connect@.service
   .config/systemd/user/slack-attention.service

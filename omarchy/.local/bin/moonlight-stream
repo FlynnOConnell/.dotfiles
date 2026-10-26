@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Focus a host's Moonlight stream, or start it if it isn't open:
+#   moonlight-stream 100.77.145.99 [app]
+# Matches on the host in each Moonlight window's command line rather than its class or
+# title, so with two hosts streaming, each one's key finds its own stream.
+
+set -euo pipefail
+
+host=${1:?usage: moonlight-stream <host> [app]}
+app=${2:-Desktop}
+
+while read -r pid address; do
+  cmd=$(tr '\0' ' ' 2>/dev/null <"/proc/$pid/cmdline") || continue
+  if [[ " $cmd " == *" stream $host "* ]]; then
+    hyprctl dispatch "hl.dsp.focus({ window = \"address:$address\" })" >/dev/null 2>&1 \
+      || hyprctl dispatch focuswindow "address:$address"
+    exit
+  fi
+done < <(hyprctl clients -j | jq -r '.[] | select(.class == "com.moonlight_stream.Moonlight") | "\(.pid) \(.address)"')
+
+exec setsid uwsm-app -- moonlight stream "$host" "$app"
