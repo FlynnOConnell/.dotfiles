@@ -1,0 +1,189 @@
+#!/usr/bin/env python3
+"""
+Flash the focused window's border while Slack has something worth your attention.
+
+Slack keeps a system-tray item (a StatusNotifierItem on the session bus) whose
+title, status and icon reflect unread DMs and mentions. That state updates even
+when Slack is in Do Not Disturb and sends no desktop notification, so it is a
+reliable "you have unread messages" signal regardless of notification settings.
+
+While that signal is on, the Hyprland active-window border (the border of the
+window you're working in, which follows focus for free) is recolored to the
+alert gradient. When Slack goes quiet again, the border is restored to whatever
+the current theme set it to. Nothing is changed while Slack is already quiet,
+and the theme's own border color is re-read whenever it's safe, so theme
+switches are picked up without a restart.
+
+Run as a long-lived user service (slack-attention.service); it polls a couple
+of times a second and is cheap.
+"""
+
+import hashlib
+import json
+import re
+import subprocess
+import sys
+import time
+
+SECONDS_POLL = 2.0  ## tray latency we accept before the border reacts
+NAME_SLACK_PROCESS = "slack"
+IFACE_SNI = "org.kde.StatusNotifierItem"
+PATH_SNI = "/StatusNotifierItem"
+
+## the clean baseline: Slack's tray title when there is nothing unread
+REGEX_TITLE_QUIET = re.compile(r"^\s*(no unread|)\s*(messages?)?\s*$", re.IGNORECASE)
+
+## the active-window border while Slack wants you: a red -> orange gradient,
+## as Hyprland rgba(RRGGBBAA) color stops plus an angle in degrees
+COLORS_ALERT = ["rgba(ff3b30ff)", "rgba(ff9500ff)"]
+ANGLE_ALERT = 45
+
+
+def run(args_command: list[str], timeout: float = 5.0) -> str:
+    """Run a command and return its stdout, or "" on any failure."""
+    try:
+        done = subprocess.run(args_command, capture_output=True, text=True, timeout=timeout)
+    except (subprocess.SubprocessError, OSError):
+        return ""
+    return done.stdout if done.returncode == 0 else ""
+
+
+def find_slack_sni() -> str | None:
+    """The bus name of Slack's tray item, or None when Slack isn't running."""
+    pid = run(["pgrep", "-o", "-x", NAME_SLACK_PROCESS]).strip()
+    if not pid.isdigit():
+        return None
+    name = f"org.freedesktop.StatusNotifierItem-{pid}-1"
+    ## confirm the item is actually on the bus (Slack can be mid-startup)
+    if not run(["busctl", "--user", "get-property", name, PATH_SNI, IFACE_SNI, "Status"]):
+        return None
+    return name
+
+
+def sni_property(name: str, prop: str) -> str:
+    """Raw `busctl get-property` text for one tray-item property."""
+    return run(["busctl", "--user", "get-property", name, PATH_SNI, IFACE_SNI, prop])
+
+
+def tray_title(name: str) -> str:
+    """The tray tooltip's title line (what Slack shows on hover), else ""."""
+    raw = sni_property(name, "ToolTip")
+    ## signature (sa(iiay)ss): iconName, iconPixmap, title, description.
+    ## the title is the last-but-one quoted string.
+    quoted = re.findall(r'"((?:[^"\\]|\\.)*)"', raw)
+    return quoted[-2] if len(quoted) >= 2 else ""
+
+
+def is_attention(name: str, hash_quiet: str | None) -> tuple[bool, str]:
+    """
+    Whether Slack currently wants attention, and the icon hash seen.
+
+    Attention is any of: the item is in NeedsAttention; the tooltip title is no
+    longer the quiet baseline; or the tray icon has changed away from the icon
+    captured while quiet (a badge was added). The icon hash is returned so the
+    caller can refresh its quiet baseline.
+    """
+    status = sni_property(name, "Status")
+    title = tray_title(name)
+    icon_raw = sni_property(name, "IconPixmap")
+    hash_icon = hashlib.md5(icon_raw.encode()).hexdigest() if icon_raw else ""
+
+    attention = (
+        "NeedsAttention" in status
+        or not REGEX_TITLE_QUIET.match(title)
+        or (hash_quiet is not None and hash_icon != "" and hash_icon != hash_quiet)
+    )
+    return attention, hash_icon
+
+
+def alert_gradient() -> str:
+    """The alert border in `getoption` form, so it's never mistaken for the theme's."""
+    parts = []
+    for color in COLORS_ALERT:
+        rgba = re.search(r"\(([0-9a-fA-F]{8})\)", color).group(1)  ## RRGGBBAA
+        parts.append((rgba[6:8] + rgba[0:6]).lower())  ## -> AARRGGBB
+    return " ".join(parts) + f" {ANGLE_ALERT}deg"
+
+
+def read_theme_border() -> str | None:
+    """
+    The current active-border as Hyprland's gradient string (e.g. "ff7aa2f7 0deg"),
+    or None when it can't be read or is our own alert color (never a restore target).
+    """
+    raw = run(["hyprctl", "getoption", "general:col.active_border", "-j"])
+    try:
+        gradient = json.loads(raw)["gradient"]
+    except (json.JSONDecodeError, KeyError, TypeError):
+        return None
+    return None if gradient == alert_gradient() else gradient
+
+
+def gradient_to_colors(gradient: str) -> tuple[list[str], int]:
+    """
+    Convert a `getoption` gradient ("<AARRGGBB> [<AARRGGBB> ...] <N>deg") to
+    rgba(RRGGBBAA) color stops and an angle, the form hl.config wants back.
+    """
+    tokens = gradient.split()
+    angle = 0
+    if tokens and tokens[-1].endswith("deg"):
+        angle = int(tokens[-1][:-3] or "0")
+        tokens = tokens[:-1]
+    colors = []
+    for hex8 in tokens:
+        hex8 = hex8.rjust(8, "f")  ## a bare RRGGBB is fully opaque
+        a, rgb = hex8[0:2], hex8[2:8]
+        colors.append(f"rgba({rgb}{a})")
+    return colors or ["rgba(ffffffff)"], angle
+
+
+def set_border(colors: list[str], angle: int) -> None:
+    """Set the active (and tabbed-group) border to one gradient, live."""
+    stops = ", ".join(f'"{c}"' for c in colors)
+    grad = f"{{ colors = {{ {stops} }}, angle = {angle} }}"
+    lua = (
+        f"hl.config({{ general = {{ col = {{ active_border = {grad} }} }}, "
+        f"group = {{ col = {{ border_active = {grad} }} }} }})"
+    )
+    run(["hyprctl", "eval", lua])
+
+
+def main() -> None:
+    hash_quiet: str | None = None
+    border_good: str | None = None  ## the theme border to restore to
+    alerting = False
+
+    while True:
+        name = find_slack_sni()
+        if name is None:
+            if alerting and border_good is not None:
+                set_border(*gradient_to_colors(border_good))
+                alerting = False
+            time.sleep(SECONDS_POLL)
+            continue
+
+        attention, hash_icon = is_attention(name, hash_quiet)
+
+        if attention and not alerting:
+            border_good = read_theme_border() or border_good
+            set_border(COLORS_ALERT, ANGLE_ALERT)
+            alerting = True
+            print(f"slack: attention -> border alert (was {border_good})", file=sys.stderr, flush=True)
+        elif not attention:
+            ## quiet: this icon is the clean baseline, and it's safe to notice
+            ## a theme change in the live border
+            if hash_icon:
+                hash_quiet = hash_icon
+            if alerting:
+                set_border(*gradient_to_colors(border_good or "ff7aa2f7 0deg"))
+                alerting = False
+                print("slack: quiet -> border restored", file=sys.stderr, flush=True)
+            else:
+                live = read_theme_border()
+                if live is not None:
+                    border_good = live
+
+        time.sleep(SECONDS_POLL)
+
+
+if __name__ == "__main__":
+    main()

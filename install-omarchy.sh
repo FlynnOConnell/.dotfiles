@@ -37,8 +37,10 @@ FILES=(
   .config/lazygit/config.yml
   .config/btop/btop.conf
   .local/bin/utsw-vpn
+  .local/bin/slack-attention
   .config/systemd/user/sshfs@.service
   .config/systemd/user/bt-connect@.service
+  .config/systemd/user/slack-attention.service
   .config/systemd/user/omarchy-crash-watch.service.d/skip-claude.conf
   .local/lib/crash-watch
   .claude/settings.json
@@ -109,6 +111,13 @@ if command -v moonlight >/dev/null; then
   else
     printf '[General]\ncapturesyskeys=2\n' >>"$moonlight_conf"
   fi
+fi
+
+# user services this repo owns (sshfs@/bt-connect@ are templates, enabled per
+# instance elsewhere). ignore failures: on --fresh the user bus may not be up.
+if command -v systemctl >/dev/null; then
+  systemctl --user daemon-reload 2>/dev/null || true
+  systemctl --user enable --now slack-attention.service 2>/dev/null || true
 fi
 
 link "$REPO/nvim" "$HOME/.config/nvim"

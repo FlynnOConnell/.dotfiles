@@ -1,0 +1,13 @@
+[Unit]
+Description=Flash the focused window's border while Slack has unread DMs or mentions
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/slack-attention
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
