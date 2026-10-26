@@ -169,3 +169,23 @@ o.bind("SUPER + SHIFT + S", "Steam", function()
   end
   hl.dispatch(hl.dsp.workspace.toggle_special("steam"))
 end)
+
+-- Discord (the web app) the same way on special:discord: SUPER+SHIFT+D shows
+-- and hides it, opening it when it isn't running. A Discord window opened
+-- elsewhere (or dragged off) is pulled back in first.
+local discord_class = "chrome-discord.com__channels_@me-Default"
+o.window({ class = "^chrome-discord\\.com__channels_@me-Default$" }, { workspace = "special:discord" })
+
+hl.unbind("SUPER + SHIFT + D")
+o.bind("SUPER + SHIFT + D", "Discord", function()
+  local special = hl.get_workspace("special:discord")
+  local discord = hl.get_windows({ class = discord_class })[1]
+  if not discord then
+    if not (special and special.visible) then
+      hl.exec_cmd(o.launch_webapp("https://discord.com/channels/@me"))
+    end
+  elseif not (discord.workspace and discord.workspace.name == "special:discord") then
+    hl.dispatch(hl.dsp.window.move({ workspace = "special:discord", follow = false, window = "address:" .. discord.address }))
+  end
+  hl.dispatch(hl.dsp.workspace.toggle_special("discord"))
+end)

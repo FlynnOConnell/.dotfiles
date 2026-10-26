@@ -73,7 +73,7 @@ hl.unbind("SUPER + SHIFT + D")
 hl.unbind("SUPER + SHIFT + G")
 hl.unbind("SUPER + SHIFT + A")
 o.bind("SUPER + SHIFT + M", "Slack", { launch = "slack.desktop", focus = "^slack$" })
-o.bind("SUPER + SHIFT + D", "Discord", { webapp = "https://discord.com/channels/@me", focus = true })
+-- Discord (SUPER+SHIFT+D) shows and hides like Steam; both are in hyprland.lua.
 o.bind("SUPER + SHIFT + G", "GitLab", { webapp = "https://gitlab.com/dashboard/projects", focus = true })
 o.bind("SUPER + SHIFT + H", "Home Assistant", { webapp = "http://100.85.105.1", focus = true })
 o.bind("SUPER + SHIFT + T", "Tailscale", { webapp = "https://login.tailscale.com/admin/machines", focus = true })
