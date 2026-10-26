@@ -149,7 +149,7 @@ gtk-update-icon-cache "$HOME/.local/share/icons/hicolor" &>/dev/null || true
 # open images with imv's own folder launcher, so arrow keys step through the folder
 xdg-mime default imv-dir.desktop image/png image/jpeg image/gif image/bmp image/webp image/tiff
 
-# moonlight: always capture system shortcuts, so SUPER+Z (bindings.lua) can hand SUPER+1 etc.
+# moonlight: always capture system shortcuts, so SUPER+GRAVE (bindings.lua) can hand SUPER+1 etc.
 # to the stream. its conf also holds per-machine pairing, so only this one key is managed.
 # restart moonlight to pick it up; it rewrites the key if changed in its settings page.
 if command -v moonlight >/dev/null; then
