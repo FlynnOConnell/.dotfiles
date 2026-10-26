@@ -7,10 +7,10 @@
 | Key          | Action                     | PyCharm       |
 | ------------ | -------------------------- | ------------- |
 | `,c` | Start / continue           | Shift+F9 / F9 |
-| `,o` | Step over                  | F8            |
-| `,i` | Step into                  | F7            |
-| `,O` | Step out                   | Shift+F8      |
-| `,s` | Run to here and stop, skipping other breakpoints; not debugging: pick a `,dd` command (last one first) | Alt+F9 |
+| `<M-o>` | Step over (hold to repeat)  | F8            |
+| `<M-i>` | Step into                  | F7            |
+| `<M-u>` | Step out                   | Shift+F8      |
+| `<M-s>` | Run to here and stop, skipping other breakpoints; not debugging: pick a `,dd` command (last one first) | Alt+F9 |
 | `,C` | Run to cursor (not paused: runs the cell, or reruns the last) | Alt+F9 |
 | `,q` | Terminate                  | Ctrl+F2       |
 | `,p` | Pause                      | Pause         |
@@ -30,19 +30,20 @@
 
 | Key          | Action                                        | PyCharm       |
 | ------------ | --------------------------------------------- | ------------- |
-| `,x` | Expand the values on this line (tree)            | Click inline value |
-| `,V` | All your variables in this frame (tree)          | Variables |
-| `<CR>` `h` `s` | In a tree: expand, collapse/parent, summary   |           |
-| `,v` | Summary: type, shape, dtype, min/max/mean/std | View as Array |
-| `,m` | Viewer: stack, variables, step buttons (on a variable: show it) | SciView |
-| `,e` | Eval word / visual selection                  | Alt+F8        |
-| `,k` | Up the call stack (toward the caller)         | Frames        |
-| `,j` | Down the call stack                           | Frames        |
+| `<leader>dl` | Expand the values on this line (tree)    | Click inline value |
+| `<leader>dV` | All your variables in this frame (tree)  | Variables |
+| `<CR>` `h` `s` | In a tree: expand, collapse/parent, summary |         |
+| `<leader>dv` | Summary: type, shape, dtype, min/max/mean/std | View as Array |
+| `<leader>dm` | Viewer: stack, variables, step buttons (on a variable: show it) | SciView |
+| `<leader>de` | Eval word / visual selection          | Alt+F8        |
+| `<C-p>` | Up the call stack (toward the caller; hold to fly) | Frames |
+| `<C-n>` | Down the call stack                        | Frames        |
 | `<CR>` | In the call stack pane (or viewer): go to frame | Frames      |
 | `,g` | Go to the paused line (the arrow), from anywhere | Alt+F10 (Show Execution Point) |
-| `,f` | Stack frames popup, Enter jumps               | Frames        |
-| `,D` | Hide / show the console + call stack row      | Console       |
-| `,u` | Variables / watches / breakpoints column      | Debug tab     |
+| `<leader>ds` | Stack frames popup, Enter jumps       | Frames        |
+| `<leader>dc` | Hide / show the console + call stack row | Console     |
+| `<leader>dt` | Hide / show the program's terminal (its output and input) | Run window |
+| `<leader>du` | Variables / watches / breakpoints column | Debug tab   |
 
 ## Tests (pytest via neotest)
 
@@ -67,7 +68,7 @@
 | `,rf` | Run whole file                       |              |
 | `,ri` | Interrupt (Ctrl-C)                   |              |
 | `,rR` | Restart REPL                         | Rerun console |
-| `,dr` | Debug cell: pause on its first line, `,i` steps in | Debug cell |
+| `,dr` | Debug cell: pause on its first line, `<M-i>` steps in | Debug cell |
 | `,da` | Attach debugger to REPL (then breakpoints in source stop) | Attach to process |
 
 ## Errors & diagnostics

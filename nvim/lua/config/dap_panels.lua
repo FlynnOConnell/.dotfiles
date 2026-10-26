@@ -1,4 +1,4 @@
--- The debug console, the call stack, the program's terminal and the ,u panels
+-- The debug console, the call stack, the program's terminal and the <leader>du panels
 -- as tinted panels with a title bar, in colors taken from the colorscheme
 -- (again on every change).
 -- Splits can't have borders (only floats can), so each panel gets a darker

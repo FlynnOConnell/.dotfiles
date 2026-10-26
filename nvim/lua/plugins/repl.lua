@@ -227,7 +227,7 @@ return {
     end, { desc = "REPL attach debugger" })
 
     -- PyCharm's "Debug cell": run the cell paused on its first line, then
-    -- ,i steps into whatever it calls, opening each file as it goes
+    -- <M-i> steps into whatever it calls, opening each file as it goes
     vim.keymap.set("n", ",dr", function()
       clear_temp_bp()
       -- take the cell now: attaching opens the dap-ui panels and moves focus

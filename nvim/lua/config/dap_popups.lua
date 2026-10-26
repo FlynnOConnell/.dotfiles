@@ -1,7 +1,7 @@
 -- Debugger popups, used instead of the dap-ui side panels:
---   summary(expr)  type, shape, dtype, min/max/mean/std of one value (,v)
---   variables()    tree of the variables you defined in this frame (,V)
---   line_values()  tree of the variables on the cursor line (,x)
+--   summary(expr)  type, shape, dtype, min/max/mean/std of one value (<leader>dv)
+--   variables()    tree of the variables you defined in this frame (<leader>dV)
+--   line_values()  tree of the variables on the cursor line (<leader>dl)
 -- plus one-line briefs for the inline values. All evaluate
 -- python/nvim_inspect.py inside the paused program.
 local M = {}
@@ -432,8 +432,8 @@ function M.setup_inline_briefs()
   end
 end
 
--- ,x: a tree of every variable on the cursor line (the ones the
--- inline values show), each expandable like in ,V.
+-- <leader>dl: a tree of every variable on the cursor line (the ones the
+-- inline values show), each expandable like in <leader>dV.
 function M.line_values()
   local line, row = vim.api.nvim_get_current_line(), vim.api.nvim_win_get_cursor(0)[1]
   frame_variables(function(session, frame, vars)

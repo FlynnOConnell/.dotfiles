@@ -85,7 +85,7 @@ return {
       -- frozen stdlib modules can't take breakpoints and make debugpy print a
       -- warning; every python the debugger launches runs without them
       -- the program runs in a terminal (colors, progress bars, input), shown
-      -- on ,t (config/dap_layout.lua)
+      -- on <leader>dt (config/dap_layout.lua)
       for _, c in ipairs(dap.configurations.python) do
         if c.request == "launch" then
           c.pythonArgs = FROZEN_OFF
@@ -99,7 +99,7 @@ return {
       -- everything, so python/nvim_repl.py and python/nvim_pytest_debug.py
       -- hand a cell's or test's fatal error to the debugger themselves. The
       -- stop is on the innermost line of your code, with the whole stack
-      -- (,k/,j, ,f).
+      -- (<C-p>/<C-n>, <leader>ds).
       dap.defaults.python.exception_breakpoints = { "uncaught" }
 
       -- debugpy's matplotlib support switches an interactive backend (qtagg)
@@ -162,8 +162,9 @@ return {
         end
       end
 
-      -- nothing opens when debugging starts: ,D shows the debug console
-      -- (`dap >` prompt) and the call stack, ,t the program's terminal.
+      -- nothing opens when debugging starts: <leader>dc shows the debug
+      -- console (`dap >` prompt) and the call stack, <leader>dt the program's
+      -- terminal.
       -- Frames always show in a code window, never in those.
       require("config.dap_layout").setup()
 
@@ -229,21 +230,52 @@ return {
   {
     "mfussenegger/nvim-dap",
     keys = function(_, keys)
-      -- LazyVim's <leader>d debug keys are gone: debugging is on `,`
-      -- (the local leader; profiler keys <leader>dp* stay)
+      -- LazyVim's <leader>d debug keys are gone: running the debugger is on
+      -- `,` (the local leader), and <leader>d has the keys below that open
+      -- things (profiler keys <leader>dp* stay)
       keys = vim.tbl_filter(function(k)
         return not (type(k[1]) == "string" and k[1]:match("^<leader>d") and not k[1]:match("^<leader>dp"))
       end, keys)
       local dap = function()
         return require("dap")
       end
+      -- the session, if it's paused. Held keys repeat faster than a step
+      -- finishes: presses that land mid-step, or past either end of the
+      -- stack, are dropped instead of each popping a warning
+      local function paused()
+        local session = dap().session()
+        return session and session.stopped_thread_id and session
+      end
+      local function step(method)
+        return function()
+          if paused() then
+            dap()[method]()
+          end
+        end
+      end
+      -- up (+1, toward the caller) or down (-1) the stack
+      local function frame(delta)
+        return function()
+          local session = paused()
+          local thread = session and session.current_frame and session.threads[session.stopped_thread_id]
+          for i, f in ipairs(thread and thread.frames or {}) do
+            if f.id == session.current_frame.id then
+              return session:_frame_set(thread.frames[i + delta])
+            end
+          end
+        end
+      end
+      -- `,` runs the program, Alt steps it (hold and repeat), Ctrl+P/N fly
+      -- through the stack, and <leader>d opens things
       return vim.list_extend(keys, {
         { ",c", function() dap().continue() end, desc = "Start / continue" },
         { ",q", function() dap().terminate() end, desc = "Terminate" },
-        { ",i", function() dap().step_into() end, desc = "Step into" },
-        { ",o", function() dap().step_over() end, desc = "Step over" },
-        { ",O", function() dap().step_out() end, desc = "Step out" },
-        { ",t", function() require("config.dap_layout").toggle_terminal() end, desc = "Program's terminal (its output)" },
+        { "<M-o>", step("step_over"), desc = "Step over" },
+        { "<M-i>", step("step_into"), desc = "Step into" },
+        { "<M-u>", step("step_out"), desc = "Step out" },
+        { "<C-p>", frame(1), desc = "Up the stack (toward the caller)" },
+        { "<C-n>", frame(-1), desc = "Down the stack" },
+        { "<leader>dt", function() require("config.dap_layout").toggle_terminal() end, desc = "Program's terminal (its output)" },
         { ",b", function() dap().toggle_breakpoint() end, desc = "Toggle breakpoint" },
         {
           ",B",
@@ -255,9 +287,7 @@ return {
         { ",l", function() dap().run_last() end, desc = "Rerun last" },
         { ",p", function() require("config.dap_layout").pause() end, desc = "Pause" },
         { ",g", function() require("config.dap_layout").goto_current() end, desc = "Go to the paused line (the arrow)" },
-        { ",k", function() dap().up() end, desc = "Up the stack" },
-        { ",j", function() dap().down() end, desc = "Down the stack" },
-        { ",D", function() require("config.dap_layout").toggle() end, desc = "Debug console + call stack" },
+        { "<leader>dc", function() require("config.dap_layout").toggle() end, desc = "Debug console + call stack" },
         { ",dd", function() require("sciview.run_configs").open() end, desc = "Run configs (saved commands)" },
         { ",dv", function() require("sciview").open_configs() end, desc = "Run configs in the viewer (a form)" },
         {
@@ -289,7 +319,7 @@ return {
         -- "run this and stop" at the cursor line, before it runs; other
         -- breakpoints on the way are skipped. Paused: from where it is.
         -- Not debugging: asks which ,dd command to start, the last one first
-        ",s",
+        "<M-s>",
         function()
           local session = require("dap").session()
           if not session then
@@ -305,7 +335,7 @@ return {
       {
         -- type, shape, dtype and min/max/mean/std of the expression under the
         -- cursor (or selected); lazy arrays get no stats (no full load)
-        ",v",
+        "<leader>dv",
         function()
           local expr
           local mode = vim.fn.mode()
@@ -323,7 +353,7 @@ return {
       {
         -- open the value under the cursor (or the selected expression) in the
         -- sciview window: movies with a time slider, images, traces
-        ",m",
+        "<leader>dm",
         function()
           local expr
           local mode = vim.fn.mode()
@@ -341,7 +371,7 @@ return {
       {
         -- expandable tree of every variable on the cursor line (the inline
         -- values), <CR> opens an entry: array shape/dtype/min/max, attributes
-        ",x",
+        "<leader>dl",
         function()
           require("config.dap_popups").line_values()
         end,
@@ -350,14 +380,14 @@ return {
       {
         -- popup of the variables you defined in the current frame (IPython's
         -- In/Out/_i*, modules and _names left out); <CR> summary, o expand
-        ",V",
+        "<leader>dV",
         function()
           require("config.dap_popups").variables()
         end,
         desc = "Variables (popup)",
       },
       {
-        ",f",
+        "<leader>ds",
         function()
           local widgets = require("dap.ui.widgets")
           widgets.centered_float(widgets.frames)

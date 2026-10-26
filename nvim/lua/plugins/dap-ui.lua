@@ -1,15 +1,14 @@
 -- The panels no longer open when debugging starts: the code shows values
 -- inline, the bottom row has the console and the call stack
--- (config/dap_layout.lua), and popups cover the rest (,V variables, ,v one
--- value). ,u adds a left column of variables, watches and breakpoints; it
--- leaves the console and the stack alone, so there is only ever one of each.
+-- (config/dap_layout.lua), and popups cover the rest (<leader>dV variables,
+-- <leader>dv one value). <leader>du adds a left column of variables, watches
+-- and breakpoints; it leaves the console and the stack alone, so there is
+-- only ever one of each.
 return {
   "rcarriga/nvim-dap-ui",
   keys = {
-    { "<leader>du", false },
-    { "<leader>de", false },
-    { ",u", function() require("dapui").toggle({}) end, desc = "Variables / watches / breakpoints panels" },
-    { ",e", function() require("dapui").eval() end, desc = "Evaluate", mode = { "n", "x" } },
+    { "<leader>du", function() require("dapui").toggle({}) end, desc = "Variables / watches / breakpoints panels" },
+    { "<leader>de", function() require("dapui").eval() end, desc = "Evaluate", mode = { "n", "x" } },
   },
   -- LazyVim's config also opens the panels on every session start; this one
   -- only sets them up and closes them when the session ends
@@ -25,7 +24,7 @@ return {
     end
   end,
   opts = {
-    -- the play/step buttons on the console's bar: keys do that (,c ,o ...),
+    -- the play/step buttons on the console's bar: keys do that (,c <M-o> ...),
     -- and the bar shows the panel's title instead (config/dap_panels.lua)
     controls = { enabled = false },
     layouts = {

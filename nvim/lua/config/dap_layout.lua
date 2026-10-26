@@ -1,10 +1,11 @@
 -- The debugging layout: the code, with the arrow on the current frame's line,
--- and nothing else until you ask. ,D shows the debug console (type code to
--- evaluate it in that frame) beside the call stack along the bottom; ,t the
--- program's terminal (its output, and its input). ,k / ,j move through the
--- stack: the stack pane marks where you are, and the code window follows.
---   open() / close() / toggle()   the console and the stack (,D)
---   toggle_terminal()             the program's terminal (,t)
+-- and nothing else until you ask. <leader>dc shows the debug console (type
+-- code to evaluate it in that frame) beside the call stack along the bottom;
+-- <leader>dt the program's terminal (its output, and its input). <C-p> / <C-n>
+-- move through the stack: the stack pane marks where you are, and the code
+-- window follows.
+--   open() / close() / toggle()   the console and the stack (<leader>dc)
+--   toggle_terminal()             the program's terminal (<leader>dt)
 --   switchbuf(buf, line, col)     where nvim-dap shows a frame: always a code
 --                                 window, never the console or a panel
 --   pause()                       pause the main thread (,p)
@@ -55,7 +56,7 @@ function M.frame_location(frame)
 end
 
 -- the stopped thread's frames, outermost first like a Python traceback, so
--- ,k (up, toward the caller) moves up the list and ,j down toward the stop
+-- <C-p> (up, toward the caller) moves up the list and <C-n> down toward the stop
 function M.frames(session)
   local thread = session and session.stopped_thread_id and session.threads[session.stopped_thread_id]
   return vim.iter(thread and thread.frames or {}):rev():totable()
@@ -319,7 +320,7 @@ function M.switchbuf(bufnr, line, column)
   end
 end
 
--- back to the arrow (the frame it's paused in, or the one ,k / ,j moved to)
+-- back to the arrow (the frame it's paused in, or the one <C-p> / <C-n> moved to)
 -- from anywhere: the console, the stack pane, another file (,g)
 function M.goto_current()
   local session = require("dap").session()
@@ -370,7 +371,7 @@ function M.setup()
     end,
   })
   -- frames arrive (a stop), the frame changes (its scopes are fetched on
-  -- every ,k / ,j / Enter), the program runs or ends
+  -- every <C-p> / <C-n> / Enter), the program runs or ends
   local function rerender()
     vim.schedule(function()
       M.render()

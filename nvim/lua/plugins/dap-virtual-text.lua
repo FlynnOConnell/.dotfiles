@@ -2,7 +2,7 @@
 -- wedged into the code, as small raised chips in theme colors (values that
 -- just changed turn orange), arrays as "ndarray (300, 32, 32) float32"
 -- rather than a truncated printout (briefs from lua/config/dap_popups.lua).
--- ,x expands everything on the cursor line.
+-- <leader>dl expands everything on the cursor line.
 local function chip_highlights()
   local function hl(name)
     return vim.api.nvim_get_hl(0, { name = name, link = false })
