@@ -58,6 +58,21 @@ hl.unbind("SUPER + SHIFT + P")
 o.bind("SUPER + SHIFT + P", "Screenrecording", "omarchy-capture-screenrecording --stop-recording || omarchy-menu toggle trigger.capture.screenrecord")
 o.bind("SUPER + SHIFT + ALT + P", "Screenrecording (full screen)", "omarchy-capture-screenrecording --fullscreen")
 
+-- Apps I use, on keys Omarchy gave to ones I don't (was: SUPER+SHIFT+M Spotify,
+-- D Docker, G Signal, A ChatGPT). Each focuses its window if it's already open;
+-- Slack is usually parked on the scratchpad, which comes up with it.
+hl.unbind("SUPER + SHIFT + M")
+hl.unbind("SUPER + SHIFT + D")
+hl.unbind("SUPER + SHIFT + G")
+hl.unbind("SUPER + SHIFT + A")
+o.bind("SUPER + SHIFT + M", "Slack", { launch = "slack.desktop", focus = "^slack$" })
+o.bind("SUPER + SHIFT + D", "Discord", { webapp = "https://discord.com/channels/@me", focus = true })
+o.bind("SUPER + SHIFT + G", "GitLab", { webapp = "https://gitlab.com/dashboard/projects", focus = true })
+o.bind("SUPER + SHIFT + H", "Home Assistant", { webapp = "http://100.85.105.1", focus = true })
+o.bind("SUPER + SHIFT + T", "Tailscale", { webapp = "https://login.tailscale.com/admin/machines", focus = true })
+-- Found by window class: "Claude" also turns up in other windows' titles.
+o.bind("SUPER + SHIFT + A", "Claude", "omarchy-launch-or-focus-webapp chrome-claude https://claude.ai")
+
 -- PDF reader for papers (opens the last document; press o inside to pick another).
 o.bind("SUPER + SHIFT + R", "PDF reader (Sioyek)", { launch = "sioyek" })
 

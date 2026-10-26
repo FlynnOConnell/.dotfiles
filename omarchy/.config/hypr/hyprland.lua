@@ -65,7 +65,7 @@ local function sciview_focus(window)
   hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
 end
 
--- ,m in nvim (the app calls it): a hidden viewer (or one on another
+-- <leader>dm in nvim (the app calls it): a hidden viewer (or one on another
 -- workspace) comes back here, leaving focus in the editor
 function sciview.reveal()
   local viewer = sciview_window()
@@ -110,3 +110,18 @@ o.bind("SUPER + ALT + M", "sciview: focus it / back to the editor", sciview.swap
 
 -- games open on workspace 4: CS2 (native) and Proton games (steam_app_<id>)
 o.window({ class = "^(cs2|steam_app_[0-9]+)$" }, { workspace = "4" })
+
+-- The Steam client lives on special:steam, floating over whatever workspace
+-- is open; games still open on 4. SUPER+SHIFT+S shows and hides it (was:
+-- Google Maps), starting Steam or reopening it from the tray if its window
+-- is closed.
+o.window({ class = "^steam$" }, { workspace = "special:steam", float = true })
+
+hl.unbind("SUPER + SHIFT + S")
+o.bind("SUPER + SHIFT + S", "Steam", function()
+  local steam = hl.get_workspace("special:steam")
+  if not (steam and steam.visible) and not hl.get_windows({ class = "steam" })[1] then
+    hl.exec_cmd(o.launch("steam"))
+  end
+  hl.dispatch(hl.dsp.workspace.toggle_special("steam"))
+end)
