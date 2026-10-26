@@ -43,6 +43,20 @@ end
 local status_bar = " %{%v:lua.require'config.dap_layout'.status_bar()%}"
 local status = { ["dap-repl"] = status_bar, ["dap-terminal"] = status_bar }
 
+-- a split as a panel: its title, then `after` (a statusline expression), on its bar
+function M.dress(win, title, after)
+  vim.wo[win].winbar = "%#DapPanelTitle# " .. title .. " %#DapPanelBar#" .. (after or "")
+  vim.wo[win].winhighlight = table.concat({
+    "Normal:DapPanel",
+    "NormalNC:DapPanel",
+    "EndOfBuffer:DapPanel",
+    "SignColumn:DapPanel",
+    "WinBar:DapPanelBar",
+    "WinBarNC:DapPanelBar",
+    "WinSeparator:DapPanelSeparator",
+  }, ",")
+end
+
 local function style(buf)
   local title = titles[vim.bo[buf].filetype]
   if not title then
@@ -50,16 +64,7 @@ local function style(buf)
   end
   for _, win in ipairs(vim.fn.win_findbuf(buf)) do
     if vim.api.nvim_win_get_config(win).relative == "" then -- splits only, not popups
-      vim.wo[win].winbar = "%#DapPanelTitle# " .. title .. " %#DapPanelBar#" .. (status[vim.bo[buf].filetype] or "")
-      vim.wo[win].winhighlight = table.concat({
-        "Normal:DapPanel",
-        "NormalNC:DapPanel",
-        "EndOfBuffer:DapPanel",
-        "SignColumn:DapPanel",
-        "WinBar:DapPanelBar",
-        "WinBarNC:DapPanelBar",
-        "WinSeparator:DapPanelSeparator",
-      }, ",")
+      M.dress(win, title, status[vim.bo[buf].filetype])
     end
   end
 end

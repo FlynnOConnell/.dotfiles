@@ -66,7 +66,7 @@ local function sciview_focus(window)
 end
 
 -- <leader>dm in nvim (the app calls it): a hidden viewer (or one on another
--- workspace) comes back here, leaving focus in the editor
+-- workspace) comes back here; the app focuses it after
 function sciview.reveal()
   local viewer = sciview_window()
   if viewer and not sciview_here(viewer) then
