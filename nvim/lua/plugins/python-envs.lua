@@ -84,11 +84,12 @@ return {
 
       -- frozen stdlib modules can't take breakpoints and make debugpy print a
       -- warning; every python the debugger launches runs without them
-      -- output goes to the debug REPL (dap-ui has no console window)
+      -- the program runs in a terminal (colors, progress bars, input), shown
+      -- on ,t (config/dap_layout.lua)
       for _, c in ipairs(dap.configurations.python) do
         if c.request == "launch" then
           c.pythonArgs = FROZEN_OFF
-          c.console = "internalConsole"
+          c.console = "integratedTerminal"
         end
       end
 
@@ -113,7 +114,8 @@ return {
         return config
       end
 
-      -- program output in the debug console reads like a terminal: color
+      -- output that does reach the debug console (debugpy's own, and runs
+      -- with console = "internalConsole") reads like a terminal: color
       -- codes dropped, and `\r` goes back to the start of the line, so
       -- progress bars (tqdm) update in place instead of piling up as ^M
       local repl = require("dap.repl")
@@ -160,9 +162,9 @@ return {
         end
       end
 
-      -- the debug console (program output, `dap >` prompt) and the call
-      -- stack open along the bottom whenever debugging starts; ,D hides /
-      -- shows them. Frames always show in a code window, never the console.
+      -- nothing opens when debugging starts: ,D shows the debug console
+      -- (`dap >` prompt) and the call stack, ,t the program's terminal.
+      -- Frames always show in a code window, never in those.
       require("config.dap_layout").setup()
 
       -- sciview (~/repos/sciview): its viewer follows every run
@@ -241,6 +243,7 @@ return {
         { ",i", function() dap().step_into() end, desc = "Step into" },
         { ",o", function() dap().step_over() end, desc = "Step over" },
         { ",O", function() dap().step_out() end, desc = "Step out" },
+        { ",t", function() require("config.dap_layout").toggle_terminal() end, desc = "Program's terminal (its output)" },
         { ",b", function() dap().toggle_breakpoint() end, desc = "Toggle breakpoint" },
         {
           ",B",
@@ -399,7 +402,7 @@ return {
     opts = {
       adapters = {
         ["neotest-python"] = {
-          dap = { justMyCode = true, pythonArgs = FROZEN_OFF, env = PYTEST_DEBUG_ENV, console = "internalConsole" },
+          dap = { justMyCode = true, pythonArgs = FROZEN_OFF, env = PYTEST_DEBUG_ENV, console = "integratedTerminal" },
         },
       },
     },

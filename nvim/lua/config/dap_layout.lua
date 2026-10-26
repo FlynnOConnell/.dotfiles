@@ -1,9 +1,10 @@
--- The debugging layout, PyCharm-style: the code on top, with the arrow on the
--- current frame's line, and along the bottom the debug console (type code to
--- evaluate it in that frame; program output) beside the call stack. ,k / ,j
--- move through the stack: the stack pane marks where you are, and the code
--- window follows.
---   open() / close() / toggle()   the bottom row (,D; opens when debugging starts)
+-- The debugging layout: the code, with the arrow on the current frame's line,
+-- and nothing else until you ask. ,D shows the debug console (type code to
+-- evaluate it in that frame) beside the call stack along the bottom; ,t the
+-- program's terminal (its output, and its input). ,k / ,j move through the
+-- stack: the stack pane marks where you are, and the code window follows.
+--   open() / close() / toggle()   the console and the stack (,D)
+--   toggle_terminal()             the program's terminal (,t)
 --   switchbuf(buf, line, col)     where nvim-dap shows a frame: always a code
 --                                 window, never the console or a panel
 --   pause()                       pause the main thread (,p)
@@ -19,10 +20,11 @@ local STACK_WIDTH = 0.35 -- of the editor
 local stack_buf, stack_win = nil, nil
 local line_frames = {} -- stack pane line -> frame
 local code_win = nil -- the last window you were in that shows a file
+local terminal_buf = nil -- the program's terminal, the last run's until the next one
 
 local function is_panel(buf)
   local ft = vim.bo[buf].filetype
-  return ft == "dap-repl" or ft == "dap_callstack" or ft:match("^dapui_") ~= nil
+  return ft == "dap-repl" or ft == "dap_callstack" or ft == "dap-terminal" or ft:match("^dapui_") ~= nil
 end
 
 -- a split showing a file (or a source the adapter sent): where code goes
@@ -240,6 +242,35 @@ function M.toggle()
   end
 end
 
+-- where nvim-dap runs the program (console = "integratedTerminal"): a
+-- terminal no window shows until ,t
+function M.terminal_win_cmd()
+  return api.nvim_create_buf(false, true)
+end
+
+function M.toggle_terminal()
+  local win = terminal_buf and vim.fn.bufwinid(terminal_buf) or -1
+  if win ~= -1 then
+    return api.nvim_win_close(win, true)
+  end
+  if not (terminal_buf and api.nvim_buf_is_valid(terminal_buf)) then
+    return vim.notify("no program yet: its terminal starts with a debug run", vim.log.levels.INFO)
+  end
+  win = api.nvim_open_win(terminal_buf, false, { split = "below", win = -1, height = HEIGHT })
+  for option, value in pairs({
+    number = false,
+    relativenumber = false,
+    signcolumn = "no",
+    foldcolumn = "0",
+    winfixheight = true,
+    winfixbuf = true,
+  }) do
+    vim.wo[win][0][option] = value
+  end
+  -- on the last line, the window follows the output
+  api.nvim_win_set_cursor(win, { api.nvim_buf_line_count(terminal_buf), 0 })
+end
+
 -- the code window you were last in, else the biggest one
 local function last_code_win()
   if code_win and is_code_win(code_win) and api.nvim_win_get_tabpage(code_win) == api.nvim_get_current_tabpage() then
@@ -314,9 +345,21 @@ end
 function M.setup()
   local dap = require("dap")
   dap.defaults.fallback.switchbuf = M.switchbuf
+  dap.defaults.fallback.terminal_win_cmd = M.terminal_win_cmd
   highlights()
   local group = api.nvim_create_augroup("dap_layout", { clear = true })
   api.nvim_create_autocmd("ColorScheme", { group = group, callback = highlights })
+  -- nvim-dap starting the program (it reuses the last run's buffer); the
+  -- filetype gives it a panel's look (config/dap_panels.lua)
+  api.nvim_create_autocmd("TermOpen", {
+    group = group,
+    callback = function(ev)
+      if vim.b[ev.buf]["dap-type"] then
+        terminal_buf = ev.buf
+        vim.bo[ev.buf].filetype = "dap-terminal"
+      end
+    end,
+  })
   api.nvim_create_autocmd("WinEnter", {
     group = group,
     callback = function()
@@ -336,7 +379,6 @@ function M.setup()
   end
   dap.listeners.after.event_initialized["dap_layout"] = function(session)
     status = { kind = "running", name = session.config.name }
-    vim.schedule(M.open)
     rerender()
   end
   dap.listeners.after.event_continued["dap_layout"] = function(session)

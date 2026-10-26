@@ -1,5 +1,6 @@
--- The debug console, the call stack and the ,u panels as tinted panels with a
--- title bar.
+-- The debug console, the call stack, the program's terminal and the ,u panels
+-- as tinted panels with a title bar, in colors taken from the colorscheme
+-- (again on every change).
 -- Splits can't have borders (only floats can), so each panel gets a darker
 -- background, a " Title " bar in the float border's color and a matching
 -- divider instead.
@@ -13,6 +14,7 @@ local titles = {
   dapui_watches = "Watches",
   dapui_breakpoints = "Breakpoints",
   dapui_console = "Program output",
+  ["dap-terminal"] = "Program",
 }
 
 local function highlights()
@@ -36,8 +38,10 @@ local function highlights()
   end
 end
 
--- after the title: the console's bar also says what the debugger is doing
-local status = { ["dap-repl"] = " %{%v:lua.require'config.dap_layout'.status_bar()%}" }
+-- after the title: the console's and the program's bars also say what the
+-- debugger is doing
+local status_bar = " %{%v:lua.require'config.dap_layout'.status_bar()%}"
+local status = { ["dap-repl"] = status_bar, ["dap-terminal"] = status_bar }
 
 local function style(buf)
   local title = titles[vim.bo[buf].filetype]
