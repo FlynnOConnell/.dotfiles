@@ -28,6 +28,13 @@
 -- o.bind("SUPER + H", nil, "voxtype record toggle")
 -- o.bind("SUPER + PERIOD", nil, "omarchy-shell shell toggle omarchy.emojis")
 
+-- Herdr on SUPER+RETURN; a plain terminal moves to SUPER+CTRL+RETURN, where Herdr was.
+-- SUPER+SHIFT+RETURN stays Omarchy's browser, which is Chrome (the xdg default).
+hl.unbind("SUPER + RETURN")
+hl.unbind("SUPER + CTRL + RETURN")
+o.bind("SUPER + RETURN", "Herdr", { omarchy = "terminal-herdr" })
+o.bind("SUPER + CTRL + RETURN", "Terminal", { omarchy = "terminal" })
+
 -- Vim-style focus movement (was: SUPER+J toggle split, SUPER+K keybindings, SUPER+L workspace layout).
 hl.unbind("SUPER + J")
 hl.unbind("SUPER + K")
