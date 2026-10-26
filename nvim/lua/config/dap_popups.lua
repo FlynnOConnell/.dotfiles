@@ -256,7 +256,7 @@ local function open_tree(session, frame, roots, title)
   vim.keymap.set("n", "m", function()
     local node = current()
     if node then
-      require("config.sciview").show(node.expr)
+      require("sciview").show(node.expr)
     end
   end, opts)
   vim.keymap.set("n", "q", "<cmd>close<cr>", opts)
@@ -297,7 +297,7 @@ local function leaf_type(t)
     or t:match("^complex%d*$") or t:match("^bool_?$") or t:match("DType$") ~= nil
 end
 
--- one row per variable for the sciview explorer (lua/config/sciview.lua):
+-- one row per variable for the sciview explorer (~/repos/sciview/nvim/lua/sciview/init.lua):
 -- { name, expr, type, value, brief, array, expandable }. `array` rows can be
 -- sent to the viewer; `expandable` ones (objects, lists, dicts) have
 -- children, fetched by evaluating `expr` again (M.children_listing).

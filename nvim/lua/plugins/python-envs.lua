@@ -39,10 +39,11 @@ return {
     end,
   },
   {
-    -- Run debugpy on the same Python version as the active env so its compiled
-    -- tracer loads (mason's debugpy is built for another version and falls back
-    -- to the slow pure-Python one). Uses the env's own debugpy if installed,
-    -- else a cached uv tool env.
+    -- Run debugpy on the same Python version as the program's env so its
+    -- compiled tracer loads (mason's debugpy is built for another version and
+    -- falls back to the slow pure-Python one). The env is the launch config's
+    -- `python` (a run config's project env, sciview), else the active one.
+    -- Uses the env's own debugpy if installed, else a cached uv tool env.
     "mfussenegger/nvim-dap-python",
     config = function()
       local dap = require("dap")
@@ -50,9 +51,10 @@ return {
       local adapter_for = dap.adapters.python
       dap.adapters.python = function(cb, config)
         adapter_for(function(adapter)
-          local venv = vim.env.VIRTUAL_ENV
+          local program_python = type(config.python) == "table" and config.python[1] or config.python
+          local venv = program_python and vim.fs.dirname(vim.fs.dirname(program_python)) or vim.env.VIRTUAL_ENV
           if adapter.type == "executable" and venv then
-            local python = venv .. "/bin/python"
+            local python = program_python or venv .. "/bin/python"
             if vim.fn.glob(venv .. "/lib/python*/site-packages/debugpy") ~= "" then
               adapter.command, adapter.args = python, { "-m", "debugpy.adapter" }
             else
@@ -163,6 +165,9 @@ return {
       -- shows them. Frames always show in a code window, never the console.
       require("config.dap_layout").setup()
 
+      -- sciview (~/repos/sciview): its viewer follows every run
+      require("sciview").setup()
+
       -- say what the exception was, not just where
       dap.listeners.after.event_stopped["exception_message"] = function(session, body)
         if body.reason ~= "exception" then
@@ -250,8 +255,8 @@ return {
         { ",k", function() dap().up() end, desc = "Up the stack" },
         { ",j", function() dap().down() end, desc = "Down the stack" },
         { ",D", function() require("config.dap_layout").toggle() end, desc = "Debug console + call stack" },
-        { ",dd", function() require("config.run_configs").open() end, desc = "Run configs (saved commands)" },
-        { ",dv", function() require("config.sciview").open_configs() end, desc = "Run configs in the viewer (a form)" },
+        { ",dd", function() require("sciview.run_configs").open() end, desc = "Run configs (saved commands)" },
+        { ",dv", function() require("sciview").open_configs() end, desc = "Run configs in the viewer (a form)" },
         {
           ",dc",
           function()
@@ -285,7 +290,7 @@ return {
         function()
           local session = require("dap").session()
           if not session then
-            require("config.run_configs").run_to_here()
+            require("sciview.run_configs").run_to_here()
           elseif session.stopped_thread_id then
             require("dap").run_to_cursor()
           else
@@ -305,7 +310,7 @@ return {
             expr = table.concat(vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), { type = mode }), "\n")
             vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "n", false)
           else
-            expr = require("config.sciview").expr_at_cursor()
+            expr = require("sciview").expr_at_cursor()
           end
           require("config.dap_popups").summary(expr)
         end,
@@ -323,9 +328,9 @@ return {
             expr = table.concat(vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."), { type = mode }), " ")
             vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "n", false)
           else
-            expr = require("config.sciview").expr_at_cursor()
+            expr = require("sciview").expr_at_cursor()
           end
-          require("config.sciview").show(expr)
+          require("sciview").show(expr)
         end,
         mode = { "n", "x" },
         desc = "Show in Viewer (movies, images, traces)",

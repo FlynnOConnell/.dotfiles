@@ -45,7 +45,8 @@ o.window({ title = "^sciview$" }, {
 
 -- SUPER+H/J/K/L never cross between tiled and floating windows, so the viewer
 -- gets its own keys. Hidden means parked on special:sciview, which is never
--- shown. sciview is global so nvim can call it: hyprctl dispatch sciview.reveal
+-- shown; closing the window (SUPER+W) unmaps it, and the app keeps running.
+-- sciview is global so the app can call it: hyprctl dispatch sciview.reveal
 sciview = {}
 
 local function sciview_window()
@@ -64,8 +65,8 @@ local function sciview_focus(window)
   hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
 end
 
--- ,m in nvim: a hidden viewer (or one on another workspace) comes back here,
--- leaving focus in the editor
+-- ,m in nvim (the app calls it): a hidden viewer (or one on another
+-- workspace) comes back here, leaving focus in the editor
 function sciview.reveal()
   local viewer = sciview_window()
   if viewer and not sciview_here(viewer) then
@@ -77,7 +78,8 @@ end
 function sciview.toggle()
   local viewer = sciview_window()
   if not viewer then
-    return hl.exec_cmd(o.notify("sciview isn't running: ,m in nvim starts it"))
+    -- closed or never shown: the app shows it (systemd starts the app first)
+    return hl.exec_cmd("sciview show --focus")
   end
   if viewer.active then
     return sciview_move(viewer, "special:sciview")
