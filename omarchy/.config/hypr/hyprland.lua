@@ -108,6 +108,50 @@ end
 o.bind("SUPER + M", "sciview: show and focus / hide", sciview.toggle)
 o.bind("SUPER + ALT + M", "sciview: focus it / back to the editor", sciview.swap)
 
+-- swayimg-nvim (the image window nvim opens images in, nvim/lua/config/swayimg.lua):
+-- floats where sciview does, without taking focus from the editor, opaque so
+-- figures show true colors. Hidden means parked on special:swayimg-nvim.
+-- swayimg_nvim is global so nvim can call it: hyprctl dispatch swayimg_nvim.reveal
+o.window({ class = "^swayimg-nvim$" }, {
+  float = true,
+  no_initial_focus = true,
+  size = { "(monitor_w*0.55)", "(monitor_h*0.88)" },
+  move = { "(monitor_w*0.43)", "(monitor_h*0.06)" },
+  tag = "-default-opacity",
+  opacity = "1 1",
+})
+
+swayimg_nvim = {}
+
+local function swayimg_nvim_move(viewer, workspace)
+  hl.dispatch(hl.dsp.window.move({ workspace = workspace, follow = false, window = "address:" .. viewer.address }))
+end
+
+-- nvim calls this on every image it sends: a hidden window (or one on
+-- another workspace) comes back here, leaving focus in the editor
+function swayimg_nvim.reveal()
+  local viewer = hl.get_windows({ class = "swayimg-nvim" })[1]
+  if viewer and viewer.workspace.id ~= hl.get_active_workspace().id then
+    swayimg_nvim_move(viewer, tostring(hl.get_active_workspace().id))
+  end
+end
+
+-- show and focus the image window (to zoom or step through the folder); when
+-- it's focused, hide it. It's started by opening an image in nvim.
+function swayimg_nvim.toggle()
+  local viewer = hl.get_windows({ class = "swayimg-nvim" })[1]
+  if not viewer then
+    return
+  end
+  if viewer.active then
+    return swayimg_nvim_move(viewer, "special:swayimg-nvim")
+  end
+  swayimg_nvim.reveal()
+  hl.dispatch(hl.dsp.focus({ window = "address:" .. viewer.address }))
+end
+
+o.bind("SUPER + I", "Images from nvim: show and focus / hide", swayimg_nvim.toggle)
+
 -- games open on workspace 4: CS2 (native) and Proton games (steam_app_<id>)
 o.window({ class = "^(cs2|steam_app_[0-9]+)$" }, { workspace = "4" })
 

@@ -178,6 +178,41 @@ local function build()
   return out, content_w
 end
 
+local function draw(buf, lines)
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.tbl_map(function(l)
+    return l.text
+  end, lines))
+  for i, l in ipairs(lines) do
+    for _, h in ipairs(l.hls) do
+      vim.api.nvim_buf_set_extmark(buf, ns, i - 1, h[1], { end_col = h[2], hl_group = h[3] })
+    end
+  end
+end
+
+-- one section (the first whose title starts with `prefix`) drawn into buf as
+-- the panel draws it, below plain `header` lines: the image stub
+-- (config/swayimg.lua) shows the Images keys this way
+function M.draw_section(buf, prefix, header)
+  set_highlights()
+  local lines = vim.tbl_map(function(text)
+    return { text = text, hls = {} }
+  end, header or {})
+  for _, sec in ipairs((parse())) do
+    if vim.startswith(sec.title, prefix) then
+      local kw, aw, altw = 0, 0, 0
+      for _, row in ipairs(sec.rows) do
+        kw = math.max(kw, width(table.concat(row.caps, " ")))
+        aw = math.max(aw, width(row.action))
+        altw = math.max(altw, width(row.alt))
+      end
+      local block_w = math.max(1 + kw + 2 + aw + (altw > 0 and 2 + altw or 0) + 1, width(sec.title) + 2)
+      vim.list_extend(lines, render_section(sec, kw, aw, block_w))
+      break
+    end
+  end
+  draw(buf, lines)
+end
+
 function M.toggle()
   if win and vim.api.nvim_win_is_valid(win) then
     vim.api.nvim_win_close(win, true)
@@ -188,14 +223,7 @@ function M.toggle()
   local lines, content_w = build()
 
   local buf = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.tbl_map(function(l)
-    return l.text
-  end, lines))
-  for i, l in ipairs(lines) do
-    for _, h in ipairs(l.hls) do
-      vim.api.nvim_buf_set_extmark(buf, ns, i - 1, h[1], { end_col = h[2], hl_group = h[3] })
-    end
-  end
+  draw(buf, lines)
   vim.bo[buf].modifiable = false
   vim.bo[buf].bufhidden = "wipe"
   vim.bo[buf].filetype = "cheatsheet"

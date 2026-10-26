@@ -36,6 +36,7 @@ FILES=(
   .config/starship.toml
   .config/lazygit/config.yml
   .config/btop/btop.conf
+  .config/swayimg/init.lua
   .local/bin/utsw-vpn
   .local/bin/slack-attention
   .local/bin/moonlight-stream
@@ -55,7 +56,9 @@ HOST_FILES=(
 )
 
 # extra packages on top of omarchy's; installed only when missing
-PACKAGES=()
+PACKAGES=(
+  swayimg  # image window nvim opens images in (nvim/lua/config/swayimg.lua)
+)
 PACKAGES_AUR=(
   zsa-keymapp-bin  # ZSA keyboard layout viewer (pulls in zsa-udev)
 )

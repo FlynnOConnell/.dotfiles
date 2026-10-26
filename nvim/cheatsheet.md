@@ -106,3 +106,21 @@
 | ------------ | ---------------------------------------- | --------- |
 | `<C-/>`      | Toggle floating terminal (uses nvim env) | Alt+F12   |
 | `:!`         | One-off shell command: :!uv pip install x |           |
+
+## Images (swayimg window; SUPER+I shows / hides it)
+
+| Key          | Action                                    | Also         |
+| ------------ | ----------------------------------------- | ------------ |
+| `j` `k`      | Next / previous image in the folder       | PgDn / PgUp  |
+| `g` `G`      | First / last image                        |              |
+| `H` `J` `K` `L` | Pan                                    | arrows, drag |
+| `+` `-`      | Zoom                                      | scroll       |
+| `0` `w` `z`  | 100% / fit width / fit window             | Backspace resets |
+| `<Enter>`    | Gallery of the folder: hjkl move, Enter opens |          |
+| `y` `Y`      | Copy the image / its path                 |              |
+| `o`          | Show it in Files                          |              |
+| `r`          | Reload (sshfs files don't refresh on their own) |        |
+| `t` `f`      | Info overlay / fullscreen                 |              |
+| `q`          | Hide, back to the editor                  | Esc          |
+| `Q`          | Quit                                      |              |
+| `?`          | These keys, in the window                 |              |
