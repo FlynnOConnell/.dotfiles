@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=masknmf-toolbox
+Comment=masknmf-toolbox
+Exec=omarchy-launch-webapp "https://github.com/apasarkar/masknmf-toolbox"
+Terminal=false
+Type=Application
+Icon=masknmf-toolbox
+StartupNotify=true

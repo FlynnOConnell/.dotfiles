@@ -6,7 +6,7 @@
 set -euo pipefail
 
 REPOS="$HOME/repos"
-CLONE=(.dotfiles arctic-lake arctic-lake-private home_hub)
+CLONE=(.dotfiles arctic-lake arctic-lake-private home_hub sciview)
 
 command -v gh >/dev/null || omarchy-pkg-add github-cli
 # --git-protocol ssh offers to generate and upload an ssh key

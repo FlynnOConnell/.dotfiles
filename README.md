@@ -43,9 +43,17 @@ Omarchy sometimes rewrites a config by replacing the file, which breaks the
 symlink. Re-running `./install` adopts the live copy back into the repo before
 relinking, so check `git diff` afterwards.
 
-Extra packages (currently keymapp) are listed in `PACKAGES` / `PACKAGES_AUR`
-at the top of `install-omarchy.sh` and installed if missing. Agent skills are
-chosen in `agents/skills.conf`, see `agents/README.md`.
+Apps on top of omarchy's are listed at the top of `install-omarchy.sh` and
+installed if missing: packages in `PACKAGES` / `PACKAGES_AUR`, apps omarchy
+has its own installer for (Chrome, 1Password, Tailscale, Steam, ...) in
+`OMARCHY_APPS`, and mise tools in `MISE_TOOLS`. sciview is cloned by the
+bootstrap and set up from `~/repos/sciview`. Agent skills are chosen in
+`agents/skills.conf`, see `agents/README.md`.
+
+Web apps made from the Omarchy menu (Install > Web App) are adopted like
+configs: `./install` copies new ones and their icons into
+`omarchy/.local/share/`, and every machine gets them all. Delete one there to
+drop it everywhere.
 
 `nvim/lua/plugins/theme.lua` is an untracked symlink to the active omarchy
 theme, created by the install. Without it (servers), LazyVim's default theme

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=GitLab
+Comment=GitLab
+Exec=omarchy-launch-webapp "https://gitlab.com/dashboard/projects"
+Terminal=false
+Type=Application
+Icon=gitlab
+StartupNotify=true

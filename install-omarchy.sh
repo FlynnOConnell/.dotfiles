@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# omarchy desktop: link the configs I've changed from omarchy's defaults, plus nvim.
+# omarchy desktop: link the configs I've changed from omarchy's defaults, plus
+# nvim, and install the apps and web apps I've added on top of omarchy's.
 #
 # The live machine is the source of truth. Omarchy (and its UI) sometimes
 # rewrites a config by replacing the file, which turns our symlink back into a
@@ -15,6 +16,7 @@ set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$REPO/omarchy"
+OMARCHY="${OMARCHY_PATH:-/usr/share/omarchy}"
 HOST="$(uname -n)"
 FRESH=0
 [[ ${1:-} == --fresh ]] && FRESH=1
@@ -37,6 +39,9 @@ FILES=(
   .config/lazygit/config.yml
   .config/btop/btop.conf
   .config/swayimg/init.lua
+  .config/gtk-3.0/bookmarks
+  .config/autostart/com.onepassword.OnePassword.desktop
+  .local/share/applications/slack.desktop
   .local/bin/utsw-vpn
   .local/bin/slack-attention
   .local/bin/moonlight-stream
@@ -57,11 +62,29 @@ HOST_FILES=(
 
 # extra packages on top of omarchy's; installed only when missing
 PACKAGES=(
-  swayimg  # image window nvim opens images in (nvim/lua/config/swayimg.lua)
+  swayimg        # image window nvim opens images in (nvim/lua/config/swayimg.lua)
+  slack-desktop  # SUPER+SHIFT+M (bindings.lua), watched by slack-attention
+  sshfs          # sshfs@<host> mounts another machine's home at ~/<host>
 )
 PACKAGES_AUR=(
   zsa-keymapp-bin  # ZSA keyboard layout viewer (pulls in zsa-udev)
 )
+
+# apps omarchy has its own installer for, which also sets up what's around the
+# package (browser flags, services, the bar widget, drivers). each runs only
+# when its package is missing; some ask questions or open the app when done.
+OMARCHY_APPS=(
+  "google-chrome  install_chrome"                          # SUPER+SHIFT+RETURN's browser
+  "1password      omarchy-install-service-1password"
+  "tailscale      omarchy-install-service-tailscale"        # the tailnet: sshfs@, Home Assistant, Moonlight
+  "voxtype-bin    omarchy-voxtype-install"                  # dictation
+  "steam          omarchy-install-gaming-steam"             # SUPER+SHIFT+S (hyprland.lua)
+  "xpadneo-dkms   omarchy-install-gaming-xbox-controllers"  # last: it can offer to reboot
+)
+
+# mise tools beyond omarchy's agent wrappers: node for nvim's language servers
+# (pyright, markdownlint), uv for python envs, nvim's debugger and sciview
+MISE_TOOLS=(node uv@latest)
 
 link() { # link <repo path> <live path>
   local src=$1 dst=$2
@@ -91,6 +114,10 @@ link() { # link <repo path> <live path>
   echo "link  $dst"
 }
 
+install_chrome() {
+  omarchy-install-browser chrome && omarchy-default-browser chrome
+}
+
 for f in "${FILES[@]}"; do
   link "$SRC/$f" "$HOME/$f"
 done
@@ -98,6 +125,26 @@ done
 for f in "${HOST_FILES[@]}"; do
   link "$SRC/hosts/$HOST/$f" "$HOME/$f"
 done
+
+# web apps (Omarchy menu > Install > Web App) beyond the ones omarchy ships: a
+# new one on this machine is adopted into the repo, and every machine gets them
+# all. To drop one everywhere, delete its .desktop and icon from omarchy/.local/share/.
+APPS=.local/share/applications
+ICONS=.local/share/icons/hicolor/256x256/apps
+is_webapp() { grep -qs '^Exec=omarchy-launch-webapp ' "$1"; }
+for live in "$HOME/$APPS"/*.desktop; do
+  if [[ ! -L $live && ! -e $OMARCHY/applications/${live##*/} ]] && is_webapp "$live"; then
+    link "$SRC/$APPS/${live##*/}" "$live"
+  fi
+done
+for app in "$SRC/$APPS"/*.desktop; do
+  if is_webapp "$app"; then
+    link "$app" "$HOME/$APPS/${app##*/}"
+    icon=$(sed -n 's/^Icon=//p' "$app")
+    link "$SRC/$ICONS/$icon.png" "$HOME/$ICONS/$icon.png"
+  fi
+done
+gtk-update-icon-cache "$HOME/.local/share/icons/hicolor" &>/dev/null || true
 
 # open images with imv's own folder launcher, so arrow keys step through the folder
 xdg-mime default imv-dir.desktop image/png image/jpeg image/gif image/bmp image/webp image/tiff
@@ -131,5 +178,35 @@ ln -sfn "$HOME/.local/state/omarchy/current/theme/neovim.lua" "$REPO/nvim/lua/pl
 (( ${#PACKAGES[@]} )) && omarchy-pkg-add "${PACKAGES[@]}"
 (( ${#PACKAGES_AUR[@]} )) && omarchy-pkg-aur-add "${PACKAGES_AUR[@]}"
 
+for tool in "${MISE_TOOLS[@]}"; do
+  grep -qs "^${tool%@*} *=" "$HOME/.config/mise/config.toml" || mise use --global "$tool"
+done
+
+# sciview (~/repos/sciview, cloned by bootstrap-omarchy.sh): the debugger app
+# behind nvim's viewer, SUPER+M (hyprland.lua) and the bar's fo.sciview widget.
+# These are the install steps from its README.
+SCIVIEW="$HOME/repos/sciview"
+SCIVIEW_ENV="$HOME/envs/sciview/.venv"
+if [[ -d $SCIVIEW ]]; then
+  if [[ ! -x $SCIVIEW_ENV/bin/sciview ]]; then
+    mise exec -- uv venv --allow-existing "$SCIVIEW_ENV" --python 3.12 &&
+      mise exec -- uv pip install --python "$SCIVIEW_ENV/bin/python" -e "$SCIVIEW[test]" ||
+      echo "sciview's env didn't install; see $SCIVIEW/README.md" >&2
+  fi
+  link "$SCIVIEW_ENV/bin/sciview" "$HOME/.local/bin/sciview"
+  link "$SCIVIEW/omarchy/fo.sciview" "$HOME/.config/omarchy/plugins/fo.sciview"
+  link "$SCIVIEW/systemd/sciview.service" "$HOME/.config/systemd/user/sciview.service"
+  link "$SCIVIEW/systemd/sciview.socket" "$HOME/.config/systemd/user/sciview.socket"
+  systemctl --user daemon-reload 2>/dev/null || true
+  systemctl --user enable --now sciview.socket 2>/dev/null || true
+fi
+
 # skills and agents are chosen in agents/skills.conf
 python3 "$REPO/agents/sync_skills.py"
+
+# last, since these can be long and interactive (logins, prompts, a reboot)
+for app in "${OMARCHY_APPS[@]}"; do
+  read -r pkg installer <<<"$app"
+  pacman -Q "$pkg" &>/dev/null && continue
+  $installer || echo "$installer failed; run it again on its own" >&2
+done
