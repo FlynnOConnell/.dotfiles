@@ -39,6 +39,8 @@ FILES=(
   .local/bin/utsw-vpn
   .config/systemd/user/sshfs@.service
   .config/systemd/user/bt-connect@.service
+  .config/systemd/user/omarchy-crash-watch.service.d/skip-claude.conf
+  .local/lib/crash-watch
   .claude/settings.json
   .claude/CLAUDE.md
 )

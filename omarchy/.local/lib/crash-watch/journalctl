@@ -1,0 +1,24 @@
+#!/bin/bash
+# journalctl as omarchy-crash-watch sees it, put first on its PATH by
+# ~/.config/systemd/user/omarchy-crash-watch.service.d/skip-claude.conf.
+#
+# Core dumps of processes Claude Code started are dropped from the stream, so
+# they get no "Process crashed" toast: Claude already sees those crashes in its
+# own tool output and deals with them. The cores are still kept for coredumpctl,
+# and every other crash is announced as usual.
+#
+# Claude Code sets CLAUDECODE=1 for each command it runs, and children inherit
+# it. systemd-coredump journals the crashed process's environment as
+# COREDUMP_ENVIRON, which is past -o json's 4096-byte cutoff, hence --all.
+
+set -o pipefail
+
+[[ " $* " == *" -o json "* ]] || exec /usr/bin/journalctl "$@"
+
+/usr/bin/journalctl --all "$@" |
+  jq --unbuffered -cR '
+    fromjson?
+    | select((.COREDUMP_ENVIRON // "")
+             | if type == "array" then implode else . end
+             | test("(^|\n)CLAUDECODE=1(\n|$)")
+             | not)'
