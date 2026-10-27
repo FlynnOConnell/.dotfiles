@@ -11,14 +11,20 @@
 # lost, it just needs a hand.
 #
 # Dotfiles (~/repos/.dotfiles): never committed automatically. Local commits
-# are pushed, and remote commits are fast-forwarded in (uncommitted edits are
-# stashed around it), after which install-omarchy.sh --link picks up new files
-# and services and Hyprland reloads. A branch that has diverged is left alone
-# for a manual rebase; the journal says so.
+# are pushed, and remote commits are fast-forwarded in, after which
+# install-omarchy.sh --link picks up new files and services and Hyprland
+# reloads. Nothing is pulled while tracked files have uncommitted edits: the
+# repo's files are the live config, so a botched merge would be a broken
+# config. A branch that has diverged is likewise left alone for a manual
+# rebase; the journal says so.
 #
-# No network: commits wait locally and the next run pushes them.
+# No network, or an ssh agent that's locked (1Password): git gives up
+# instead of waiting for a prompt, and the next run tries again.
 
 set -u
+
+export GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=15"
+git() { command timeout 120 git "$@"; }
 
 notes=(~/repos/arctic-lake ~/repos/arctic-lake-private)
 dotfiles=~/repos/.dotfiles
@@ -58,10 +64,18 @@ sync_dotfiles() {
   if git merge-base --is-ancestor "$upstream" "$head"; then
     git push -q 2>/dev/null || true # local commits, nothing new upstream
   elif git merge-base --is-ancestor "$head" "$upstream"; then
-    if ! git merge -q --ff-only --autostash '@{u}' 2>/dev/null; then
-      echo "dotfiles: fast-forward failed (local edits clash with upstream)" >&2
+    if ! git diff --quiet HEAD; then
+      # install-omarchy.sh adopts live edits into tracked files, so this is
+      # routine; say so once per new upstream commit, not every 5 minutes.
+      local msg="Commit or stash the local edits in ~/repos/.dotfiles so it can fast-forward"
+      echo "dotfiles: behind origin but tracked files have local edits. $msg" >&2
+      if [[ $(cat .git/repo-sync.notified 2>/dev/null) != "$upstream" ]]; then
+        echo "$upstream" >.git/repo-sync.notified
+        notify-send "Dotfiles: new commits on GitHub not pulled" "$msg"
+      fi
       return 1
     fi
+    git merge -q --ff-only '@{u}' 2>/dev/null || return 1
     "$1/install-omarchy.sh" --link >/dev/null || echo "dotfiles: install-omarchy.sh --link failed" >&2
     hyprctl reload >/dev/null 2>&1 || true
   else
