@@ -45,9 +45,11 @@ FILES=(
   .local/bin/utsw-vpn
   .local/bin/slack-attention
   .local/bin/moonlight-stream
+  .local/bin/suspend-when-locked
   .config/systemd/user/sshfs@.service
   .config/systemd/user/bt-connect@.service
   .config/systemd/user/slack-attention.service
+  .config/systemd/user/suspend-when-locked.service
   .config/systemd/user/omarchy-crash-watch.service.d/skip-claude.conf
   .local/lib/crash-watch
   .claude/settings.json
@@ -169,6 +171,7 @@ fi
 if command -v systemctl >/dev/null; then
   systemctl --user daemon-reload 2>/dev/null || true
   systemctl --user enable --now slack-attention.service 2>/dev/null || true
+  systemctl --user enable --now suspend-when-locked.service 2>/dev/null || true
 fi
 
 link "$REPO/nvim" "$HOME/.config/nvim"

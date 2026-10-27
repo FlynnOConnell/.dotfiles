@@ -1,0 +1,13 @@
+[Unit]
+Description=Suspend after the screen has been locked for a while (wake it back with Wake-on-LAN)
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/suspend-when-locked
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

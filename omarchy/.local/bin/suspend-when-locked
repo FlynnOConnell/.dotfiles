@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+#
+# Suspend the machine once it has sat locked for a while, so it idles at a few
+# watts instead of ~100 W, while staying reachable: Wake-on-LAN is enabled on
+# the wired NIC and Home Assistant's "Wake desktop" button sends the magic
+# packet, so it can be woken from anywhere on the tailnet.
+#
+# Omarchy's own idle service only knows screensaver and lock (shell.json), so
+# this sits beside it: the lock screen coming up is the idle signal. Nothing
+# happens while:
+#   - the shell's Stay Awake toggle is on (same state file the shell uses),
+#   - someone is logged in over ssh (that's the "woke it from work" case:
+#     we must not fall back asleep under them),
+#   - a process holds a systemd sleep inhibitor (systemctl suspend refuses).
+# The countdown restarts after every resume, so a machine woken remotely
+# gets a full window before it is considered idle again.
+#
+# Run as a long-lived user service (suspend-when-locked.service).
+
+set -u
+
+SECONDS_LOCKED_BEFORE_SUSPEND=${SECONDS_LOCKED_BEFORE_SUSPEND:-1500}  # 25 min after lock
+SECONDS_POLL=30
+STAY_AWAKE_FILE="$HOME/.local/state/omarchy/indicators/stay-awake"
+
+locked() { [[ "$(omarchy-shell lock isLocked 2>/dev/null)" == "true" ]]; }
+stay_awake() { [[ -f "$STAY_AWAKE_FILE" ]]; }
+ssh_active() { [[ -n "$(ss -Htn state established '( sport = :22 )' 2>/dev/null)" ]]; }
+
+locked_for=0
+while sleep "$SECONDS_POLL"; do
+  if ! locked || stay_awake || ssh_active; then
+    locked_for=0
+    continue
+  fi
+  locked_for=$((locked_for + SECONDS_POLL))
+  (( locked_for < SECONDS_LOCKED_BEFORE_SUSPEND )) && continue
+
+  echo "locked for ${locked_for}s, suspending"
+  if systemctl suspend; then
+    locked_for=0  # we're back: start a fresh countdown
+  else
+    echo "suspend refused (inhibited?), retrying in ${SECONDS_POLL}s"
+  fi
+done
