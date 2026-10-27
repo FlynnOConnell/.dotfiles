@@ -77,7 +77,10 @@ sync_dotfiles() {
     fi
     git merge -q --ff-only '@{u}' 2>/dev/null || return 1
     "$1/install-omarchy.sh" --link >/dev/null || echo "dotfiles: install-omarchy.sh --link failed" >&2
-    hyprctl reload >/dev/null 2>&1 || true
+    # from the timer there's no HYPRLAND_INSTANCE_SIGNATURE; the newest socket dir is this session's
+    local sig
+    sig=$(ls -t "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hypr" 2>/dev/null | head -1)
+    [[ -n $sig ]] && HYPRLAND_INSTANCE_SIGNATURE=$sig hyprctl reload >/dev/null 2>&1
   else
     echo "dotfiles: diverged from origin, rebase it by hand: cd $1 && git pull --rebase" >&2
     return 1
