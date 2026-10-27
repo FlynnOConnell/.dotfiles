@@ -11,6 +11,9 @@
 #
 # --fresh is for a new machine, where the live files are omarchy's defaults:
 # they're moved to ~/.dotfiles-backup/ instead of adopted over the repo copies.
+#
+# --link only links files and enables services: no packages, apps or envs.
+# repo-sync runs it after fast-forwarding the repo, so it must never prompt.
 
 set -euo pipefail
 
@@ -19,7 +22,9 @@ SRC="$REPO/omarchy"
 OMARCHY="${OMARCHY_PATH:-/usr/share/omarchy}"
 HOST="$(uname -n)"
 FRESH=0
+LINK_ONLY=0
 [[ ${1:-} == --fresh ]] && FRESH=1
+[[ ${1:-} == --link ]] && LINK_ONLY=1
 BACKUP="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 # paths relative to $HOME, mirrored under omarchy/
@@ -46,11 +51,15 @@ FILES=(
   .local/bin/slack-attention
   .local/bin/moonlight-stream
   .local/bin/meeting-record
+  .local/bin/quick-note
+  .local/bin/repo-sync
   .local/bin/suspend-when-locked
   .config/systemd/user/sshfs@.service
   .config/systemd/user/bt-connect@.service
   .config/systemd/user/slack-attention.service
   .config/systemd/user/suspend-when-locked.service
+  .config/systemd/user/repo-sync.service
+  .config/systemd/user/repo-sync.timer
   .config/systemd/user/omarchy-crash-watch.service.d/skip-claude.conf
   .local/lib/crash-watch
   .claude/settings.json
@@ -71,6 +80,7 @@ PACKAGES=(
 )
 PACKAGES_AUR=(
   zsa-keymapp-bin  # ZSA keyboard layout viewer (pulls in zsa-udev)
+  globalprotect-openconnect-git  # gpclient, for utsw-vpn (UTSW GlobalProtect over openconnect)
 )
 
 # apps omarchy has its own installer for, which also sets up what's around the
@@ -173,11 +183,22 @@ if command -v systemctl >/dev/null; then
   systemctl --user daemon-reload 2>/dev/null || true
   systemctl --user enable --now slack-attention.service 2>/dev/null || true
   systemctl --user enable --now suspend-when-locked.service 2>/dev/null || true
+  systemctl --user enable --now repo-sync.timer 2>/dev/null || true
+fi
+
+# the private notes repo shows up inside the Obsidian vault as private/ (the
+# vault's .gitignore skips it); quick-note writes there, repo-sync pushes both.
+if [[ -d $HOME/repos/arctic-lake && -d $HOME/repos/arctic-lake-private && ! -e $HOME/repos/arctic-lake/private ]]; then
+  ln -s "$HOME/repos/arctic-lake-private" "$HOME/repos/arctic-lake/private"
 fi
 
 link "$REPO/nvim" "$HOME/.config/nvim"
 # nvim follows the active omarchy theme; untracked, see nvim/.gitignore
 ln -sfn "$HOME/.local/state/omarchy/current/theme/neovim.lua" "$REPO/nvim/lua/plugins/theme.lua"
+
+if (( LINK_ONLY )); then
+  exit 0
+fi
 
 (( ${#PACKAGES[@]} )) && omarchy-pkg-add "${PACKAGES[@]}"
 (( ${#PACKAGES_AUR[@]} )) && omarchy-pkg-aur-add "${PACKAGES_AUR[@]}"

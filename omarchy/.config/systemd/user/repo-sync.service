@@ -1,0 +1,7 @@
+[Unit]
+Description=Sync notes and dotfiles with GitHub (commit notes, push and fast-forward dotfiles)
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/repo-sync

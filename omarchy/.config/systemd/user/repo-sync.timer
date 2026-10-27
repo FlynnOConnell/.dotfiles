@@ -1,0 +1,10 @@
+[Unit]
+Description=Sync notes and dotfiles with GitHub every 5 minutes
+
+[Timer]
+OnStartupSec=1min
+OnUnitActiveSec=5min
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# Keep this machine's notes and dotfiles in step with GitHub, so every omarchy
+# machine (home, pml-w1, pml-w2, ...) has the same notes and config while it's
+# running. Runs from repo-sync.timer every 5 minutes and from quick-note when
+# its window closes.
+#
+# Notes (~/repos/arctic-lake, the public vault, and ~/repos/arctic-lake-private,
+# linked into the vault as private/): everything not gitignored is committed,
+# remote changes are rebased in, and the result is pushed. A conflict aborts
+# the rebase, keeps the local commit, and sends a notification; nothing is
+# lost, it just needs a hand.
+#
+# Dotfiles (~/repos/.dotfiles): never committed automatically. Local commits
+# are pushed, and remote commits are fast-forwarded in (uncommitted edits are
+# stashed around it), after which install-omarchy.sh --link picks up new files
+# and services and Hyprland reloads. A branch that has diverged is left alone
+# for a manual rebase; the journal says so.
+#
+# No network: commits wait locally and the next run pushes them.
+
+set -u
+
+notes=(~/repos/arctic-lake ~/repos/arctic-lake-private)
+dotfiles=~/repos/.dotfiles
+status=0
+
+sync_notes() {
+  cd "$1" || return 1
+  exec 9>.git/repo-sync.lock
+  flock -w 60 9 || return 0
+
+  git add -A
+  if ! git diff --cached --quiet; then
+    git commit -q -m "notes: $(date '+%Y-%m-%d %H:%M') on $(uname -n)"
+  fi
+
+  git fetch -q 2>/dev/null || return 0 # offline: the commit waits for the next run
+  if ! git rebase -q '@{u}' 2>/dev/null; then
+    git rebase --abort 2>/dev/null
+    notify-send -u critical "Notes sync: conflict in ${1##*/}" \
+      "Local commit kept. Resolve with: cd $1 && git pull --rebase"
+    return 1
+  fi
+  git push -q 2>/dev/null || true
+}
+
+sync_dotfiles() {
+  cd "$1" || return 1
+  exec 8>.git/repo-sync.lock
+  flock -w 60 8 || return 0
+
+  git fetch -q 2>/dev/null || return 0
+  local head upstream
+  head=$(git rev-parse HEAD)
+  upstream=$(git rev-parse '@{u}' 2>/dev/null) || return 0
+  [[ $head == "$upstream" ]] && return 0
+
+  if git merge-base --is-ancestor "$upstream" "$head"; then
+    git push -q 2>/dev/null || true # local commits, nothing new upstream
+  elif git merge-base --is-ancestor "$head" "$upstream"; then
+    if ! git merge -q --ff-only --autostash '@{u}' 2>/dev/null; then
+      echo "dotfiles: fast-forward failed (local edits clash with upstream)" >&2
+      return 1
+    fi
+    "$1/install-omarchy.sh" --link >/dev/null || echo "dotfiles: install-omarchy.sh --link failed" >&2
+    hyprctl reload >/dev/null 2>&1 || true
+  else
+    echo "dotfiles: diverged from origin, rebase it by hand: cd $1 && git pull --rebase" >&2
+    return 1
+  fi
+}
+
+for repo in "${notes[@]}"; do
+  [[ -d $repo/.git ]] && { (sync_notes "$repo") || status=1; }
+done
+[[ -d $dotfiles/.git ]] && { (sync_dotfiles "$dotfiles") || status=1; }
+
+exit $status
