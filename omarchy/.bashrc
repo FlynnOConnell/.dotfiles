@@ -15,6 +15,10 @@ source "$OMARCHY_PATH/default/bash/rc"
 
 alias lg='lazygit'
 
+# Share history between open shells (tmux, herdr): each prompt saves the last command and
+# reads in what the others have saved since. Appended so starship_precmd still sees $?.
+PROMPT_COMMAND+=('history -a; history -n')
+
 # 1Password shell plugins (gh via `op plugin init gh`)
 [[ -f ~/.config/op/plugins.sh ]] && source ~/.config/op/plugins.sh
 
