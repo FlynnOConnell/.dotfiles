@@ -4,6 +4,7 @@
     "pr": ""
   },
   "includeCoAuthoredBy": false,
+  "model": "fable",
   "hooks": {
     "SessionStart": [
       {
@@ -35,6 +36,9 @@
       "autoCompactWindow": 400000
     },
     "claude-opus-4-8": {
+      "autoCompactWindow": 400000
+    },
+    "claude-fable-5-1": {
       "autoCompactWindow": 400000
     }
   },
