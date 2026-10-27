@@ -1,0 +1,13 @@
+[Unit]
+Description=Replay the GameSir T3 Pro as a wired Xbox 360 pad, so Xbox Cloud Gaming sees a standard controller
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/gamesir-x360
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

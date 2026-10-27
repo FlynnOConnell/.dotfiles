@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+"""Replay an Android-layout HID gamepad as a virtual wired Xbox 360 pad.
+
+The GameSir T3 Pro fails XInput enumeration on Linux and falls back to an
+Android-layout HID gamepad. Chrome exposes that with no standard mapping, so
+Xbox Cloud Gaming ignores it. Chrome does map 045e:028e (wired Xbox 360) as
+standard, so this grabs the real device and replays its input through a uinput
+device with the same capabilities xpad gives a real 360 pad. Runs as the
+gamesir-x360 user service; rumble does not pass through.
+"""
+
+import argparse
+import errno
+import fcntl
+import logging
+import os
+import struct
+import time
+
+logger = logging.getLogger("gamesir-x360")
+
+EV_SYN, EV_KEY, EV_ABS = 0x00, 0x01, 0x03
+SYN_REPORT = 0
+
+BTN_A, BTN_B, BTN_X, BTN_Y = 0x130, 0x131, 0x133, 0x134
+BTN_TL, BTN_TR = 0x136, 0x137
+BTN_SELECT, BTN_START, BTN_MODE = 0x13A, 0x13B, 0x13C
+BTN_THUMBL, BTN_THUMBR = 0x13D, 0x13E
+
+ABS_X, ABS_Y, ABS_Z = 0x00, 0x01, 0x02
+ABS_RX, ABS_RY, ABS_RZ = 0x03, 0x04, 0x05
+ABS_GAS, ABS_BRAKE = 0x09, 0x0A
+ABS_HAT0X, ABS_HAT0Y = 0x10, 0x11
+
+EVIOCGRAB = 0x40044590
+UI_SET_EVBIT = 0x40045564
+UI_SET_KEYBIT = 0x40045565
+UI_SET_ABSBIT = 0x40045567
+UI_DEV_CREATE = 0x5501
+UI_DEV_DESTROY = 0x5502
+
+INPUT_EVENT = struct.Struct("llHHi")
+ABSINFO = struct.Struct("6i")
+BUS_USB = 0x03
+
+X360_NAME = b"Microsoft X-Box 360 pad"
+X360_VENDOR, X360_PRODUCT, X360_VERSION = 0x045E, 0x028E, 0x0114
+
+# Android-layout buttons already carry the Xbox evdev codes. BTN_C, BTN_Z and the
+# digital trigger bits are dropped: Chrome's 360 mapping indexes buttons by
+# position, so the virtual device must expose exactly xpad's key set.
+KEYS = (BTN_A, BTN_B, BTN_X, BTN_Y, BTN_TL, BTN_TR, BTN_SELECT, BTN_START, BTN_MODE, BTN_THUMBL, BTN_THUMBR)
+
+# target axis -> (min, max, fuzz, flat), as xpad reports them for a 360 pad
+X360_AXES = {
+    ABS_X: (-32768, 32767, 16, 128),
+    ABS_Y: (-32768, 32767, 16, 128),
+    ABS_Z: (0, 255, 0, 0),
+    ABS_RX: (-32768, 32767, 16, 128),
+    ABS_RY: (-32768, 32767, 16, 128),
+    ABS_RZ: (0, 255, 0, 0),
+    ABS_HAT0X: (-1, 1, 0, 0),
+    ABS_HAT0Y: (-1, 1, 0, 0),
+}
+
+# Android layout: right stick on Z/RZ, left trigger on BRAKE, right trigger on GAS
+SOURCE_TO_TARGET_AXIS = {
+    ABS_X: ABS_X,
+    ABS_Y: ABS_Y,
+    ABS_Z: ABS_RX,
+    ABS_RZ: ABS_RY,
+    ABS_BRAKE: ABS_Z,
+    ABS_GAS: ABS_RZ,
+    ABS_HAT0X: ABS_HAT0X,
+    ABS_HAT0Y: ABS_HAT0Y,
+}
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument(
+        "--path_device",
+        default="/dev/input/by-id/usb-3537_GameSir-T3_Pro_for_Xbox-event-joystick",
+        help="evdev node of the HID gamepad to replay",
+    )
+    parser.add_argument("--seconds_poll", type=float, default=1.0, help="how often to check for the device")
+    parser.add_argument("--log_level", default="INFO")
+    return parser.parse_args()
+
+
+def read_source_ranges(fd_source: int) -> dict[int, tuple[int, int]]:
+    ranges = {}
+    for code in SOURCE_TO_TARGET_AXIS:
+        EVIOCGABS = 0x80184540 + code
+        _, lo, hi, _, _, _ = ABSINFO.unpack(fcntl.ioctl(fd_source, EVIOCGABS, bytes(ABSINFO.size)))
+        ranges[code] = (lo, hi)
+    return ranges
+
+
+def create_virtual_pad() -> int:
+    fd = os.open("/dev/uinput", os.O_WRONLY | os.O_NONBLOCK)
+    fcntl.ioctl(fd, UI_SET_EVBIT, EV_KEY)
+    fcntl.ioctl(fd, UI_SET_EVBIT, EV_ABS)
+    for code in KEYS:
+        fcntl.ioctl(fd, UI_SET_KEYBIT, code)
+    absmax, absmin, absfuzz, absflat = ([0] * 64 for _ in range(4))
+    for code, (lo, hi, fuzz, flat) in X360_AXES.items():
+        fcntl.ioctl(fd, UI_SET_ABSBIT, code)
+        absmin[code], absmax[code], absfuzz[code], absflat[code] = lo, hi, fuzz, flat
+    # legacy struct uinput_user_dev
+    setup = struct.pack(
+        "=80s4HI256i",
+        X360_NAME, BUS_USB, X360_VENDOR, X360_PRODUCT, X360_VERSION, 0,
+        *absmax, *absmin, *absfuzz, *absflat,
+    )
+    os.write(fd, setup)
+    fcntl.ioctl(fd, UI_DEV_CREATE)
+    return fd
+
+
+def rescale(value: int, source: tuple[int, int], target: tuple[int, int]) -> int:
+    (s_lo, s_hi), (t_lo, t_hi) = source, target
+    return t_lo + round((value - s_lo) * (t_hi - t_lo) / (s_hi - s_lo))
+
+
+def replay(path_device: str) -> None:
+    """Forward events until the device disappears (raises OSError ENODEV)."""
+    fd_source = os.open(path_device, os.O_RDONLY)
+    try:
+        # exclusive grab also silences the raw device's joydev node, so Chrome
+        # sees input only from the virtual pad
+        fcntl.ioctl(fd_source, EVIOCGRAB, 1)
+        source_ranges = read_source_ranges(fd_source)
+        fd_pad = create_virtual_pad()
+        logger.info("replaying %s as %s", os.path.realpath(path_device), X360_NAME.decode())
+        try:
+            while True:
+                chunk = os.read(fd_source, INPUT_EVENT.size * 64)
+                for offset in range(0, len(chunk), INPUT_EVENT.size):
+                    _, _, ev_type, code, value = INPUT_EVENT.unpack_from(chunk, offset)
+                    if ev_type == EV_KEY and code in KEYS:
+                        os.write(fd_pad, INPUT_EVENT.pack(0, 0, EV_KEY, code, value))
+                    elif ev_type == EV_ABS and code in SOURCE_TO_TARGET_AXIS:
+                        target = SOURCE_TO_TARGET_AXIS[code]
+                        lo, hi, _, _ = X360_AXES[target]
+                        scaled = rescale(value, source_ranges[code], (lo, hi))
+                        os.write(fd_pad, INPUT_EVENT.pack(0, 0, EV_ABS, target, scaled))
+                    elif ev_type == EV_SYN and code == SYN_REPORT:
+                        os.write(fd_pad, INPUT_EVENT.pack(0, 0, EV_SYN, SYN_REPORT, 0))
+        finally:
+            fcntl.ioctl(fd_pad, UI_DEV_DESTROY)
+            os.close(fd_pad)
+    finally:
+        os.close(fd_source)
+
+
+def main() -> None:
+    args = parse_args()
+    logging.basicConfig(level=args.log_level, format="%(asctime)s %(levelname)s %(message)s")
+    if not os.access("/dev/uinput", os.W_OK):
+        raise SystemExit("no write access to /dev/uinput")
+
+    logger.info("waiting for %s", args.path_device)
+    while True:
+        if not os.path.exists(args.path_device):
+            time.sleep(args.seconds_poll)
+            continue
+        try:
+            replay(args.path_device)
+        except OSError as e:
+            # ENODEV: unplugged mid-read. EACCES/ENOENT: node seen before udev
+            # finished applying permissions, or gone again during re-enumeration.
+            if e.errno not in (errno.ENODEV, errno.EACCES, errno.ENOENT):
+                raise
+            logger.info("device unavailable (%s), waiting", os.strerror(e.errno))
+            time.sleep(args.seconds_poll)
+
+
+if __name__ == "__main__":
+    main()

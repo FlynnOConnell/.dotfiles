@@ -54,10 +54,12 @@ FILES=(
   .local/bin/quick-note
   .local/bin/repo-sync
   .local/bin/suspend-when-locked
+  .local/bin/gamesir-x360
   .config/systemd/user/sshfs@.service
   .config/systemd/user/bt-connect@.service
   .config/systemd/user/slack-attention.service
   .config/systemd/user/suspend-when-locked.service
+  .config/systemd/user/gamesir-x360.service
   .config/systemd/user/repo-sync.service
   .config/systemd/user/repo-sync.timer
   .config/systemd/user/omarchy-crash-watch.service.d/skip-claude.conf
@@ -183,6 +185,7 @@ if command -v systemctl >/dev/null; then
   systemctl --user daemon-reload 2>/dev/null || true
   systemctl --user enable --now slack-attention.service 2>/dev/null || true
   systemctl --user enable --now suspend-when-locked.service 2>/dev/null || true
+  systemctl --user enable --now gamesir-x360.service 2>/dev/null || true
   systemctl --user enable --now repo-sync.timer 2>/dev/null || true
 fi
 
