@@ -44,8 +44,8 @@ o.window({ title = "^sciview$" }, {
 })
 
 -- SUPER+H/J/K/L never cross between tiled and floating windows, so the viewer
--- gets its own keys. Hidden means parked on special:sciview, which is never
--- shown; closing the window (SUPER+W) unmaps it, and the app keeps running.
+-- gets its own keys. It opens from nvim (<leader>dm) and closes when that nvim
+-- quits, or on SUPER+W, which unmaps it while the app keeps running.
 -- sciview is global so the app can call it: hyprctl dispatch sciview.reveal
 sciview = {}
 
@@ -65,8 +65,8 @@ local function sciview_focus(window)
   hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
 end
 
--- <leader>dm in nvim (the app calls it): a hidden viewer (or one on another
--- workspace) comes back here; the app focuses it after
+-- <leader>dm in nvim (the app calls it): a viewer on another workspace comes
+-- back here; the app focuses it after
 function sciview.reveal()
   local viewer = sciview_window()
   if viewer and not sciview_here(viewer) then
@@ -74,25 +74,16 @@ function sciview.reveal()
   end
 end
 
--- show and focus the viewer; when it's focused, hide it
-function sciview.toggle()
-  local viewer = sciview_window()
-  if not viewer then
-    -- closed or never shown: the app shows it (systemd starts the app first)
-    return hl.exec_cmd("sciview show --focus")
-  end
-  if viewer.active then
-    return sciview_move(viewer, "special:sciview")
-  end
-  sciview.reveal()
-  sciview_focus(viewer)
-end
-
--- focus the viewer, or from it the window used before it, leaving it shown
+-- focus the viewer, or from it the window used before it (the editor),
+-- leaving it shown; a closed viewer stays closed: nvim opens it
 function sciview.swap()
   local viewer = sciview_window()
-  if not (viewer and viewer.active) then
-    return sciview.toggle()
+  if not viewer then
+    return
+  end
+  if not viewer.active then
+    sciview.reveal()
+    return sciview_focus(viewer)
   end
   local previous
   for _, window in ipairs(hl.get_workspace_windows(viewer.workspace.id)) do
@@ -105,7 +96,6 @@ function sciview.swap()
   end
 end
 
-o.bind("SUPER + M", "sciview: show and focus / hide", sciview.toggle)
 o.bind("SUPER + ALT + M", "sciview: focus it / back to the editor", sciview.swap)
 
 -- swayimg-nvim (the image window nvim opens images in, nvim/lua/config/swayimg.lua):
