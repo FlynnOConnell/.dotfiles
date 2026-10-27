@@ -24,7 +24,7 @@
 set -u
 
 export GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=15"
-git() { command timeout 120 git "$@"; }
+git() { command timeout 60 git "$@"; }
 
 notes=(~/repos/arctic-lake ~/repos/arctic-lake-private)
 dotfiles=~/repos/.dotfiles
