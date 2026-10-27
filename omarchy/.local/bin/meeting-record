@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Start or stop recording a meeting (SUPER+CTRL+M). Saves two files in ~/meetings:
+# <date>-me.wav (your mic) and <date>-them.wav (everyone else, what plays through
+# your speakers), so a transcript can tell who's speaking. 16 kHz mono, ready for
+# `voxtype transcribe`. Uses whichever mic and speakers are the defaults at start.
+
+set -euo pipefail
+
+unit=meeting-record
+
+if systemctl --user is-active -q "$unit"; then
+  systemctl --user stop "$unit" # SIGINT: ffmpeg finishes the files
+  notify-send -t 5000 "Meeting recording stopped" "Saved in ~/meetings"
+  exit
+fi
+
+mkdir -p ~/meetings
+out=~/meetings/$(date +%F-%H%M)
+systemd-run --user --quiet --collect --unit="$unit" -p KillSignal=SIGINT \
+  ffmpeg -nostdin -loglevel error \
+  -f pulse -i @DEFAULT_SOURCE@ -f pulse -i @DEFAULT_MONITOR@ \
+  -map 0 -ac 1 -ar 16000 "$out-me.wav" \
+  -map 1 -ac 1 -ar 16000 "$out-them.wav"
+notify-send -t 5000 "Recording meeting" "SUPER+CTRL+M again to stop"

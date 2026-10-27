@@ -95,6 +95,9 @@ o.bind("SUPER + SHIFT + ALT + E", "New Outlook email", { webapp = "https://outlo
 o.bind("SUPER + R", "pml-w1 (Moonlight)", "moonlight-stream 100.117.75.71")
 o.bind("SUPER + ALT + R", "pml-w2 (Moonlight)", "moonlight-stream 100.77.145.99")
 
+-- Record a meeting as your mic and everyone else in separate files; again to stop.
+o.bind("SUPER + CTRL + M", "Meeting recording: start / stop", "meeting-record")
+
 -- Moonlight: tiled on workspace 3 instead of omarchy's forced fullscreen.
 o.window("com.moonlight_stream.Moonlight", { fullscreen = false, tile = true, workspace = "3" })
 

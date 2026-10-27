@@ -45,6 +45,7 @@ FILES=(
   .local/bin/utsw-vpn
   .local/bin/slack-attention
   .local/bin/moonlight-stream
+  .local/bin/meeting-record
   .local/bin/suspend-when-locked
   .config/systemd/user/sshfs@.service
   .config/systemd/user/bt-connect@.service
