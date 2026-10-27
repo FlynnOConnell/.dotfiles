@@ -114,42 +114,6 @@ return {
         return config
       end
 
-      -- output that does reach the debug console (debugpy's own, and runs
-      -- with console = "internalConsole") reads like a terminal: color
-      -- codes dropped, and `\r` goes back to the start of the line, so
-      -- progress bars (tqdm) update in place instead of piling up as ^M
-      local repl = require("dap.repl")
-      local function console_buf()
-        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-          if vim.bo[buf].filetype == "dap-repl" and vim.bo[buf].buftype == "prompt" then
-            return buf
-          end
-        end
-      end
-      local function clear_last_output_line()
-        local buf = console_buf()
-        if not buf then
-          return
-        end
-        local ok, mark = pcall(vim.api.nvim_buf_get_mark, buf, ":")
-        local count = (vim.fn.has("nvim-0.12") == 1 and ok) and mark[1] - 1 or vim.api.nvim_buf_line_count(buf) - 1
-        if count > 0 then
-          vim.api.nvim_buf_set_lines(buf, count - 1, count, true, { "" })
-        end
-      end
-      dap.defaults.python.on_output = function(_, body)
-        if body.category == "telemetry" then
-          return
-        end
-        local text = body.output:gsub("\27%[[%d;?]*%a", ""):gsub("\r\n", "\n")
-        local parts = vim.split(text, "\r", { plain = true })
-        repl.append(parts[1], "$", { newline = false })
-        for i = 2, #parts do
-          clear_last_output_line()
-          repl.append(parts[i], "$", { newline = false })
-        end
-      end
-
       -- a pause asks the editor not to move (preserveFocusHint): show where
       -- it stopped anyway, at the innermost frame of your code
       dap.listeners.after.event_stopped["pause_focus"] = function(_, body)
