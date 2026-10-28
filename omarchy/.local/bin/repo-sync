@@ -6,9 +6,12 @@
 #
 # Notes (~/repos/arctic-lake, the private vault; lab notes and the quick-note
 # inbox live under private/): everything not gitignored is committed,
-# remote changes are rebased in, and the result is pushed. A conflict aborts
-# the rebase, keeps the local commit, and sends a notification; nothing is
-# lost, it just needs a hand.
+# remote changes are rebased in, and the result is pushed. On a conflict the
+# local commits are first pushed to the private repo-sync-backups repo, then
+# Claude (claude -p, with the user's own settings) resolves the conflict and
+# finishes the rebase, and the result is pushed as usual. Claude gets one try
+# per upstream commit; if it can't finish, or the backup can't be pushed, the
+# rebase is aborted, the local commit kept, and a notification asks for a hand.
 #
 # Dotfiles (~/repos/.dotfiles): never committed automatically. Local commits
 # are pushed, and remote commits are fast-forwarded in, after which
@@ -35,6 +38,7 @@ git() { command timeout 60 git "$@"; }
 
 notes=(~/repos/arctic-lake)
 dotfiles=~/repos/.dotfiles
+backups=git@github.com:FlynnOConnell/repo-sync-backups.git
 status=0
 
 sync_notes() {
@@ -48,13 +52,39 @@ sync_notes() {
   fi
 
   git fetch -q 2>/dev/null || { echo "${1##*/}: can't reach GitHub, the commit waits for the next run" >&2; return 0; }
-  if ! git rebase -q '@{u}' 2>/dev/null; then
-    git rebase --abort 2>/dev/null
-    notify-send -u critical "Notes sync: conflict in ${1##*/}" \
-      "Local commit kept. Resolve with: cd $1 && git pull --rebase"
-    return 1
+  local tip upstream
+  tip=$(git rev-parse HEAD)
+  upstream=$(git rev-parse '@{u}') || return 1
+  if ! git rebase -q "$upstream" >/dev/null 2>&1; then
+    resolve_conflict "$1" "$tip" "$upstream" || return 1
   fi
   git push -q 2>/dev/null || true
+}
+
+# both commits are read before the rebase: once it stops, HEAD is detached and @{u} is gone
+resolve_conflict() { # resolve_conflict <repo> <local commit> <upstream commit>
+  local repo=$1 tip=$2 upstream=$3 name=${1##*/} ref
+  ref=$name/$(uname -n)-$(date +%Y%m%d-%H%M%S)
+  if [[ $(cat .git/repo-sync.claude 2>/dev/null) != "$upstream" ]] &&
+    command -v claude >/dev/null &&
+    git push -q "$backups" "$tip:refs/heads/$ref"; then
+    echo "$upstream" >.git/repo-sync.claude
+    notify-send "Notes sync: conflict in $name" \
+      "Claude is resolving it. The local commits are backed up as $ref in repo-sync-backups."
+    # GIT_EDITOR: rebase --continue keeps each commit's message instead of
+    # waiting on an editor. 9>&-: nothing Claude leaves running holds the lock.
+    local prompt="$repo is a notes repo (an Obsidian vault) that repo-sync keeps in step with GitHub. Rebasing this machine's local commits onto origin stopped on a conflict, and the rebase is still in progress. Resolve every conflict so nothing from either side is lost: where both sides changed the same text, merge them into one version that keeps what each side added. Then git add the files and git rebase --continue, until the rebase is done. Don't push, reset or abort; repo-sync pushes once you're done. The local commits from before the rebase are backed up as $ref in $backups."
+    GIT_EDITOR=true timeout 30m claude -p "$prompt" --permission-mode acceptEdits --allowedTools 'Bash(git:*)' 9>&- </dev/null
+    if [[ ! -d .git/rebase-merge && ! -d .git/rebase-apply ]] &&
+      git merge-base --is-ancestor "$upstream" HEAD && git diff --quiet HEAD; then
+      notify-send "Notes sync: Claude resolved the conflict in $name" "Backup: $ref in repo-sync-backups"
+      return 0
+    fi
+  fi
+  git rebase --abort 2>/dev/null
+  notify-send -u critical "Notes sync: conflict in $name" \
+    "Local commit kept. Resolve with: cd $repo && git pull --rebase"
+  return 1
 }
 
 sync_dotfiles() {
