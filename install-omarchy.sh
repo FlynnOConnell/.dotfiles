@@ -219,11 +219,10 @@ if command -v systemctl >/dev/null; then
   systemctl --user enable --now repo-sync.timer 2>/dev/null || true
 fi
 
-# the private notes repo shows up inside the Obsidian vault as private/ (the
-# vault's .gitignore skips it); quick-note writes there, repo-sync pushes both.
-if [[ -d $HOME/repos/arctic-lake && -d $HOME/repos/arctic-lake-private && ! -e $HOME/repos/arctic-lake/private ]]; then
-  ln -s "$HOME/repos/arctic-lake-private" "$HOME/repos/arctic-lake/private"
-fi
+# private/ used to be a symlink to a separate arctic-lake-private clone; the
+# notes now live in the vault repo itself, so a leftover link must go before
+# repo-sync can check the directory out.
+[[ -L $HOME/repos/arctic-lake/private ]] && rm "$HOME/repos/arctic-lake/private"
 
 link "$REPO/nvim" "$HOME/.config/nvim"
 # nvim follows the active omarchy theme; untracked, see nvim/.gitignore
