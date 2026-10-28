@@ -28,9 +28,6 @@ require("default.hypr.toggles")
 -- Add any other personal Hyprland configuration below.
 -- o.window("qemu", { workspace = "5" })
 
--- GUI dev windows open on workspace 5 without stealing focus.
-o.window({ class = "^ophys.*" }, { workspace = "5 silent" })
-
 -- sciview (nvim debugger array viewer): floats on the right of the current
 -- workspace without taking focus from the editor, fully opaque so images
 -- show true values.
