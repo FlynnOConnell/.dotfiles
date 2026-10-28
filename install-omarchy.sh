@@ -232,6 +232,22 @@ if (( LINK_ONLY )); then
   exit 0
 fi
 
+# sudo and polkit never ask me for a password: the disk password at boot and
+# the lock screen are the gates. 1Password keeps its own unlock prompt.
+if [[ ! -f /etc/sudoers.d/50-$USER-nopasswd ]]; then
+  echo "$USER ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee "/etc/sudoers.d/50-$USER-nopasswd" >/dev/null
+  sudo chmod 440 "/etc/sudoers.d/50-$USER-nopasswd"
+fi
+if [[ ! -f /etc/polkit-1/rules.d/49-$USER-nopasswd.rules ]]; then
+  sudo tee "/etc/polkit-1/rules.d/49-$USER-nopasswd.rules" >/dev/null <<POLKIT
+polkit.addRule(function(action, subject) {
+    if (subject.user == "$USER" && action.id.indexOf("com.1password.") != 0) {
+        return polkit.Result.YES;
+    }
+});
+POLKIT
+fi
+
 (( ${#PACKAGES[@]} )) && omarchy-pkg-add "${PACKAGES[@]}"
 (( ${#PACKAGES_AUR[@]} )) && omarchy-pkg-aur-add "${PACKAGES_AUR[@]}"
 
