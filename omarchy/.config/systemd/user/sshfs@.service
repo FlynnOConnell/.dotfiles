@@ -1,9 +1,9 @@
 # Mounts a tailnet machine's home so ~/<host> opens it, e.g.
 #   systemctl --user enable --now sshfs@pml-w1
 # sshfs-mount has the details (hidden mount point + symlink, tailscale ip,
-# reconnect). Logs in through the 1Password SSH agent, so it keeps retrying
-# until 1Password is unlocked. Restarts forever after any exit; only an
-# explicit `systemctl --user stop sshfs@<host>` keeps it down.
+# this machine's own key instead of the 1Password agent, reconnect). Restarts
+# forever after any exit; only an explicit `systemctl --user stop sshfs@<host>`
+# keeps it down.
 
 [Unit]
 Description=sshfs mount of %i at ~/%i

@@ -12,6 +12,10 @@
 #
 # The address comes from tailscaled (tailscale ip), not DNS, so it still
 # resolves when another VPN (UTSW GlobalProtect) has taken over the resolver.
+# It logs in with this machine's own key file (~/.ssh/id_ed25519, authorized
+# on every fleet machine by install-hub.sh), never the 1Password agent: the
+# agent needs 1Password unlocked and someone at the screen to approve, and a
+# mount whose ssh is waiting on it blocks every file operation under it.
 # sshfs reconnects by itself across short drops (VPN flaps, suspend/resume);
 # if it exits, the unit restarts and this clears the stale mount point first.
 
@@ -35,6 +39,12 @@ if [[ ! -L $link ]]; then
 fi
 
 addr=$(tailscale ip -4 "$host" 2>/dev/null) || addr=$host.tail0ea452.ts.net
+key=$HOME/.ssh/id_ed25519
+if [[ ! -r $key ]]; then
+  echo "no $key: generate one (ssh-keygen -t ed25519) and authorize it on $host" >&2
+  exit 1
+fi
 exec sshfs -f "$addr:" "$mnt" \
   -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,ConnectTimeout=15 \
-  -o BatchMode=yes,StrictHostKeyChecking=accept-new
+  -o BatchMode=yes,StrictHostKeyChecking=accept-new \
+  -o IdentityAgent=none,IdentitiesOnly=yes,IdentityFile="$key"
