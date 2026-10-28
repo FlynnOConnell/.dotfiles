@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Quick note (SUPER+SHIFT+W): opens today's inbox note in Omawrite, which
-# autosaves as you type. Notes go in the private vault repo
-# (~/repos/arctic-lake-private/inbox/<date>.md, seen in Obsidian as
-# private/inbox/), one file per day with a timestamp heading per visit.
+# autosaves as you type. Notes go in the vault repo
+# (~/repos/arctic-lake/private/inbox/<date>.md), one file per day with a
+# timestamp heading per visit.
 # When the window closes, repo-sync commits and pushes right away; the
 # repo-sync timer covers anything else (Obsidian edits, other machines).
 
 set -euo pipefail
 
-dir=~/repos/arctic-lake-private/inbox
+dir=~/repos/arctic-lake/private/inbox
 note=$dir/$(date +%F).md
 mkdir -p "$dir"
 
