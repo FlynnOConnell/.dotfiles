@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# sshfs-mount <host>: mount a tailnet machine's home so that ~/<host> opens it.
+# Run by sshfs@<host>.service; it stays in the foreground so systemd owns it.
+#
+# The mount itself lives at ~/.local/mnt/<host>, and ~/<host> is a symlink to
+# it. That matters: every machine mounts the others, and machines sleep. A
+# mount whose peer is asleep blocks anything that stats it, and listing a home
+# directory stats every entry in it, so a mount placed directly in ~ would
+# freeze `ls ~`, Nautilus, and above all the other machines' sftp servers that
+# list this home for *their* mounts. A symlink is never followed by a listing,
+# so a sleeping peer only blocks whoever actually steps into ~/<host>.
+#
+# The address comes from tailscaled (tailscale ip), not DNS, so it still
+# resolves when another VPN (UTSW GlobalProtect) has taken over the resolver.
+# sshfs reconnects by itself across short drops (VPN flaps, suspend/resume);
+# if it exits, the unit restarts and this clears the stale mount point first.
+
+set -u
+
+host=${1:?usage: sshfs-mount <host>}
+mnt=$HOME/.local/mnt/$host
+link=$HOME/$host
+
+fusermount3 -uz "$mnt" 2>/dev/null
+mkdir -p "$mnt"
+
+if [[ ! -L $link ]]; then
+  # earlier layout: mounted straight on ~/<host>, possibly left stale
+  fusermount3 -uz "$link" 2>/dev/null
+  if [[ -d $link ]] && ! rmdir "$link" 2>/dev/null; then
+    echo "$link is a non-empty directory; move it aside so it can become a link to $mnt" >&2
+    exit 1
+  fi
+  ln -s ".local/mnt/$host" "$link"
+fi
+
+addr=$(tailscale ip -4 "$host" 2>/dev/null) || addr=$host.tail0ea452.ts.net
+exec sshfs -f "$addr:" "$mnt" \
+  -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,ConnectTimeout=15 \
+  -o BatchMode=yes,StrictHostKeyChecking=accept-new

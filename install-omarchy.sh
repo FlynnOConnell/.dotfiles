@@ -54,6 +54,7 @@ FILES=(
   .local/bin/quick-note
   .local/bin/repo-sync
   .local/bin/suspend-when-locked
+  .local/bin/sshfs-mount
   .local/bin/gamesir-x360
   .config/systemd/user/sshfs@.service
   .config/systemd/user/bt-connect@.service

@@ -1,17 +1,20 @@
-# Mounts a tailnet machine's home at ~/<host>, e.g.
+# Mounts a tailnet machine's home so ~/<host> opens it, e.g.
 #   systemctl --user enable --now sshfs@pml-w1
-# Logs in through the 1Password SSH agent, so it keeps retrying until 1Password is unlocked.
+# sshfs-mount has the details (hidden mount point + symlink, tailscale ip,
+# reconnect). Logs in through the 1Password SSH agent, so it keeps retrying
+# until 1Password is unlocked. Restarts forever after any exit; only an
+# explicit `systemctl --user stop sshfs@<host>` keeps it down.
 
 [Unit]
 Description=sshfs mount of %i at ~/%i
 After=network-online.target
+StartLimitIntervalSec=0
 
 [Service]
-ExecStartPre=/usr/bin/mkdir -p %h/%i
-ExecStart=/usr/bin/sshfs -f %i.tail0ea452.ts.net: %h/%i -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,BatchMode=yes,StrictHostKeyChecking=accept-new
-ExecStop=/usr/bin/fusermount3 -u %h/%i
-Restart=on-failure
-RestartSec=30
+ExecStart=%h/.local/bin/sshfs-mount %i
+ExecStop=-/usr/bin/fusermount3 -uz %h/.local/mnt/%i
+Restart=always
+RestartSec=15
 
 [Install]
 WantedBy=default.target
