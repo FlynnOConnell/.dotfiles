@@ -42,7 +42,6 @@ FILES=(
   .config/herdr/config.toml
   .config/starship.toml
   .config/lazygit/config.yml
-  .config/btop/btop.conf
   .config/swayimg/init.lua
   .config/gtk-3.0/bookmarks
   .config/autostart/com.onepassword.OnePassword.desktop
@@ -67,6 +66,13 @@ FILES=(
   .local/lib/crash-watch
   .claude/settings.json
   .claude/CLAUDE.md
+)
+
+# configs the app rewrites itself (btop saves its settings on every change): a
+# machine gets the repo copy once, then keeps its own, so what the app saves
+# never shows up as a dotfiles edit or holds up repo-sync's fast-forward
+SEED_FILES=(
+  .config/btop/btop.conf
 )
 
 # per-machine files, mirrored under omarchy/hosts/<hostname>/. a machine
@@ -130,12 +136,29 @@ link() { # link <repo path> <live path>
   echo "link  $dst"
 }
 
+seed() { # seed <repo path> <live path>
+  local src=$1 dst=$2
+  [[ -e $src ]] || return 0
+  if [[ -L $dst && $(readlink -f "$dst") == "$(readlink -f "$src")" ]]; then
+    cp --remove-destination "$src" "$dst" # linked before SEED_FILES existed
+    echo "local $dst"
+  elif [[ ! -e $dst || $FRESH == 1 ]]; then
+    mkdir -p "$(dirname "$dst")"
+    cp --remove-destination "$src" "$dst"
+    echo "seed  $dst"
+  fi
+}
+
 install_chrome() {
   omarchy-install-browser chrome && omarchy-default-browser chrome
 }
 
 for f in "${FILES[@]}"; do
   link "$SRC/$f" "$HOME/$f"
+done
+
+for f in "${SEED_FILES[@]}"; do
+  seed "$SRC/$f" "$HOME/$f"
 done
 
 for f in "${HOST_FILES[@]}"; do
@@ -185,7 +208,13 @@ fi
 if command -v systemctl >/dev/null; then
   systemctl --user daemon-reload 2>/dev/null || true
   systemctl --user enable --now slack-attention.service 2>/dev/null || true
-  systemctl --user enable --now suspend-when-locked.service 2>/dev/null || true
+  # the lab workstations host the shared herdr session and can't be woken from
+  # outside the lab, so only the other machines suspend once locked
+  if [[ $HOST == pml-w* ]]; then
+    systemctl --user disable --now suspend-when-locked.service 2>/dev/null || true
+  else
+    systemctl --user enable --now suspend-when-locked.service 2>/dev/null || true
+  fi
   systemctl --user enable --now gamesir-x360.service 2>/dev/null || true
   systemctl --user enable --now repo-sync.timer 2>/dev/null || true
 fi
