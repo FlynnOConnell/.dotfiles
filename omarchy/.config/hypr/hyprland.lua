@@ -145,37 +145,45 @@ o.bind("SUPER + I", "Images from nvim: show and focus / hide", swayimg_nvim.togg
 -- games open on workspace 4: CS2 (native) and Proton games (steam_app_<id>)
 o.window({ class = "^(cs2|steam_app_[0-9]+)$" }, { workspace = "4" })
 
--- The Steam client lives on special:steam, floating over whatever workspace
--- is open; games still open on 4. SUPER+SHIFT+S shows and hides it (was:
--- Google Maps), starting Steam or reopening it from the tray if its window
--- is closed.
-o.window({ class = "^steam$" }, { workspace = "special:steam", float = true })
-
-hl.unbind("SUPER + SHIFT + S")
-o.bind("SUPER + SHIFT + S", "Steam", function()
-  local steam = hl.get_workspace("special:steam")
-  if not (steam and steam.visible) and not hl.get_windows({ class = "steam" })[1] then
-    hl.exec_cmd(o.launch("steam"))
-  end
-  hl.dispatch(hl.dsp.workspace.toggle_special("steam"))
-end)
-
--- Discord (the web app) the same way on special:discord: SUPER+SHIFT+D shows
--- and hides it, opening it when it isn't running. A Discord window opened
--- elsewhere (or dragged off) is pulled back in first.
-local discord_class = "chrome-discord.com__channels_@me-Default"
-o.window({ class = "^chrome-discord\\.com__channels_@me-Default$" }, { workspace = "special:discord" })
-
-hl.unbind("SUPER + SHIFT + D")
-o.bind("SUPER + SHIFT + D", "Discord", function()
-  local special = hl.get_workspace("special:discord")
-  local discord = hl.get_windows({ class = discord_class })[1]
-  if not discord then
+-- Pop-over apps: each lives on its own special workspace as a floating,
+-- near-fullscreen window over whatever is open. Its key starts the app if it
+-- isn't running, shows it on the monitor the cursor is on, and hides it again
+-- on the next press (the app keeps running). A window of the app that opened
+-- elsewhere, or got dragged off, is pulled back onto its workspace first.
+-- Web app classes are chrome-<host>_<path with / as _>-Default.
+local function popover_toggle(name, class, launch)
+  local special = hl.get_workspace("special:" .. name)
+  local window = hl.get_windows({ class = class })[1]
+  if not window then
     if not (special and special.visible) then
-      hl.exec_cmd(o.launch_webapp("https://discord.com/channels/@me"))
+      hl.exec_cmd(launch)
     end
-  elseif not (discord.workspace and discord.workspace.name == "special:discord") then
-    hl.dispatch(hl.dsp.window.move({ workspace = "special:discord", follow = false, window = "address:" .. discord.address }))
+  elseif not (window.workspace and window.workspace.name == "special:" .. name) then
+    hl.dispatch(hl.dsp.window.move({ workspace = "special:" .. name, follow = false, window = "address:" .. window.address }))
   end
-  hl.dispatch(hl.dsp.workspace.toggle_special("discord"))
-end)
+  hl.dispatch(hl.dsp.workspace.toggle_special(name))
+end
+
+local function popover(keys, description, class, launch)
+  local name = description:lower():gsub("%s+", "-")
+  o.window({ class = "^" .. class:gsub("%.", "\\.") .. "$" }, {
+    workspace = "special:" .. name,
+    float = true,
+    size = { "(monitor_w*0.96)", "(monitor_h*0.94)" },
+    center = true,
+  })
+  o.bind(keys, description .. ": show / hide", function()
+    popover_toggle(name, class, launch)
+  end)
+end
+
+-- Steam (was: SUPER+SHIFT+S Google Maps); games still open on workspace 4.
+hl.unbind("SUPER + SHIFT + S")
+popover("SUPER + SHIFT + S", "Steam", "steam", o.launch("steam"))
+-- Discord (was: SUPER+SHIFT+D Docker).
+hl.unbind("SUPER + SHIFT + D")
+popover("SUPER + SHIFT + D", "Discord", "chrome-discord.com__channels_@me-Default", o.launch_webapp("https://discord.com/channels/@me"))
+-- Home Assistant over Tailscale, by MagicDNS name: HA rejects logins from a
+-- 100.x IP as an invalid client id, since it doesn't count CGNAT as private.
+popover("SUPER + SHIFT + A", "Home Assistant", "chrome-homeassistant.tail0ea452.ts.net__-Default", o.launch_webapp("http://homeassistant.tail0ea452.ts.net"))
+popover("SUPER + SHIFT + T", "Tailscale", "chrome-login.tailscale.com__admin_machines-Default", o.launch_webapp("https://login.tailscale.com/admin/machines"))

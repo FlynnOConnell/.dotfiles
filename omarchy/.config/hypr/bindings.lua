@@ -60,25 +60,26 @@ o.bind("SUPER + SHIFT + LEFT", "Move workspace to left monitor", hl.dsp.workspac
 o.bind("SUPER + SHIFT + RIGHT", "Move workspace to right monitor", hl.dsp.workspace.move({ monitor = "r" }))
 
 
--- Screen recording menu, or stop if recording (was: SUPER+SHIFT+P Google Photos).
+-- Screenshot on SUPER+P, same flow as PRINT. Pseudo-tile moves to SUPER+ALT+P.
+hl.unbind("SUPER + P")
+o.bind("SUPER + P", "Screenshot", "omarchy-capture-screenshot")
+o.bind("SUPER + ALT + P", "Pseudo window", hl.dsp.window.pseudo())
+
+-- Record the focused monitor, no audio; again to stop (was: SUPER+SHIFT+P Google Photos).
 hl.unbind("SUPER + SHIFT + P")
-o.bind("SUPER + SHIFT + P", "Screenrecording", "omarchy-capture-screenrecording --stop-recording || omarchy-menu toggle trigger.capture.screenrecord")
-o.bind("SUPER + SHIFT + ALT + P", "Screenrecording (full screen)", "omarchy-capture-screenrecording --fullscreen")
+o.bind("SUPER + SHIFT + P", "Screenrecording: start / stop", "omarchy-capture-screenrecording --stop-recording || omarchy-capture-screenrecording --fullscreen")
 
 -- Apps I use, on keys Omarchy gave to ones I don't (was: SUPER+SHIFT+M Spotify,
--- D Docker, G Signal, A ChatGPT). Each focuses its window if it's already open;
--- Slack is usually parked on the scratchpad, which comes up with it.
+-- G Signal, A ChatGPT). Each focuses its window if it's already open; Slack is
+-- usually parked on the scratchpad, which comes up with it. Steam, Discord,
+-- Home Assistant and Tailscale (SUPER+SHIFT+S/D/A/T) are pop-overs in hyprland.lua.
 hl.unbind("SUPER + SHIFT + M")
-hl.unbind("SUPER + SHIFT + D")
 hl.unbind("SUPER + SHIFT + G")
 hl.unbind("SUPER + SHIFT + A")
 o.bind("SUPER + SHIFT + M", "Slack", { launch = "slack.desktop", focus = "^slack$" })
--- Discord (SUPER+SHIFT+D) shows and hides like Steam; both are in hyprland.lua.
 o.bind("SUPER + SHIFT + G", "GitLab", { webapp = "https://gitlab.com/dashboard/projects", focus = true })
-o.bind("SUPER + SHIFT + H", "Home Assistant", { webapp = "http://100.85.105.1", focus = true })
-o.bind("SUPER + SHIFT + T", "Tailscale", { webapp = "https://login.tailscale.com/admin/machines", focus = true })
 -- Found by window class: "Claude" also turns up in other windows' titles.
-o.bind("SUPER + SHIFT + A", "Claude", "omarchy-launch-or-focus-webapp chrome-claude https://claude.ai")
+o.bind("SUPER + SHIFT + H", "Claude", "omarchy-launch-or-focus-webapp chrome-claude https://claude.ai")
 
 -- PDF reader for papers (opens the last document; press o inside to pick another).
 o.bind("SUPER + SHIFT + R", "PDF reader (Sioyek)", { launch = "sioyek" })
