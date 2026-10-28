@@ -12,6 +12,11 @@ Two mechanisms, because agents disagree about how they load instructions:
    with the always-on skills inlined and the rest indexed by absolute path, then
    spliced into a managed block so anything hand-written around it survives.
 
+Claude Code gets both: its skill directory, and the always-on skills inlined
+into ``~/.claude/CLAUDE.md`` (without the index, since it sees every skill's
+description on its own). Otherwise "always on" would mean nothing there, as a
+skill is only read when invoked.
+
 Skills and agents are picked in ``skills.conf``. Agents that aren't listed have
 anything this script installed removed. Without ``agent`` lines, every agent
 whose config directory exists is used.
@@ -48,6 +53,7 @@ TARGETS_SKILLS = {
 
 TARGETS_DIGEST = {
     "repo": DIR_REPO / "AGENTS.md",
+    "claude": Path.home() / ".claude" / "CLAUDE.md",
     "codex": Path.home() / ".codex" / "AGENTS.md",
     "copilot": Path.home() / ".copilot" / "copilot-instructions.md",
     "gemini": Path.home() / ".gemini" / "GEMINI.md",
@@ -305,7 +311,7 @@ def demote_headings(body: str, levels: int = 2) -> str:
     return "\n".join(lines)
 
 
-def build_digest(skills: List[Dict[str, object]], relative: bool = False) -> str:
+def build_digest(skills: List[Dict[str, object]], relative: bool = False, index: bool = True) -> str:
     """
     Render the managed-block body for agents that read a single instructions file.
 
@@ -319,6 +325,8 @@ def build_digest(skills: List[Dict[str, object]], relative: bool = False) -> str
     relative : bool
         Write skill paths relative to the repo. Use for the digest committed to
         this repo; absolute paths are needed for digests installed elsewhere.
+    index : bool
+        Append the on-demand index. Off for an agent that loads skills itself.
 
     Returns
     -------
@@ -339,6 +347,9 @@ def build_digest(skills: List[Dict[str, object]], relative: bool = False) -> str
         if skill is None:
             continue
         lines += [demote_headings(str(skill["body"])), ""]
+
+    if not index:
+        return "\n".join(lines).strip() + "\n"
 
     lines += [
         "## Load on demand",
@@ -503,7 +514,8 @@ def main() -> int:
         selected.setdefault("repo", TARGETS_DIGEST["repo"])
         for name, filepath_digest in TARGETS_DIGEST.items():
             if name in selected:
-                write_digest(filepath_digest, build_digest(skills, relative=name == "repo"), args.dry_run)
+                body = build_digest(skills, relative=name == "repo", index=name != "claude")
+                write_digest(filepath_digest, body, args.dry_run)
             else:
                 remove_digest(filepath_digest, args.dry_run)
 
