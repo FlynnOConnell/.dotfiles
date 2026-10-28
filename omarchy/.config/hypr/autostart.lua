@@ -5,4 +5,4 @@
 o.exec_on_start(o.launch_webapp("https://outlook.office.com/mail/"))
 
 -- Open Home Assistant (over Tailscale) as a web app at login.
-o.exec_on_start(o.launch_webapp("http://100.85.105.1"))
+o.exec_on_start(o.launch_webapp("http://homeassistant.tail0ea452.ts.net"))
