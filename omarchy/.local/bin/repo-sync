@@ -4,8 +4,8 @@
 # running. Runs from repo-sync.timer every 5 minutes and from quick-note when
 # its window closes.
 #
-# Notes (~/repos/arctic-lake, the public vault, and ~/repos/arctic-lake-private,
-# linked into the vault as private/): everything not gitignored is committed,
+# Notes (~/repos/arctic-lake, the private vault; lab notes and the quick-note
+# inbox live under private/): everything not gitignored is committed,
 # remote changes are rebased in, and the result is pushed. A conflict aborts
 # the rebase, keeps the local commit, and sends a notification; nothing is
 # lost, it just needs a hand.
@@ -33,7 +33,7 @@ else
 fi
 git() { command timeout 60 git "$@"; }
 
-notes=(~/repos/arctic-lake ~/repos/arctic-lake-private)
+notes=(~/repos/arctic-lake)
 dotfiles=~/repos/.dotfiles
 status=0
 
