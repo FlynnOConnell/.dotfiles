@@ -18,12 +18,19 @@
 # config. A branch that has diverged is likewise left alone for a manual
 # rebase; the journal says so.
 #
-# No network, or an ssh agent that's locked (1Password): git gives up
-# instead of waiting for a prompt, and the next run tries again.
+# GitHub is reached with the machine's own key file, not the 1Password agent:
+# a locked agent fails every fetch, and the machine would quietly stop syncing
+# until someone unlocked it. No network: git gives up instead of waiting for a
+# prompt, the journal says so, and the next run tries again.
 
 set -u
 
-export GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=15"
+key=~/.ssh/id_ed25519
+if [[ -r $key ]]; then
+  export GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=15 -o IdentityAgent=none -o IdentitiesOnly=yes -i $key"
+else
+  export GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=15"
+fi
 git() { command timeout 60 git "$@"; }
 
 notes=(~/repos/arctic-lake ~/repos/arctic-lake-private)
@@ -40,7 +47,7 @@ sync_notes() {
     git commit -q -m "notes: $(date '+%Y-%m-%d %H:%M') on $(uname -n)"
   fi
 
-  git fetch -q 2>/dev/null || return 0 # offline: the commit waits for the next run
+  git fetch -q 2>/dev/null || { echo "${1##*/}: can't reach GitHub, the commit waits for the next run" >&2; return 0; }
   if ! git rebase -q '@{u}' 2>/dev/null; then
     git rebase --abort 2>/dev/null
     notify-send -u critical "Notes sync: conflict in ${1##*/}" \
@@ -55,7 +62,7 @@ sync_dotfiles() {
   exec 8>.git/repo-sync.lock
   flock -w 60 8 || return 0
 
-  git fetch -q 2>/dev/null || return 0
+  git fetch -q 2>/dev/null || { echo "dotfiles: can't reach GitHub" >&2; return 0; }
   local head upstream
   head=$(git rev-parse HEAD)
   upstream=$(git rev-parse '@{u}' 2>/dev/null) || return 0
