@@ -2,13 +2,25 @@
 # sshfs-mount <host>: mount a tailnet machine's home so that ~/<host> opens it.
 # Run by sshfs@<host>.service; it stays in the foreground so systemd owns it.
 #
-# The mount itself lives at ~/.local/mnt/<host>, and ~/<host> is a symlink to
-# it. That matters: every machine mounts the others, and machines sleep. A
-# mount whose peer is asleep blocks anything that stats it, and listing a home
-# directory stats every entry in it, so a mount placed directly in ~ would
-# freeze `ls ~`, Nautilus, and above all the other machines' sftp servers that
-# list this home for *their* mounts. A symlink is never followed by a listing,
-# so a sleeping peer only blocks whoever actually steps into ~/<host>.
+# The mount itself lives at $XDG_RUNTIME_DIR/sshfs/<this host>/<host>, and
+# ~/<host> is an absolute symlink to it. Both halves of that matter, because
+# every machine mounts the others' homes, and machines sleep:
+#
+# - A symlink in ~ rather than the mount itself: a mount whose peer is asleep
+#   blocks anything that stats it, and listing a home stats every entry in it,
+#   so a mount placed directly in ~ would freeze `ls ~`, Nautilus, and above
+#   all the peers' sftp servers that list this home for *their* mounts. A
+#   listing never follows a symlink, so a sleeping peer only blocks whoever
+#   actually steps into ~/<host>.
+# - The mount outside ~ rather than at ~/.local/mnt/<host>: a mount inside the
+#   home is reachable through every peer's mount of this home. Walking
+#   ~/pml-w2/.local/mnt/pml-w1/... bounces between the two machines forever,
+#   and since each mount's sftp-server answers one request at a time, the
+#   walk left both servers waiting on each other's mount. That wedged every
+#   shell prompt and every file operation on both machines (2026-10-28).
+#   $XDG_RUNTIME_DIR is never inside a mounted home, and the <this host>
+#   component means a peer sees link text that resolves to nothing on its
+#   own machine instead of to its own mounts.
 #
 # The address comes from tailscaled (tailscale ip), not DNS, so it still
 # resolves when another VPN (UTSW GlobalProtect) has taken over the resolver.
@@ -22,20 +34,31 @@
 set -u
 
 host=${1:?usage: sshfs-mount <host>}
-mnt=$HOME/.local/mnt/$host
+mnt=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/sshfs/$(hostname)/$host
 link=$HOME/$host
+mnt_old=$HOME/.local/mnt/$host
 
 fusermount3 -uz "$mnt" 2>/dev/null
 mkdir -p "$mnt"
 
+if [[ -e $mnt_old || -L $mnt_old ]]; then
+  # earlier layout: mounted inside the home, see the header
+  fusermount3 -uz "$mnt_old" 2>/dev/null
+  rmdir "$mnt_old" 2>/dev/null
+  rmdir "$HOME/.local/mnt" 2>/dev/null
+fi
+
+if [[ -L $link && $(readlink "$link") != "$mnt" ]]; then
+  rm "$link"
+fi
 if [[ ! -L $link ]]; then
-  # earlier layout: mounted straight on ~/<host>, possibly left stale
+  # earliest layout: mounted straight on ~/<host>, possibly left stale
   fusermount3 -uz "$link" 2>/dev/null
   if [[ -d $link ]] && ! rmdir "$link" 2>/dev/null; then
     echo "$link is a non-empty directory; move it aside so it can become a link to $mnt" >&2
     exit 1
   fi
-  ln -s ".local/mnt/$host" "$link"
+  ln -s "$mnt" "$link"
 fi
 
 addr=$(tailscale ip -4 "$host" 2>/dev/null) || addr=$host.tail0ea452.ts.net

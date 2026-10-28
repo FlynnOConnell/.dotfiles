@@ -12,7 +12,7 @@ StartLimitIntervalSec=0
 
 [Service]
 ExecStart=%h/.local/bin/sshfs-mount %i
-ExecStop=-/usr/bin/fusermount3 -uz %h/.local/mnt/%i
+ExecStop=-/usr/bin/fusermount3 -uz %t/sshfs/%H/%i
 Restart=always
 RestartSec=15
 
