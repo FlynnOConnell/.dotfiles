@@ -9,7 +9,10 @@ work belongs to, `<B>` the topic folder. When you tell me where something is, gi
 Keep the session scratchpad for throwaway intermediates I'll never open.
 
 `~/<host>` (e.g. `~/pml-w1`) is that tailnet machine's home mounted over sshfs, so files saved on
-pml-w1 are readable here at `~/pml-w1/agent_assets/...`.
+pml-w1 are readable here at `~/pml-w1/agent_assets/...`. Only open paths you already know under
+it. Never glob, grep, find, `ls -R` or otherwise walk under `~/<host>`, and never stat it to see if
+the machine is up: a sleeping or wedged peer blocks the caller in the kernel until the mount times
+out, and that is what freezes agents and shell prompts. For anything that searches, `ssh <host>`.
 
 # Commits
 
