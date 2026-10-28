@@ -196,6 +196,16 @@ with `find -L`, and don't delete or replace it. If missing: `mkdir -p <root>`.
 - Write and run small test scripts in `<root>/<A>/<B>/code/`.
 - Store lightweight artifacts in `artifacts/`; large files (`.npy`, models, checkpoints) go to `<temp_data_dir>` (see `references.md`).
 
+#### The results page
+
+Every `<B>` shows up on the lab results page (`runhub`, see that skill). Three things decide whether it is usable there:
+
+- The first paragraph under `## Abstract Context` in `MEMORIES.md` is one plain sentence (≤ 160 chars) saying what the topic is; it is the summary on the page. Everything else in `MEMORIES.md` is for agents and sits in a collapsed "agent notes" block.
+- `artifacts/REPORT.md` is the entry point: question, answer, key figures inline with relative image links. It renders as a page.
+- Figures sit at most two folders below `artifacts/` (`artifacts/figures/unit1/x.png`); the page groups them by folder.
+
+Before finishing, run `runhub check <B dir>`; fix every `FIX` line and end your report with the link it prints.
+
 ### Deslop
 
 This guide changes the way you write. Follow it closely.
@@ -273,6 +283,33 @@ Humans maintain your code, so the same rule applies: a comment carries news when
 `results = []  ## Initialize the results list` is comment-shape with nothing in it, and a `try/except` around code that cannot fail is the defensive equivalent. Compare `## latin-1: the 2024 exports carry a µ that utf-8 rejects`, which is the one thing a reader would otherwise undo. Comment the shapes, the units, the workaround and the bug behind it, the equation, the choice that looks wrong until you know why.
 
 Match the file you are editing rather than writing generically correct code. When you cannot verify a signature, say so instead of writing confident code around a guess. See `coding-style`.
+
+#### Titles, captions and labels in figures, pages and explainers
+
+In anything visual (a figure, an app page, a manim story, a slide) text competes with the picture, and most of it
+loses. These rules come from a round of corrections on a d' explainer (2026-10-28); the struck-out phrases are what I
+had to remove.
+
+- No rhetorical or narrative section and chapter titles: "What d' says", "How it is computed", "What moves it",
+  "What it misses", "Who we're affecting", "The number", "One cell, one trace". That is not scientific. A title
+  names the content in the field's terms ("Two clusters", "More noise", "Photobleaching", "What the number means"),
+  or there is none. When the picture explains itself, there is none.
+- One statement per idea. A caption never restates a title: under "d': a measure of how well spikes stand out from
+  noise", the caption "How clearly does each spike stand out of this trace?" was cut.
+- Say what the metric is: "d': a measure of how well spikes stand out from noise", not "d': how far one spike
+  stands above the noise".
+- A label names the thing and its provenance: "Ground truth spikes (simulated)", not "when the cell spiked";
+  "spike +/- 0.8 s", not "one spike, 1.6 s around it"; "clustered" and "clusters", not "piles".
+- Traces get scale bars, not axes or axis labels: a 5 s bar and a 20% dF/F bar replace "dF/F, 30 Hz" and "over
+  40 s". A zoom shares the vertical scale with its parent and gets only a time bar.
+- No parameter readouts the picture does not need ("20 photons / pixel / frame").
+- No prose beside a number. The formula line, "gap = 0.125 - 0.026", "pooled SD = 0.036" and "a threshold halfway
+  between the piles gets 91% of single spikes right" were all cut. The number stays ("d' = 2.7"); what it means
+  goes in one table at the end (d' against the fraction called right).
+- Captions are secondary: small, grey, one line, and only where the picture needs one. The headline title leaves
+  as soon as the picture takes over.
+- Show change by making the picture react: morph the trace, move the boxed segment into its zoom, and let the
+  number count along with the morph. Never fade one value out and another in.
 
 #### Two cautions
 

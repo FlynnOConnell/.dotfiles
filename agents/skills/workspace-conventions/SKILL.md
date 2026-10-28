@@ -44,3 +44,13 @@ with `find -L`, and don't delete or replace it. If missing: `mkdir -p <root>`.
 - Don't change settings, install packages, or modify the environment unless explicitly asked.
 - Write and run small test scripts in `<root>/<A>/<B>/code/`.
 - Store lightweight artifacts in `artifacts/`; large files (`.npy`, models, checkpoints) go to `<temp_data_dir>` (see `references.md`).
+
+## The results page
+
+Every `<B>` shows up on the lab results page (`runhub`, see that skill). Three things decide whether it is usable there:
+
+- The first paragraph under `## Abstract Context` in `MEMORIES.md` is one plain sentence (≤ 160 chars) saying what the topic is; it is the summary on the page. Everything else in `MEMORIES.md` is for agents and sits in a collapsed "agent notes" block.
+- `artifacts/REPORT.md` is the entry point: question, answer, key figures inline with relative image links. It renders as a page.
+- Figures sit at most two folders below `artifacts/` (`artifacts/figures/unit1/x.png`); the page groups them by folder.
+
+Before finishing, run `runhub check <B dir>`; fix every `FIX` line and end your report with the link it prints.
