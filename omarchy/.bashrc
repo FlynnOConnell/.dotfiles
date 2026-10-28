@@ -15,6 +15,12 @@ source "$OMARCHY_PATH/default/bash/rc"
 
 alias lg='lazygit'
 
+# Up/down search history for what's typed so far, as in zsh. Omarchy's inputrc binds
+# only the normal arrow sequence (\e[A); in application cursor mode (herdr, and
+# anything else that sets DECCKM) the arrows send \eOA, which was plain previous-history.
+bind '"\eOA": history-search-backward'
+bind '"\eOB": history-search-forward'
+
 # Share history between open shells (tmux, herdr): each prompt saves the last command and
 # reads in what the others have saved since. Appended so starship_precmd still sees $?.
 PROMPT_COMMAND+=('history -a; history -n')
