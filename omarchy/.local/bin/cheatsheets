@@ -18,10 +18,10 @@ keybinding_records() {
   cat "$(ls -t "${XDG_CACHE_HOME:-$HOME/.cache}"/omarchy/keybindings-*.records | head -1)"
 }
 
-# Web apps and pop-overs: anything launched through a webapp helper, plus the
-# "show / hide" pop-over toggles from hyprland.lua.
+# Web apps and pop-overs: anything launched through a webapp helper, the
+# "show / hide" pop-overs from hyprland.lua and the "open / close" web apps from bindings.lua.
 webapps_records() {
-  keybinding_records | awk -F '\t' '$3 ~ /webapp|launch-or-focus/ || $1 ~ /: show \/ hide/'
+  keybinding_records | awk -F '\t' '$3 ~ /webapp|launch-or-focus/ || $1 ~ /: (show \/ hide|open \/ close)/'
 }
 
 # ~/.config/nvim/cheatsheet.md: "## Section" headers and "| `key` | action | ... |" rows.

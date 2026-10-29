@@ -73,30 +73,57 @@ hl.unbind("SUPER + SHIFT + P")
 o.bind("SUPER + SHIFT + P", "Screenrecording: start / stop", "omarchy-capture-screenrecording --stop-recording || omarchy-capture-screenrecording --fullscreen")
 
 -- Apps I use, on keys Omarchy gave to ones I don't (was: SUPER+SHIFT+M Spotify,
--- G Signal, A ChatGPT). Each focuses its window if it's already open; Slack is
+-- G Signal, A ChatGPT). Slack focuses its window if it's already open; it is
 -- usually parked on the scratchpad, which comes up with it. Steam, Discord,
 -- Home Assistant and Tailscale (SUPER+SHIFT+S/D/A/T) are pop-overs in hyprland.lua.
 hl.unbind("SUPER + SHIFT + M")
 hl.unbind("SUPER + SHIFT + G")
 hl.unbind("SUPER + SHIFT + A")
 o.bind("SUPER + SHIFT + M", "Slack", { launch = "slack.desktop", focus = "^slack$" })
-o.bind("SUPER + SHIFT + G", "GitLab", { webapp = "https://gitlab.com/dashboard/projects", focus = true })
--- Found by window class: "Claude" also turns up in other windows' titles.
-o.bind("SUPER + SHIFT + H", "Claude", "omarchy-launch-or-focus-webapp chrome-claude https://claude.ai")
--- By window class too: the title changes to whichever report is open.
-o.bind("SUPER + CTRL + G", "pml-w1 results", "omarchy-launch-or-focus-webapp chrome-pml-w1 https://pml-w1.tail0ea452.ts.net/")
+
+-- Tiled web apps on one key each: the first press opens the app, a press while
+-- another window has focus brings it up, and a press while it is focused closes
+-- it. The pop-overs in hyprland.lua hide and keep running instead; these are
+-- cheap to reopen, so they close. Chrome names an app window
+-- chrome-<host>__<path with / as _>-Default, from the URL it was launched with.
+local function webapp_class(url)
+  local host, path = url:gsub("^%w+://", ""):match("^([^/]+)/?(.*)$")
+  return "chrome-" .. host .. "__" .. path:gsub("/", "_") .. "-Default"
+end
+
+function fo_webapp_toggle(url) -- global so `hyprctl eval` can drive it
+  local window = hl.get_windows({ class = webapp_class(url) })[1]
+  local active = hl.get_active_window()
+  if not window then
+    hl.exec_cmd(o.launch_webapp(url))
+  elseif active and active.address == window.address then
+    hl.dispatch(hl.dsp.window.close({ window = "address:" .. window.address }))
+  else
+    hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
+  end
+end
+
+local function webapp(keys, description, url)
+  o.bind(keys, description .. ": open / close", function()
+    fo_webapp_toggle(url)
+  end)
+end
+
+webapp("SUPER + SHIFT + G", "GitLab", "https://gitlab.com/dashboard/projects")
+webapp("SUPER + SHIFT + H", "Claude", "https://claude.ai")
+webapp("SUPER + CTRL + G", "pml-w1 results", "https://pml-w1.tail0ea452.ts.net/")
 
 -- PDF reader for papers (opens the last document; press o inside to pick another).
 -- Through XWayland: on native Wayland its OpenGL context fails (EGL_BAD_MATCH on
 -- pml-w2's NVIDIA) and it runs with no window.
 o.bind("SUPER + SHIFT + R", "PDF reader (Sioyek)", { launch = "env QT_QPA_PLATFORM=xcb sioyek" })
 
--- Work Outlook (UTSW) as web apps, focusing the existing window if open (was: HEY email/calendar).
+-- Work Outlook (UTSW) as web apps (was: HEY email/calendar).
 hl.unbind("SUPER + SHIFT + E")
 hl.unbind("SUPER + SHIFT + C")
 hl.unbind("SUPER + SHIFT + ALT + E")
-o.bind("SUPER + SHIFT + E", "Outlook Mail", "omarchy-launch-or-focus-webapp 'Mail.*Outlook' 'https://outlook.office.com/mail/'")
-o.bind("SUPER + SHIFT + C", "Outlook Calendar", "omarchy-launch-or-focus-webapp 'Calendar.*Outlook' 'https://outlook.office.com/calendar/'")
+webapp("SUPER + SHIFT + E", "Outlook Mail", "https://outlook.office.com/mail/")
+webapp("SUPER + SHIFT + C", "Outlook Calendar", "https://outlook.office.com/calendar/")
 o.bind("SUPER + SHIFT + ALT + E", "New Outlook email", { webapp = "https://outlook.office.com/mail/deeplink/compose" })
 
 -- Stream a lab workstation with Moonlight, focusing that host's stream if it's already open.
