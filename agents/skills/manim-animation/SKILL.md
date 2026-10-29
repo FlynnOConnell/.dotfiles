@@ -20,6 +20,9 @@ is what those rounds settled. Read it before writing a new one:
   stills are in `~/agent_assets/imgui_ophys/20261028_lesson-stories_02/artifacts/story/dprime/`.
 - `~/repos/imgui_ophys/animations/{motion,nmf,traces,svd}.py`: four more on the same kit (movies with `Play`,
   grids with `Recolor`, equations as chapter titles).
+- `~/repos/imgui_ophys/animations/subcellular.py` (branch `worktree-subcellular`): the d' arc on a membrane
+  voltage model with two zooms at their own scales, three traces in slots, two numbers counting at once, and a
+  closing table of shapes with a snippet per row.
 - `~/repos/imgui_masknmf_manim/src/imgui_masknmf_manim/canvas.py`: the same machinery inside an imgui window, with
   movie panels that follow a frame slider (the imgui-lesson skill).
 - The text rules live in the deslop skill, section "Titles, captions and labels in figures, pages and explainers".
@@ -87,6 +90,9 @@ The deslop rules, as they bit here. Left is what was cut, right is what stayed.
 - Traces get scale bars, never axes or axis labels: `scale_bars(axes, ...)` puts a time bar under the right end and
   a dF/F bar at the top right; `nice()` rounds the bar to 1, 2 or 5 x 10^n. Bars and their labels are BAR, a step
   greyer than the TRACE they sit under. A zoom gets a time bar only.
+  Exception, from the subcellular animation (2026-10-29): when the zoomed event is an order of magnitude smaller
+  than the trace's largest (an EPSP against a bAP), the zoom gets its own dF/F bar, and so does any second zoom
+  at another scale; the bars are what tells the viewer the scales differ.
 - `plain_axes(..., visible=False)` maps coordinates for a trace drawn with bars; `visible=True` draws a bare frame
   for a plot that needs one (the clusters).
 - Plot ranges are fixed over every cell the animation will show (take the min and max across all of them before
@@ -128,6 +134,8 @@ The deslop rules, as they bit here. Left is what was cut, right is what stayed.
   would; the kit's `seek` dedupes the draw list by family. Before that fix a FadeOut in the last chapter lifted the
   whole window chrome over panels introduced in between, and a child animated on its own (a checkbox inside a
   panel group, Transformed later) was drawn twice, once on top of everything.
+- A `FadeIn` of a mobject that an earlier chapter faded out shows nothing: `FadeIn` targets the mobject's state at
+  its begin, which is the faded one. Fade in a fresh `copy()` instead (the Studio suite2p demo's source label).
 - To check mid-chapter frames, not only the stills: `ffmpeg -ss <t> -i x.mp4 -frames:v 1 f.png` at the moments a
   thing is supposed to be on screen, tiled four at a time with PIL.
 
