@@ -43,7 +43,6 @@ FILES=(
   .config/starship.toml
   .config/lazygit/config.yml
   .config/swayimg/init.lua
-  .config/gtk-3.0/bookmarks
   .config/autostart/com.onepassword.OnePassword.desktop
   .local/share/applications/slack.desktop
   .local/bin/utsw-vpn
@@ -80,6 +79,7 @@ SEED_FILES=(
 # without its own copy yet adopts whatever it has live.
 HOST_FILES=(
   .config/hypr/monitors.lua
+  .config/gtk-3.0/bookmarks  # sshfs-mount adds ~/<host> here, so each machine lists its own peers
 )
 
 # extra packages on top of omarchy's; installed only when missing

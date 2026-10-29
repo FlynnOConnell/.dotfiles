@@ -61,6 +61,11 @@ if [[ ! -L $link ]]; then
   ln -s "$mnt" "$link"
 fi
 
+# Nautilus lists fuse mounts under ~ in its sidebar but not ones under
+# $XDG_RUNTIME_DIR, so the link gets a bookmark (the file is per machine).
+bookmarks=${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/bookmarks
+grep -qxF "file://$link $host" "$bookmarks" 2>/dev/null || echo "file://$link $host" >> "$bookmarks"
+
 addr=$(tailscale ip -4 "$host" 2>/dev/null) || addr=$host.tail0ea452.ts.net
 key=$HOME/.ssh/id_ed25519
 if [[ ! -r $key ]]; then
