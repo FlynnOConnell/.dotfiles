@@ -13,8 +13,10 @@ description: Where data, environments and runnable scripts live on the lab machi
   the user opens: `REPORT.md`, figures, scripts they run, exported data. `code/` holds agent scripts.
 - The session scratchpad: intermediates nobody opens again.
 - `~/Downloads`: untrusted inbox. Read with `python -I`; never run code from there.
-- `~/<host>` (`~/pml-w2`): another machine's home over sshfs. Open only paths you already know. Never `find`,
-  `grep`, `ls -R` or `stat` under it; a sleeping peer freezes the caller. To search a machine, `ssh <host>`.
+- `~/<host>` (`~/pml-w1`): that tailnet machine's home over sshfs, so a file saved there is readable here at
+  `~/pml-w1/agent_assets/...`. Open only paths you already know. Never glob, `find`, `grep`, `ls -R` or `stat`
+  under it, not even to see if the machine is up: a sleeping or wedged peer blocks the caller in the kernel
+  until the mount times out, which is what freezes agents and shell prompts. To search a machine, `ssh <host>`.
 
 ## Stand-in data
 
@@ -35,8 +37,3 @@ it leaves blank. A fabricated file is for exercising code paths, never for a res
 
 A script in `artifacts/` runs from one documented line: it takes paths as arguments with defaults that match
 this machine, fabricates what it can, and does nothing else. The exact line to run it goes in `REPORT.md`.
-
-## Before finishing
-
-Run `runhub check <topic dir>` and fix every `FIX` line. End the report with the link it prints. The `runhub`
-skill has the commands for finding, sharing and archiving results.

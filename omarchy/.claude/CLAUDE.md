@@ -8,12 +8,6 @@ work belongs to, `<B>` the topic folder. When you tell me where something is, gi
 
 Keep the session scratchpad for throwaway intermediates I'll never open.
 
-`~/<host>` (e.g. `~/pml-w1`) is that tailnet machine's home mounted over sshfs, so files saved on
-pml-w1 are readable here at `~/pml-w1/agent_assets/...`. Only open paths you already know under
-it. Never glob, grep, find, `ls -R` or otherwise walk under `~/<host>`, and never stat it to see if
-the machine is up: a sleeping or wedged peer blocks the caller in the kernel until the mount times
-out, and that is what freezes agents and shell prompts. For anything that searches, `ssh <host>`.
-
 # Commits
 
 - One line, lowercase, no body, no trailers, no Co-Authored-By, no "Generated with Claude Code".
@@ -198,13 +192,8 @@ with `find -L`, and don't delete or replace it. If missing: `mkdir -p <root>`.
 
 #### The results page
 
-Every `<B>` shows up on the lab results page (`runhub`, see that skill). Three things decide whether it is usable there:
-
-- The first paragraph under `## Abstract Context` in `MEMORIES.md` is one plain sentence (≤ 160 chars) saying what the topic is; it is the summary on the page. Everything else in `MEMORIES.md` is for agents and sits in a collapsed "agent notes" block.
-- `artifacts/REPORT.md` is the entry point: question, answer, key figures inline with relative image links. It renders as a page.
-- Figures sit at most two folders below `artifacts/` (`artifacts/figures/unit1/x.png`); the page groups them by folder.
-
-Before finishing, run `runhub check <B dir>`; fix every `FIX` line and end your report with the link it prints.
+Every `<B>` shows up on the lab results page. The `runhub` skill says what the page needs
+(`MEMORIES.md` abstract, `artifacts/REPORT.md`, figure depth) and the check to run before finishing.
 
 ### Data management
 
@@ -216,8 +205,10 @@ Before finishing, run `runhub check <B dir>`; fix every `FIX` line and end your 
   the user opens: `REPORT.md`, figures, scripts they run, exported data. `code/` holds agent scripts.
 - The session scratchpad: intermediates nobody opens again.
 - `~/Downloads`: untrusted inbox. Read with `python -I`; never run code from there.
-- `~/<host>` (`~/pml-w2`): another machine's home over sshfs. Open only paths you already know. Never `find`,
-  `grep`, `ls -R` or `stat` under it; a sleeping peer freezes the caller. To search a machine, `ssh <host>`.
+- `~/<host>` (`~/pml-w1`): that tailnet machine's home over sshfs, so a file saved there is readable here at
+  `~/pml-w1/agent_assets/...`. Open only paths you already know. Never glob, `find`, `grep`, `ls -R` or `stat`
+  under it, not even to see if the machine is up: a sleeping or wedged peer blocks the caller in the kernel
+  until the mount times out, which is what freezes agents and shell prompts. To search a machine, `ssh <host>`.
 
 #### Stand-in data
 
@@ -239,23 +230,27 @@ it leaves blank. A fabricated file is for exercising code paths, never for a res
 A script in `artifacts/` runs from one documented line: it takes paths as arguments with defaults that match
 this machine, fabricates what it can, and does nothing else. The exact line to run it goes in `REPORT.md`.
 
-#### Before finishing
-
-Run `runhub check <topic dir>` and fix every `FIX` line. End the report with the link it prints. The `runhub`
-skill has the commands for finding, sharing and archiving results.
-
 ### runhub
 
 `runhub up` runs a user service on pml-w1 that rescans `~/agent_assets` and `~/data` every two minutes
 and serves `http://localhost:8787/` (tailnet: `https://pml-w1.tail0ea452.ts.net/`). Nothing has to be
 registered: every `agent_assets/<A>/<YYYYMMDD_slug>/` topic and masknmf run folder appears on its own.
+The index lists topics, newest first; pipeline runs have their own page (`/runs.html`), one fold per dataset.
 
 Before finishing a topic, run `runhub check <topic dir>` and fix every `FIX` line; end the report with the link it prints.
 What it checks, and what makes a topic look good on the page:
 
 - the first paragraph under `## Abstract Context` in `MEMORIES.md` is one plain sentence (≤ 160 chars) saying what the topic is; it is the summary on the page. The rest of `MEMORIES.md` is for agents and shows only in a collapsed "agent notes" block;
+- `runhub.toml` in the topic folder says what kind of work it is and what for; the page shows these as chips and filters, so write it when the topic starts:
+
+      category = "analysis"      # or "development" (code, tooling, pages)
+      goal = "Decide whether vnoiser replaces masknmf for Asako's ASAP7 recordings."
+      tags = ["asako", "CA1", "voltage"]   # experimenter, brain region, indicator, dataset
+
+  Tags are free words people will search for. `runhub note <id> --category analysis --goal "..." --tag asako` writes the same file;
 - `artifacts/REPORT.md` is the entry point: question, answer, key figures inline with relative image links. Markdown renders as a page;
-- every png, jpg, gif, html, md, pdf and mp4 anywhere under the topic (up to eight levels, zarr stores included) is on its record page `/r/<id>`: pages as buttons at the top, images as a thumbnail gallery grouped by folder, click to view full size, arrow keys to step through;
+- every png, jpg, gif, html, md, pdf and mp4 anywhere under the topic (up to eight levels, zarr stores included) is on its record page `/r/<id>`: `REPORT.md` inline, pages and videos as buttons at the top, images in one gallery with the folder in the caption, click to view full size, arrow keys to step through, a pen to draw on for presenting;
+- a pipeline run a topic uses is listed on the topic's page and marked "used by" on the runs page. Link them by launching through `runhub run ... --topic <topic dir>` (or `export RUNHUB_TOPIC=<topic dir>`), by naming the run folder (`20261027T025609_two-photon-calcium`) in `MEMORIES.md` or `REPORT.md`, or afterwards with `runhub note <run id> --topic <topic dir>`. Runs nobody links stay on the runs page only;
 - `/media.html` is one filterable gallery of every image on the host, newest topic first; `/r/<id>/artifacts/<sub>/` browses a folder with the same gallery.
 
 Archiving: the page's "archive" button (or `runhub archive <id>`) moves an item's folder to `_archive/` beside
@@ -263,8 +258,9 @@ its scan root and hides it; `runhub restore <id>` or the archived list at the pa
 Deleting a folder by hand drops its record on the next scan.
 
 Commands: `runhub status`, `runhub scan` (refresh now instead of waiting), `runhub ls <words>` (find the
-id), `runhub share <id>` (print the short link). Optional curation: `runhub note <id> --tag t --note "..."`.
-Pipeline launching at pinned versions: `runhub run <name>@<channel> --dir <run> -- <cmd>`; see
+id), `runhub share <id>` (print the short link). Curation: `runhub note <id> --category analysis --goal "..." --tag t --untag u --note "..."`.
+Filtering the page: `?q=<word>` in the URL, the category links above the table, or click any chip.
+Pipeline launching at pinned versions: `runhub run <name>@<channel> --dir <run> --topic <topic dir> -- <cmd>`; see
 `pipelines/README.md` in the repo.
 
 ### Deslop
