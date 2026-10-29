@@ -81,7 +81,7 @@ o.bind("SUPER + SHIFT + G", "GitLab", { webapp = "https://gitlab.com/dashboard/p
 -- Found by window class: "Claude" also turns up in other windows' titles.
 o.bind("SUPER + SHIFT + H", "Claude", "omarchy-launch-or-focus-webapp chrome-claude https://claude.ai")
 -- By window class too: the title changes to whichever report is open.
-o.bind("SUPER + SHIFT + ALT + R", "pml-w1 results", "omarchy-launch-or-focus-webapp chrome-pml-w1 https://pml-w1.tail0ea452.ts.net/")
+o.bind("SUPER + CTRL + G", "pml-w1 results", "omarchy-launch-or-focus-webapp chrome-pml-w1 https://pml-w1.tail0ea452.ts.net/")
 
 -- PDF reader for papers (opens the last document; press o inside to pick another).
 -- Through XWayland: on native Wayland its OpenGL context fails (EGL_BAD_MATCH on
