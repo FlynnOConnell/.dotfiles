@@ -1,0 +1,22 @@
+#!/bin/bash
+# Steam notification toasts: a sound only (default) or a pinned popup card.
+# The flag is an Omarchy toggle; Hyprland re-reads it without a reload.
+#   steam-popups [on|off|toggle|status]
+case "${1:-toggle}" in
+  status)
+    if omarchy-toggle-enabled steam-popups 2>/dev/null || [[ -f "$HOME/.local/state/omarchy/toggles/steam-popups" ]]; then
+      echo "popup"
+    else
+      echo "sound"
+    fi
+    ;;
+  on | off | toggle)
+    omarchy-toggle steam-popups "$1"
+    hyprctl eval 'fo_steam_popups_sync()' >/dev/null
+    exec "$0" status
+    ;;
+  *)
+    echo "usage: steam-popups [on|off|toggle|status]" >&2
+    exit 1
+    ;;
+esac
