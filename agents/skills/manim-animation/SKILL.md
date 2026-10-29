@@ -130,6 +130,10 @@ The deslop rules, as they bit here. Left is what was cut, right is what stayed.
 - `Count` must not use `become()`: it pads both families to the longer one and never shrinks them, so a label whose
   glyph count changes ("d: 0" to "d: 1999") breaks any FadeIn or FadeOut of it begun at another length
   (`ValueError: zip() argument 2 is shorter`). The kit's `Count` swaps the glyph submobjects instead.
+- A `FadeIn` or `FadeOut` must not overlap a `Count` of the same label whose glyph count changes meanwhile
+  ("9 ROIs" to "10 ROIs" inside the fade's 0.3 s): the fade zips the families it captured and crashes with
+  `zip() argument 2 is shorter`. Put the fade and the count in a `lag_ratio=1.0` group. The stills pass (they seek
+  to chapter ends only); the movie finds it.
 - Draw order is first appearance. A mobject is drawn where its first animation lists it, as a Scene's `add()`
   would; the kit's `seek` dedupes the draw list by family. Before that fix a FadeOut in the last chapter lifted the
   whole window chrome over panels introduced in between, and a child animated on its own (a checkbox inside a
@@ -138,6 +142,26 @@ The deslop rules, as they bit here. Left is what was cut, right is what stayed.
   its begin, which is the faded one. Fade in a fresh `copy()` instead (the Studio suite2p demo's source label).
 - To check mid-chapter frames, not only the stills: `ffmpeg -ss <t> -i x.mp4 -frames:v 1 f.png` at the moments a
   thing is supposed to be on screen, tiled four at a time with PIL.
+
+## An app demo
+
+Never redraw an app's widgets in manim (the user: "This is not the purpose, to recreate the U/I in manim"; then,
+of small drawn cards, "Can we use the actual windows used in the U/I rather than making small snippets?"). Capture
+the real windows and animate those:
+
+- The Studio renders offscreen with no display: `_create_image_widget(array, widget="preview" | "manualroi",
+  figure_kwargs_override={"canvas": "offscreen", "size": (w, h)})`, the side widget is
+  `next(g for g in iw.figure.imgui_windows.values() if g)`, `iw.figure.canvas.draw()` returns the composited frame.
+  Popups and tabs by their flags (`gui._show_metadata_popup`, `gui._force_run_tab`, `manual_roi.focus_tab`); runs by
+  `manual_roi.load_run(plane_dir)`, cells by `select_derived(si, k)` and `buffer_toggle(si, k)`.
+- `iw.current_index = {"t": k}` between draws gives a frame sequence of the whole window: the movie, the T slider and
+  the trace cursor move as in the app. Save it as one uint8 npz and `Play` it on the window's `ImageMobject`.
+- Windows are `ImageMobject`s with bicubic resampling at one scale (0.0078 scene units per px), all centered at one
+  place; chapters cross-fade them. Render at `--width 1920`, gif 960: at 1280 the UI text is unreadable.
+- manim text sits beside the window, never on it: the typed command (a `Count` over the string's prefix), a frame
+  around the button in use (`scene_rect` from the button's pixel rectangle), counts, measured step timings, file
+  names. The reference is `~/repos/imgui_studio_manim/animations/suite2p_demo.py` with its capture script in
+  `~/agent_assets/imgui_studio_manim/20261029_studio-suite2p-demo/code/capture_windows.py`.
 
 ## manim outside a Scene
 
