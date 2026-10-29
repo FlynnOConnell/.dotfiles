@@ -196,3 +196,5 @@ popover("SUPER + SHIFT + T", "Tailscale", "chrome-login.tailscale.com__admin_mac
 -- note in Obsidian (quick-note). Every show re-runs it, so a new day gets its
 -- own file; every hide runs repo-sync, which commits and pushes the vault.
 popover("SUPER + SHIFT + W", "Notes", "md.obsidian.Obsidian", "quick-note", { on_show = "quick-note", on_hide = "repo-sync" })
+-- Opaque: text over other windows' text is unreadable through Omarchy's default opacity.
+o.window({ class = "^md\\.obsidian\\.Obsidian$" }, { tag = "-default-opacity", opacity = "1 1" })
