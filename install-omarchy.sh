@@ -90,6 +90,7 @@ PACKAGES=(
 PACKAGES_AUR=(
   zsa-keymapp-bin  # ZSA keyboard layout viewer (pulls in zsa-udev)
   globalprotect-openconnect-git  # gpclient, for utsw-vpn (UTSW GlobalProtect over openconnect)
+  sioyek-git       # SUPER+SHIFT+R PDF reader (bindings.lua); sioyek left the official repos
 )
 
 # apps omarchy has its own installer for, which also sets up what's around the

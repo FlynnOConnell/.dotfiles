@@ -80,9 +80,13 @@ o.bind("SUPER + SHIFT + M", "Slack", { launch = "slack.desktop", focus = "^slack
 o.bind("SUPER + SHIFT + G", "GitLab", { webapp = "https://gitlab.com/dashboard/projects", focus = true })
 -- Found by window class: "Claude" also turns up in other windows' titles.
 o.bind("SUPER + SHIFT + H", "Claude", "omarchy-launch-or-focus-webapp chrome-claude https://claude.ai")
+-- By window class too: the title changes to whichever report is open.
+o.bind("SUPER + SHIFT + ALT + R", "pml-w1 results", "omarchy-launch-or-focus-webapp chrome-pml-w1 https://pml-w1.tail0ea452.ts.net/")
 
 -- PDF reader for papers (opens the last document; press o inside to pick another).
-o.bind("SUPER + SHIFT + R", "PDF reader (Sioyek)", { launch = "sioyek" })
+-- Through XWayland: on native Wayland its OpenGL context fails (EGL_BAD_MATCH on
+-- pml-w2's NVIDIA) and it runs with no window.
+o.bind("SUPER + SHIFT + R", "PDF reader (Sioyek)", { launch = "env QT_QPA_PLATFORM=xcb sioyek" })
 
 -- Work Outlook (UTSW) as web apps, focusing the existing window if open (was: HEY email/calendar).
 hl.unbind("SUPER + SHIFT + E")
