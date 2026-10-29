@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# A menu of cheat sheets: pick one, get its searchable key list.
+# Usage: cheatsheets [omarchy|herdr|tmux|neovim|webapps]
+
+set -euo pipefail
+
+menu_height() {
+  local monitor_height
+  monitor_height=$(hyprctl monitors -j 2>/dev/null | jq -r '.[] | select(.focused == true) | .height')
+  [[ $monitor_height =~ ^[0-9]+$ ]] || monitor_height=900
+  echo $((monitor_height * 40 / 100))
+}
+
+# The Omarchy keybindings menu caches its records as "display<TAB>dispatcher<TAB>arg".
+keybinding_records() {
+  omarchy-menu-keybindings --print >/dev/null
+  cat "$(ls -t "${XDG_CACHE_HOME:-$HOME/.cache}"/omarchy/keybindings-*.records | head -1)"
+}
+
+# Web apps and pop-overs: anything launched through a webapp helper, plus the
+# "show / hide" pop-over toggles from hyprland.lua.
+webapps_records() {
+  keybinding_records | awk -F '\t' '$3 ~ /webapp|launch-or-focus/ || $1 ~ /: show \/ hide/'
+}
+
+# ~/.config/nvim/cheatsheet.md: "## Section" headers and "| `key` | action | ... |" rows.
+neovim_records() {
+  awk -F '|' '
+    /^## / { section = substr($0, 4); next }
+    /^\| `/ {
+      key = $2; action = $3
+      gsub(/^[ `]+|[` ]+$/, "", key)
+      gsub(/^ +| +$/, "", action)
+      printf "%-32s → %s   [%s]\n", key, action, section
+    }
+  ' "$HOME/.config/nvim/cheatsheet.md"
+}
+
+show_records() {
+  local prompt="$1" records="$2" selection
+  selection=$(cut -f1 <<<"$records" | omarchy-menu-select "$prompt" -- --width 800 --height "$(menu_height)") || return 0
+  record=$(awk -F '\t' -v s="$selection" '$1 == s { print; exit }' <<<"$records")
+  dispatcher=$(cut -f2 <<<"$record")
+  arg=$(cut -f3- <<<"$record")
+  [[ $dispatcher == exec && -n $arg ]] && hyprctl dispatch exec "$arg" >/dev/null
+}
+
+sheet="${1:-}"
+if [[ -z $sheet ]]; then
+  sheet=$(printf '%s\n' "Omarchy / Hyprland" "Herdr" "Tmux" "Neovim" "Web apps & pop-overs" |
+    omarchy-menu-select 'Cheatsheets' -- --width 400) || exit 0
+fi
+
+case "$sheet" in
+  Omarchy*|omarchy|hyprland) exec omarchy-menu-keybindings ;;
+  Herdr|herdr) exec omarchy-menu-herdr-keybindings ;;
+  Tmux|tmux) exec omarchy-menu-tmux-keybindings ;;
+  Neovim|neovim|nvim) show_records 'Neovim' "$(neovim_records)" ;;
+  Web*|webapps) show_records 'Web apps & pop-overs' "$(webapps_records)" ;;
+  *) echo "cheatsheets: unknown sheet '$sheet'" >&2; exit 1 ;;
+esac

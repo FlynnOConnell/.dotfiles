@@ -49,6 +49,9 @@ o.bind("SUPER + SHIFT + L", "Toggle workspace layout", "omarchy-hyprland-workspa
 -- Dwindle split toggle and the keybindings viewer, moved off SUPER+J and SUPER+K.
 o.bind("SUPER + SHIFT + J", "Toggle window split", hl.dsp.layout("togglesplit"))
 o.bind("SUPER + SHIFT + K", "Keybindings", "omarchy-menu-keybindings")
+-- One menu for every cheat sheet (Omarchy, Herdr, Tmux, Neovim, web apps); was: Herdr keybindings.
+hl.unbind("SUPER + CTRL + K")
+o.bind("SUPER + CTRL + K", "Cheatsheets", "cheatsheets")
 
 -- Send the current workspace to the left/right monitor (shorter than SUPER+SHIFT+ALT+arrows).
 o.bind("SUPER + ALT + H", "Move workspace to left monitor", hl.dsp.workspace.move({ monitor = "l" }))

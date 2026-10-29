@@ -50,6 +50,7 @@ FILES=(
   .local/bin/slack-attention
   .local/bin/moonlight-stream
   .local/bin/meeting-record
+  .local/bin/cheatsheets
   .local/bin/quick-note
   .local/bin/repo-sync
   .local/bin/suspend-when-locked
