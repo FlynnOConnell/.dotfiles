@@ -100,8 +100,8 @@ o.bind("SUPER + SHIFT + C", "Outlook Calendar", "omarchy-launch-or-focus-webapp 
 o.bind("SUPER + SHIFT + ALT + E", "New Outlook email", { webapp = "https://outlook.office.com/mail/deeplink/compose" })
 
 -- Stream a lab workstation with Moonlight, focusing that host's stream if it's already open.
-o.bind("SUPER + R", "pml-w1 (Moonlight)", "moonlight-stream 100.117.75.71")
-o.bind("SUPER + ALT + R", "pml-w2 (Moonlight)", "moonlight-stream 100.77.145.99")
+o.bind("SUPER + R", "pml-w1 (Moonlight)", "moonlight-stream pml-w1")
+o.bind("SUPER + ALT + R", "pml-w2 (Moonlight)", "moonlight-stream pml-w2")
 
 -- Quick note (SUPER+SHIFT+W, was: Omawrite on an empty document) is a pop-over in hyprland.lua.
 hl.unbind("SUPER + SHIFT + W")

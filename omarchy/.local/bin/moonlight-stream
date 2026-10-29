@@ -1,21 +1,32 @@
 #!/usr/bin/env bash
 # Focus a host's Moonlight stream, or start it if it isn't open:
-#   moonlight-stream 100.77.145.99 [app]
-# Matches on the host in each Moonlight window's command line rather than its class or
-# title, so with two hosts streaming, each one's key finds its own stream.
+#   moonlight-stream pml-w1 [app]
+# The host is an ssh alias; its address comes from ssh config so the stream, the
+# window match and pairing all agree on one name. Matches on the address in each
+# Moonlight window's command line rather than its class or title, so with two
+# hosts streaming, each one's key finds its own stream.
 
 set -euo pipefail
 
 host=${1:?usage: moonlight-stream <host> [app]}
 app=${2:-Desktop}
+addr=$(ssh -G "$host" 2>/dev/null | awk '$1 == "hostname" {print $2}')
 
 while read -r pid address; do
   cmd=$(tr '\0' ' ' 2>/dev/null <"/proc/$pid/cmdline") || continue
-  if [[ " $cmd " == *" stream $host "* ]]; then
+  if [[ " $cmd " == *" stream $addr "* ]]; then
     hyprctl dispatch "hl.dsp.focus({ window = \"address:$address\" })" >/dev/null 2>&1 \
       || hyprctl dispatch focuswindow "address:$address"
     exit
   fi
 done < <(hyprctl clients -j | jq -r '.[] | select(.class == "com.moonlight_stream.Moonlight") | "\(.pid) \(.address)"')
 
-exec setsid uwsm-app -- moonlight stream "$host" "$app"
+# A fresh install has a new Moonlight identity the host doesn't know yet. Pairing
+# is one script (home_hub/services/moonlight/pair: 1Password "Sunshine <host>" login).
+if moonlight list "$addr" 2>&1 | grep -q "has not been paired"; then
+  notify-send "Moonlight" "pairing with $host first (approve in 1Password)"
+  "$HOME/repos/home_hub/services/moonlight/pair" "$host" \
+    || { notify-send -u critical "Moonlight" "pairing with $host failed"; exit 1; }
+fi
+
+exec setsid uwsm-app -- moonlight stream "$addr" "$app"
