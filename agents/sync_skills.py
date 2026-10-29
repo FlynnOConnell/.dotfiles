@@ -39,6 +39,8 @@ MARKER_END = "<!-- END agent_skills -->"
 SKILLS_ALWAYS = (
     "coding-style",
     "workspace-conventions",
+    "data-management",
+    "runhub",
     "deslop",
 )
 

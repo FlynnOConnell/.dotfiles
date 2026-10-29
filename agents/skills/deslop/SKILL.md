@@ -108,6 +108,24 @@ had to remove.
 - Show change by making the picture react: morph the trace, move the boxed segment into its zoom, and let the
   number count along with the morph. Never fade one value out and another in.
 
+## Statements, not labels
+
+Write the fact, never the slot for it. A heading, docstring, comment, caption or summary is a declarative sentence
+with a subject and a finite verb: "Returns cuda if available, otherwise cpu", "F0 is the 20th percentile of the
+recording", "d': a measure of how well spikes stand out from noise", "Add noise". It is never a wh-clause used as a
+noun: "what --device auto amounts to", "where tensors live and compute", "What d' says", "How it is computed",
+"with what each part is". That form is
+an embedded question (a free relative clause); it names the topic and leaves the reader to supply the sentence. It
+is not the passive voice, so a passive-voice check does not catch it.
+
+Test before writing any title or one-liner: say the sentence it stands for. If the sentence exists, write that
+instead. If none does, delete the line.
+
+Corrections of 2026-10-28: a launcher docstring ("what --device auto amounts to on this machine") and the d' story
+titles, in one day. A grep over diffs for headings and docstring first lines starting with
+`what|how|why|where|when|which` catches the title case; the mid-sentence case ("with what each is") only the rule
+catches.
+
 ## Two cautions
 
 Do not overcorrect. Em dashes are acceptable on rare occasions, and a long sentence is fine when it is clear. The goal is incisive prose, not rigid adherence to rules.
