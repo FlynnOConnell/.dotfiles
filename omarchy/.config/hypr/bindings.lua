@@ -96,16 +96,8 @@ o.bind("SUPER + SHIFT + ALT + E", "New Outlook email", { webapp = "https://outlo
 o.bind("SUPER + R", "pml-w1 (Moonlight)", "moonlight-stream 100.117.75.71")
 o.bind("SUPER + ALT + R", "pml-w2 (Moonlight)", "moonlight-stream 100.77.145.99")
 
--- Quick note (was: Omawrite on an empty document): today's inbox note in Omawrite,
--- autosaved as you type and pushed to GitHub when the window closes (quick-note,
--- repo-sync). The window floats in the middle of the screen, over whatever's open.
+-- Quick note (SUPER+SHIFT+W, was: Omawrite on an empty document) is a pop-over in hyprland.lua.
 hl.unbind("SUPER + SHIFT + W")
-o.bind("SUPER + SHIFT + W", "Quick note", "quick-note")
-o.window({ class = "^omawrite$" }, {
-  float = true,
-  size = { "(monitor_w*0.45)", "(monitor_h*0.7)" },
-  move = { "(monitor_w*0.275)", "(monitor_h*0.15)" },
-})
 
 -- Record a meeting as your mic and everyone else in separate files; again to stop.
 o.bind("SUPER + CTRL + M", "Meeting recording: start / stop", "meeting-record")

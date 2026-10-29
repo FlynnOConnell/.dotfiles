@@ -148,20 +148,28 @@ o.window({ class = "^(cs2|steam_app_[0-9]+)$" }, { workspace = "4" })
 -- on the next press (the app keeps running). A window of the app that opened
 -- elsewhere, or got dragged off, is pulled back onto its workspace first.
 -- Web app classes are chrome-<host>_<path with / as _>-Default.
-local function popover_toggle(name, class, launch)
+-- hooks.on_show runs on every show of a running app, hooks.on_hide on every hide.
+local function popover_toggle(name, class, launch, hooks)
   local special = hl.get_workspace("special:" .. name)
   local window = hl.get_windows({ class = class })[1]
+  local showing = special and special.visible
   if not window then
-    if not (special and special.visible) then
+    if not showing then
       hl.exec_cmd(launch)
     end
   elseif not (window.workspace and window.workspace.name == "special:" .. name) then
     hl.dispatch(hl.dsp.window.move({ workspace = "special:" .. name, follow = false, window = "address:" .. window.address }))
   end
+  if showing and hooks.on_hide then
+    hl.exec_cmd(hooks.on_hide)
+  elseif window and not showing and hooks.on_show then
+    hl.exec_cmd(hooks.on_show)
+  end
   hl.dispatch(hl.dsp.workspace.toggle_special(name))
 end
 
-local function popover(keys, description, class, launch)
+local function popover(keys, description, class, launch, hooks)
+  hooks = hooks or {}
   local name = description:lower():gsub("%s+", "-")
   o.window({ class = "^" .. class:gsub("%.", "\\.") .. "$" }, {
     workspace = "special:" .. name,
@@ -170,7 +178,7 @@ local function popover(keys, description, class, launch)
     center = true,
   })
   o.bind(keys, description .. ": show / hide", function()
-    popover_toggle(name, class, launch)
+    popover_toggle(name, class, launch, hooks)
   end)
 end
 
@@ -184,3 +192,7 @@ popover("SUPER + SHIFT + D", "Discord", "chrome-discord.com__channels_@me-Defaul
 -- 100.x IP as an invalid client id, since it doesn't count CGNAT as private.
 popover("SUPER + SHIFT + A", "Home Assistant", "chrome-homeassistant.tail0ea452.ts.net__-Default", o.launch_webapp("http://homeassistant.tail0ea452.ts.net"))
 popover("SUPER + SHIFT + T", "Tailscale", "chrome-login.tailscale.com__admin_machines-Default", o.launch_webapp("https://login.tailscale.com/admin/machines"))
+-- Quick note (was: SUPER+SHIFT+W Omawrite on an empty document): today's inbox
+-- note in Obsidian (quick-note). Every show re-runs it, so a new day gets its
+-- own file; every hide runs repo-sync, which commits and pushes the vault.
+popover("SUPER + SHIFT + W", "Notes", "md.obsidian.Obsidian", "quick-note", { on_show = "quick-note", on_hide = "repo-sync" })

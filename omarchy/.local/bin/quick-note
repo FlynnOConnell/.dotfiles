@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Quick note (SUPER+SHIFT+W): opens today's inbox note in Omawrite, which
-# autosaves as you type. Notes go in the vault repo
+# Quick note (SUPER+SHIFT+W, a pop-over in hyprland.lua): opens today's inbox
+# note in Obsidian. Notes go in the vault repo
 # (~/repos/arctic-lake/private/inbox/<date>.md), one file per day with a
-# timestamp heading per visit.
-# When the window closes, repo-sync commits and pushes right away; the
-# repo-sync timer covers anything else (Obsidian edits, other machines).
+# timestamp heading per visit. Hiding the pop-over runs repo-sync, which
+# commits and pushes; the repo-sync timer covers anything else (edits made
+# elsewhere in the vault, other machines).
 
 set -euo pipefail
 
@@ -17,5 +17,5 @@ if [[ ! -s $note ]]; then
 fi
 printf '\n## %s\n\n' "$(date +%H:%M)" >>"$note"
 
-omawrite "$note" || true # sync even if Omawrite is killed
-repo-sync
+# Obsidian is single-instance: a running one just switches to the file.
+setsid -f uwsm-app -- obsidian "obsidian://open?path=$note" >/dev/null 2>&1
