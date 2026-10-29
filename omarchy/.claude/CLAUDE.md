@@ -206,6 +206,67 @@ Every `<B>` shows up on the lab results page (`runhub`, see that skill). Three t
 
 Before finishing, run `runhub check <B dir>`; fix every `FIX` line and end your report with the link it prints.
 
+### Data management
+
+#### Where things live
+
+- `~/data/<name>/`: datasets and pipeline run folders. Raw movies, results files and anything over a few hundred MB
+  go here, never under `agent_assets`. runhub scans it, so a run folder shows on the results page on its own.
+- `~/agent_assets/<A>/<YYYYMMDD_slug>/`: one topic of work (see `workspace-conventions`). `artifacts/` holds what
+  the user opens: `REPORT.md`, figures, scripts they run, exported data. `code/` holds agent scripts.
+- The session scratchpad: intermediates nobody opens again.
+- `~/Downloads`: untrusted inbox. Read with `python -I`; never run code from there.
+- `~/<host>` (`~/pml-w2`): another machine's home over sshfs. Open only paths you already know. Never `find`,
+  `grep`, `ls -R` or `stat` under it; a sleeping peer freezes the caller. To search a machine, `ssh <host>`.
+
+#### Stand-in data
+
+When the real input is elsewhere, fabricate one with the real shape: a sparse file (`f.truncate(nbytes)`) reads
+as zeros and takes no disk. Write it under `~/data/<name>_fake/`, and say in the report which panels or numbers
+it leaves blank. A fabricated file is for exercising code paths, never for a result.
+
+#### Environments
+
+- `~/envs/<name>/.venv` are uv environments; `~/envs/pml/.venv` runs masknmf.
+- An installed package shadows a checkout: a script run from outside the repo imports site-packages. Check
+  `python -c "import pkg; print(pkg.__file__)"` and set `PYTHONPATH=<checkout>` when it is wrong.
+- Any script left in `artifacts/` gets the environment that ran it exported beside it, in
+  `artifacts/environment/`: `uv pip freeze` as `requirements.txt`, the python version, the GPU driver, and a
+  `README.md` with the commands that recreate it and the checkout and branch it ran against.
+
+#### Runnable scripts
+
+A script in `artifacts/` runs from one documented line: it takes paths as arguments with defaults that match
+this machine, fabricates what it can, and does nothing else. The exact line to run it goes in `REPORT.md`.
+
+#### Before finishing
+
+Run `runhub check <topic dir>` and fix every `FIX` line. End the report with the link it prints. The `runhub`
+skill has the commands for finding, sharing and archiving results.
+
+### runhub
+
+`runhub up` runs a user service on pml-w1 that rescans `~/agent_assets` and `~/data` every two minutes
+and serves `http://localhost:8787/` (tailnet: `https://pml-w1.tail0ea452.ts.net/`). Nothing has to be
+registered: every `agent_assets/<A>/<YYYYMMDD_slug>/` topic and masknmf run folder appears on its own.
+
+Before finishing a topic, run `runhub check <topic dir>` and fix every `FIX` line; end the report with the link it prints.
+What it checks, and what makes a topic look good on the page:
+
+- the first paragraph under `## Abstract Context` in `MEMORIES.md` is one plain sentence (≤ 160 chars) saying what the topic is; it is the summary on the page. The rest of `MEMORIES.md` is for agents and shows only in a collapsed "agent notes" block;
+- `artifacts/REPORT.md` is the entry point: question, answer, key figures inline with relative image links. Markdown renders as a page;
+- every png, jpg, gif, html, md, pdf and mp4 anywhere under the topic (up to eight levels, zarr stores included) is on its record page `/r/<id>`: pages as buttons at the top, images as a thumbnail gallery grouped by folder, click to view full size, arrow keys to step through;
+- `/media.html` is one filterable gallery of every image on the host, newest topic first; `/r/<id>/artifacts/<sub>/` browses a folder with the same gallery.
+
+Archiving: the page's "archive" button (or `runhub archive <id>`) moves an item's folder to `_archive/` beside
+its scan root and hides it; `runhub restore <id>` or the archived list at the page bottom brings it back.
+Deleting a folder by hand drops its record on the next scan.
+
+Commands: `runhub status`, `runhub scan` (refresh now instead of waiting), `runhub ls <words>` (find the
+id), `runhub share <id>` (print the short link). Optional curation: `runhub note <id> --tag t --note "..."`.
+Pipeline launching at pinned versions: `runhub run <name>@<channel> --dir <run> -- <cmd>`; see
+`pipelines/README.md` in the repo.
+
 ### Deslop
 
 This guide changes the way you write. Follow it closely.
@@ -310,6 +371,24 @@ had to remove.
   as soon as the picture takes over.
 - Show change by making the picture react: morph the trace, move the boxed segment into its zoom, and let the
   number count along with the morph. Never fade one value out and another in.
+
+#### Statements, not labels
+
+Write the fact, never the slot for it. A heading, docstring, comment, caption or summary is a declarative sentence
+with a subject and a finite verb: "Returns cuda if available, otherwise cpu", "F0 is the 20th percentile of the
+recording", "d': a measure of how well spikes stand out from noise", "Add noise". It is never a wh-clause used as a
+noun: "what --device auto amounts to", "where tensors live and compute", "What d' says", "How it is computed",
+"with what each part is". That form is
+an embedded question (a free relative clause); it names the topic and leaves the reader to supply the sentence. It
+is not the passive voice, so a passive-voice check does not catch it.
+
+Test before writing any title or one-liner: say the sentence it stands for. If the sentence exists, write that
+instead. If none does, delete the line.
+
+Corrections of 2026-10-28: a launcher docstring ("what --device auto amounts to on this machine") and the d' story
+titles, in one day. A grep over diffs for headings and docstring first lines starting with
+`what|how|why|where|when|which` catches the title case; the mid-sentence case ("with what each is") only the rule
+catches.
 
 #### Two cautions
 
