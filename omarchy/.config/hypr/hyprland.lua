@@ -172,6 +172,28 @@ hl.on("window.active", function(window)
   end
 end)
 
+-- Python GUIs (imgui_bundle, fastplotlib, Qt) float at the size they asked for
+-- instead of tiling: hello_imgui lays its panels out for the size it requested,
+-- and a tiled half screen breaks that layout. They come up through XWayland
+-- (imgui_bundle ships an X11-only GLFW) with the window title as the class, so
+-- no class rule covers them all; the process does. A window.open hook floats
+-- any window whose process is a python from a uv venv (~/envs/<name>/.venv).
+local function process_argv0(pid)
+  local file = io.open("/proc/" .. pid .. "/cmdline", "r")
+  if not file then return "" end
+  local cmdline = file:read("*a") or ""
+  file:close()
+  local nul = cmdline:find("\0", 1, true)
+  return nul and cmdline:sub(1, nul - 1) or cmdline
+end
+
+hl.on("window.open", function(window)
+  if not window or window.floating or not window.pid or window.pid <= 0 then return end
+  if process_argv0(window.pid):find("/.venv/bin/python", 1, true) then
+    hl.dispatch(hl.dsp.window.float({ action = "on", window = "address:" .. window.address }))
+  end
+end)
+
 -- Pop-over apps: each lives on its own special workspace as a floating,
 -- near-fullscreen window over whatever is open. Its key starts the app if it
 -- isn't running, shows it on the monitor the cursor is on, and hides it again
