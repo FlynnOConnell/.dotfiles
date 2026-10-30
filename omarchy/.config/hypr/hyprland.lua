@@ -178,6 +178,9 @@ end)
 -- on the next press (the app keeps running). A window of the app that opened
 -- elsewhere, or got dragged off, is pulled back onto its workspace first.
 -- Web app classes are chrome-<host>_<path with / as _>-Default.
+-- The workspace rule is silent: only the key shows the workspace, so a stray
+-- window of the app (a Steam toast whose title isn't set yet when it maps)
+-- cannot pop the workspace open and dim the screen.
 -- hooks.on_show runs on every show of a running app, hooks.on_hide on every hide.
 -- hooks.match adds fields to the window-rule match (e.g. a title exclusion).
 local function popover_toggle(name, class, launch, hooks)
@@ -207,7 +210,7 @@ local function popover(keys, description, class, launch, hooks)
     match[key] = value
   end
   o.window(match, {
-    workspace = "special:" .. name,
+    workspace = "special:" .. name .. " silent",
     float = true,
     size = { "(monitor_w*0.96)", "(monitor_h*0.94)" },
     center = true,
@@ -263,8 +266,15 @@ function fo_steam_popups_sync()
 end
 fo_steam_popups_sync()
 hl.on("window.open", function(window)
-  if fo_steam_popups_on or not window or window.class ~= "steam" then return end
+  if not window or window.class ~= "steam" then return end
   local title = window.title or window.initial_title or ""
+  local log = io.open(os.getenv("HOME") .. "/.local/state/omarchy/steam-windows.log", "a")
+  if log then
+    local size = type(window.size) == "table" and (tostring(window.size[1]) .. "x" .. tostring(window.size[2])) or tostring(window.size)
+    log:write(os.date("%Y-%m-%d %H:%M:%S"), "\ttitle=", title, "\tinitial_title=", tostring(window.initial_title), "\tsize=", size, "\n")
+    log:close()
+  end
+  if fo_steam_popups_on then return end
   if title:match("^notificationtoasts_") then
     hl.exec_cmd("pw-play /usr/share/sounds/freedesktop/stereo/message.oga")
   end
