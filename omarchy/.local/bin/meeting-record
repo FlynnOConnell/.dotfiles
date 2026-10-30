@@ -2,7 +2,7 @@
 # Start or stop recording a meeting (SUPER+CTRL+M). Saves two files in ~/meetings:
 # <date>-me.wav (your mic) and <date>-them.wav (everyone else, what plays through
 # your speakers), so a transcript can tell who's speaking. 16 kHz mono, ready for
-# `voxtype transcribe`. Uses whichever mic and speakers are the defaults at start.
+# `meeting-transcribe`. Uses whichever mic and speakers are the defaults at start.
 
 set -euo pipefail
 

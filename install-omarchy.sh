@@ -49,6 +49,7 @@ FILES=(
   .local/bin/slack-attention
   .local/bin/moonlight-stream
   .local/bin/meeting-record
+  .local/bin/meeting-transcribe
   .local/bin/cheatsheets
   .local/bin/quick-note
   .local/bin/repo-sync
