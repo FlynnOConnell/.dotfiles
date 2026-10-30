@@ -225,9 +225,11 @@ popover("SUPER + SHIFT + S", "Steam", "steam", o.launch("steam"), { match = { ti
 -- Steam's notification toasts ("friend is online", title
 -- notificationtoasts_<n>_desktop) are real X11 windows. The Steam rule above
 -- used to drop them on special:steam, which opened that workspace, dimmed the
--- screen and took focus mid-game. Two modes, switched with `steam-popups`:
---   sound (default): the toast stays hidden on special:steam and a sound plays.
---   popup: the toast pins as a quiet floating card on the current workspace.
+-- screen (dim_special) and took focus mid-game. Two modes, switched with
+-- `steam-popups`:
+--   popup (default): the toast pins bottom-right of the current monitor as a
+--     quiet floating card; nothing gets focus and no workspace opens.
+--   sound: the toast stays hidden on special:steam and a sound plays.
 local steam_toast = { class = "^steam$", title = "^notificationtoasts_" }
 local steam_toast_hidden = hl.window_rule({
   name = "steam-toast-hidden",
@@ -244,16 +246,17 @@ local steam_toast_popup = hl.window_rule({
   match = steam_toast,
   float = true,
   pin = true,
+  move = "monitor_w-w-16 monitor_h-h-16",
   no_focus = true,
   no_initial_focus = true,
   no_dim = true,
   no_anim = true,
 })
-local steam_popups_flag = os.getenv("HOME") .. "/.local/state/omarchy/toggles/steam-popups"
-fo_steam_popups_on = false
+local steam_toast_sound_flag = os.getenv("HOME") .. "/.local/state/omarchy/toggles/steam-toast-sound"
+fo_steam_popups_on = true
 function fo_steam_popups_sync()
-  local flag = io.open(steam_popups_flag, "r")
-  fo_steam_popups_on = flag ~= nil
+  local flag = io.open(steam_toast_sound_flag, "r")
+  fo_steam_popups_on = flag == nil
   if flag then flag:close() end
   steam_toast_hidden:set_enabled(not fo_steam_popups_on)
   steam_toast_popup:set_enabled(fo_steam_popups_on)

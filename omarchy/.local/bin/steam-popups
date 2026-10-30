@@ -1,17 +1,21 @@
 #!/bin/bash
-# Steam notification toasts: a sound only (default) or a pinned popup card.
-# The flag is an Omarchy toggle; Hyprland re-reads it without a reload.
+# Steam notification toasts: a pinned popup card bottom-right (default) or a
+# sound only. The Omarchy toggle `steam-toast-sound` holds the non-default
+# mode, so popups come back on a fresh install; Hyprland re-reads it without
+# a reload.
 #   steam-popups [on|off|toggle|status]
 case "${1:-toggle}" in
   status)
-    if omarchy-toggle-enabled steam-popups 2>/dev/null || [[ -f "$HOME/.local/state/omarchy/toggles/steam-popups" ]]; then
-      echo "popup"
-    else
+    if omarchy-toggle-enabled steam-toast-sound; then
       echo "sound"
+    else
+      echo "popup"
     fi
     ;;
+  on) omarchy-toggle steam-toast-sound off ;;&
+  off) omarchy-toggle steam-toast-sound on ;;&
+  toggle) omarchy-toggle steam-toast-sound toggle ;;&
   on | off | toggle)
-    omarchy-toggle steam-popups "$1"
     hyprctl eval 'fo_steam_popups_sync()' >/dev/null
     exec "$0" status
     ;;
