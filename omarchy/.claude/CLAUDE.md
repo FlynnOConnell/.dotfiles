@@ -238,10 +238,10 @@ registered: every `agent_assets/<A>/<YYYYMMDD_slug>/` topic and masknmf run fold
 The index lists topics, newest first; pipeline runs have their own page (`/runs.html`), one fold per dataset.
 
 Before finishing a topic, run `runhub check <topic dir>` and fix every `FIX` line; end the report with the link it prints.
-What it checks, and what makes a topic look good on the page:
+It checks these, and the page needs them:
 
 - the first paragraph under `## Abstract Context` in `MEMORIES.md` is one plain sentence (≤ 160 chars) saying what the topic is; it is the summary on the page. The rest of `MEMORIES.md` is for agents and shows only in a collapsed "agent notes" block;
-- `runhub.toml` in the topic folder says what kind of work it is and what for; the page shows these as chips and filters, so write it when the topic starts:
+- `runhub.toml` in the topic folder names the kind of work and its purpose; the page shows them as chips and filters by them, so write it when the topic starts:
 
       category = "analysis"      # or "development" (code, tooling, pages)
       goal = "Decide whether vnoiser replaces masknmf for Asako's ASAP7 recordings."
