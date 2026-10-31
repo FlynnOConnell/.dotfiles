@@ -56,6 +56,7 @@ FILES=(
   .local/bin/suspend-when-locked
   .local/bin/sshfs-mount
   .local/bin/gamesir-x360
+  .local/bin/reboot-windows
   .config/systemd/user/sshfs@.service
   .config/systemd/user/bt-connect@.service
   .config/systemd/user/slack-attention.service

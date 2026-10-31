@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Reboot into Windows once, without the firmware boot menu: point the UEFI
+# BootNext variable at the Windows Boot Manager entry, then reboot the way the
+# omarchy menu does (closing windows first). The boot after that follows the
+# normal BootOrder again. windows/reboot-linux.ps1 is the way back.
+
+set -euo pipefail
+
+bootnum=$(efibootmgr | sed -n 's/^Boot\([0-9A-F]\{4\}\)\*\{0,1\} Windows Boot Manager\t.*/\1/p' | head -n1)
+[[ -n $bootnum ]] || { echo "reboot-windows: no 'Windows Boot Manager' entry in efibootmgr" >&2; exit 1; }
+
+sudo efibootmgr --bootnext "$bootnum" >/dev/null
+omarchy-system-reboot

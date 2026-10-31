@@ -31,4 +31,6 @@
   "vpn": {"icon":"󰒃","label":"UTSW VPN","aliases":["vpn"],"description":"GlobalProtect","checked":"pgrep -x gpclient"},
   "vpn.connect": {"icon":"󰌾","label":"Connect","when":"! pgrep -x gpclient","action":"omarchy-launch-floating-terminal-with-presentation ~/.local/bin/utsw-vpn connect"},
   "vpn.disconnect": {"icon":"󰌿","label":"Disconnect","when":"pgrep -x gpclient","action":"~/.local/bin/utsw-vpn disconnect"},
+
+  "system.windows": {"icon":"󰖳","label":"Reboot to Windows","aliases":["windows"],"when":"efibootmgr | grep -q 'Windows Boot Manager'","action":"omarchy-launch-floating-terminal-with-presentation ~/.local/bin/reboot-windows"},
 }
