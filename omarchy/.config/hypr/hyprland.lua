@@ -245,7 +245,7 @@ end
 -- Steam (was: SUPER+SHIFT+S Google Maps); games still open on workspace 4.
 -- Its notification toasts are excluded here and handled below.
 hl.unbind("SUPER + SHIFT + S")
-popover("SUPER + SHIFT + S", "Steam", "steam", o.launch("steam"), { match = { title = "negative:^notificationtoasts_" } })
+popover("SUPER + SHIFT + S", "Steam", "steam", o.launch("steam"), { match = { title = "^Steam$" } })
 
 -- Steam's notification toasts ("friend is online", title
 -- notificationtoasts_<n>_desktop) are real X11 windows. The Steam rule above
