@@ -277,7 +277,12 @@ local steam_toast_popup = hl.window_rule({
   no_dim = true,
   no_anim = true,
 })
-local steam_toast_sound_flag = os.getenv("HOME") .. "/.local/state/omarchy/toggles/steam-toast-sound"
+-- Steam's menus (right-click, dropdowns, the overlay's "Join Game") are
+-- untitled X11 windows, and Steam closes one the instant it loses focus. Over
+-- a fullscreen game the game takes focus straight back, so the menu flashes
+-- and dies. stay_focused holds focus on the menu until Steam closes it.
+o.window({ class = "^steam$", title = "^$" }, { float = true, stay_focused = true })
+local steam_toast_sound_flag =os.getenv("HOME") .. "/.local/state/omarchy/toggles/steam-toast-sound"
 fo_steam_popups_on = true
 function fo_steam_popups_sync()
   local flag = io.open(steam_toast_sound_flag, "r")
