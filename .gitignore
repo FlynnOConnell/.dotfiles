@@ -61,3 +61,4 @@ dots/.config/tmux/plugins
 CLAUDE.md
 !omarchy/.claude/CLAUDE.md
 agents/AGENTS.md
+/nvim/lazy-lock.json
