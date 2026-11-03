@@ -136,20 +136,22 @@ hl.unbind("SUPER + SHIFT + W")
 -- Record a meeting as your mic and everyone else in separate files; again to stop.
 o.bind("SUPER + CTRL + M", "Meeting recording: start / stop", "meeting-record")
 
--- Moonlight: tiled on workspace 3 instead of omarchy's forced fullscreen.
-o.window("com.moonlight_stream.Moonlight", { fullscreen = false, tile = true, workspace = "3" })
+-- Moonlight: on workspace 3, fullscreen by omarchy's own rule.
+o.window("com.moonlight_stream.Moonlight", { workspace = "3" })
 
--- Moonlight keyboard mode: toggles whether keys go to the stream or to this machine
--- (Moonlight's own Ctrl+Alt+Shift+Z). dont_inhibit so it still fires while Moonlight
--- has the keyboard grabbed. Needs Moonlight's "Capture system keyboard shortcuts" on
--- Always, which install-omarchy.sh sets.
+-- Moonlight keyboard and mouse: SUPER+D hands both to the stream or back to this machine
+-- (Moonlight's own Ctrl+Alt+Shift+Z); from another window it jumps to the stream and hands
+-- them over. dont_inhibit so it still fires while Moonlight has the keyboard grabbed. Needs
+-- Moonlight's "Capture system keyboard shortcuts" on Always (install-omarchy.sh) and
+-- "Optimize mouse for remote desktop" on (home_hub's install-hub.sh, as mouseacceleration=true).
+-- The second puts the remote cursor where this one is, without a pointer lock, and keeps
+-- the grab when the stream loses focus.
 --
--- While the stream has the keyboard it carries the moonlight-remote tag and a white
--- border; otherwise it keeps the theme's border. Hyprland doesn't expose the grab, so the
--- tag follows Moonlight's own rules: it grabs when the stream starts or is clicked into,
--- and lets go on focus loss unless fullscreen. Fullscreen windows have no border at all.
+-- While the stream has them it carries the moonlight-remote tag, and while it's also focused
+-- a dark green frame (the fo.stream-frame shell plugin) circles its monitor: fullscreen
+-- windows have no border. Hyprland doesn't expose the grab, so the tag follows Moonlight's
+-- own rules: it grabs when the stream starts or is clicked into.
 local moonlight_class = "com.moonlight_stream.Moonlight"
-o.window({ tag = "moonlight-remote" }, { border_color = "rgb(ffffff)" })
 
 local function moonlight_is_remote(moonlight)
   for _, tag in ipairs(moonlight.tags) do
@@ -160,38 +162,58 @@ local function moonlight_is_remote(moonlight)
   return false
 end
 
+-- Starts unknown so the first call after a config reload always syncs the shell.
+local moonlight_frame_monitor = nil
+
+local function update_moonlight_frame()
+  local window = hl.get_active_window()
+  local monitor = ""
+  if window and window.class == moonlight_class and moonlight_is_remote(window) then
+    monitor = window.monitor.name
+  end
+  if monitor ~= moonlight_frame_monitor then
+    moonlight_frame_monitor = monitor
+    hl.exec_cmd(monitor == "" and "omarchy-shell -q fo.stream-frame hide" or "omarchy-shell -q fo.stream-frame show " .. monitor)
+  end
+end
+
 local function set_moonlight_remote(moonlight, remote)
   if remote ~= moonlight_is_remote(moonlight) then
     hl.dispatch(hl.dsp.window.tag({ tag = (remote and "+" or "-") .. "moonlight-remote", window = "address:" .. moonlight.address }))
   end
+  update_moonlight_frame()
 end
 
 -- A plain bind on the same key fires only when the focused window isn't grabbing the
 -- keyboard, and Hyprland runs it before the toggle below, so the toggle can read where
 -- keys were going instead of trusting the tag.
 local keys_were_local = false
-hl.bind("SUPER + GRAVE", function()
+hl.bind("SUPER + D", function()
   keys_were_local = true
 end)
 
-o.bind("SUPER + GRAVE", "Moonlight: toggle keys local/remote", function()
+o.bind("SUPER + D", "Moonlight: keys and mouse to the stream / back here", function()
   local was_local = keys_were_local
   keys_were_local = false
   local moonlight = hl.get_windows({ class = moonlight_class })[1]
   if not moonlight then
     return
   end
-  -- An unfocused stream can't grab, so there the tag is all there is to go on.
+  -- Unfocused, the stream keeps the grab it had and the tag is all there is to go on;
+  -- a stream that kept it only needs focus to have the keys again.
   local was_remote = moonlight_is_remote(moonlight)
   if moonlight.active then
     was_remote = not was_local
   end
+  local remote = not (moonlight.active and was_remote)
   hl.dispatch(hl.dsp.focus({ window = "address:" .. moonlight.address }))
-  hl.dispatch(hl.dsp.send_key_state({ mods = "CTRL ALT SHIFT", key = "Z", state = "down" }))
-  hl.timer(function()
-    hl.dispatch(hl.dsp.send_key_state({ mods = "CTRL ALT SHIFT", key = "Z", state = "up" }))
-  end, { timeout = 50, type = "oneshot" })
-  set_moonlight_remote(moonlight, not was_remote)
+  if remote ~= was_remote then
+    hl.dispatch(hl.dsp.send_key_state({ mods = "CTRL ALT SHIFT", key = "Z", state = "down" }))
+    hl.timer(function()
+      hl.dispatch(hl.dsp.send_key_state({ mods = "CTRL ALT SHIFT", key = "Z", state = "up" }))
+    end, { timeout = 50, type = "oneshot" })
+  end
+  set_moonlight_remote(moonlight, remote)
 end, { dont_inhibit = true })
 
 hl.on("window.open", function(window)
@@ -200,12 +222,7 @@ hl.on("window.open", function(window)
   end
 end)
 
-hl.on("window.active", function(window)
-  local moonlight = hl.get_windows({ class = moonlight_class })[1]
-  if moonlight and not (window and window.address == moonlight.address) and moonlight.fullscreen_client < 2 then
-    set_moonlight_remote(moonlight, false)
-  end
-end)
+hl.on("window.active", update_moonlight_frame)
 
 -- Non-consuming and inhibitable, so it only sees clicks the stream isn't already grabbing.
 hl.bind("mouse:272", function()

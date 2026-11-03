@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "fo.stream-frame",
+  "name": "Stream frame",
+  "version": "1.0.0",
+  "author": "fo",
+  "description": "A dark green frame around a monitor, drawn over fullscreen windows, while the Moonlight stream has the keyboard and mouse.",
+  "kinds": ["service"],
+  "entryPoints": {
+    "service": "Service.qml"
+  }
+}
