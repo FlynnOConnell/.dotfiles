@@ -123,7 +123,16 @@ def rescale(value: int, source: tuple[int, int], target: tuple[int, int]) -> int
     return t_lo + round((value - s_lo) * (t_hi - t_lo) / (s_hi - s_lo))
 
 
-def replay(path_device: str) -> None:
+def release_all(fd_pad: int) -> None:
+    """Return every button and axis to rest, so nothing stays held while the dongle is gone."""
+    for code in KEYS:
+        os.write(fd_pad, INPUT_EVENT.pack(0, 0, EV_KEY, code, 0))
+    for code, (lo, hi, _, _) in X360_AXES.items():
+        os.write(fd_pad, INPUT_EVENT.pack(0, 0, EV_ABS, code, 0 if lo < 0 < hi else lo))
+    os.write(fd_pad, INPUT_EVENT.pack(0, 0, EV_SYN, SYN_REPORT, 0))
+
+
+def replay(path_device: str, fd_pad: int) -> None:
     """Forward events until the device disappears (raises OSError ENODEV)."""
     fd_source = os.open(path_device, os.O_RDONLY)
     try:
@@ -131,7 +140,6 @@ def replay(path_device: str) -> None:
         # sees input only from the virtual pad
         fcntl.ioctl(fd_source, EVIOCGRAB, 1)
         source_ranges = read_source_ranges(fd_source)
-        fd_pad = create_virtual_pad()
         logger.info("replaying %s as %s", os.path.realpath(path_device), X360_NAME.decode())
         try:
             while True:
@@ -148,8 +156,7 @@ def replay(path_device: str) -> None:
                     elif ev_type == EV_SYN and code == SYN_REPORT:
                         os.write(fd_pad, INPUT_EVENT.pack(0, 0, EV_SYN, SYN_REPORT, 0))
         finally:
-            fcntl.ioctl(fd_pad, UI_DEV_DESTROY)
-            os.close(fd_pad)
+            release_all(fd_pad)
     finally:
         os.close(fd_source)
 
@@ -160,13 +167,20 @@ def main() -> None:
     if not os.access("/dev/uinput", os.W_OK):
         raise SystemExit("no write access to /dev/uinput")
 
+    ## NOTE: the dongle re-enumerates often; one virtual pad for the whole run means games
+    ## never see the controller vanish (Rocket League lost it on every re-plug). It is made
+    ## only once the HID fallback appears: when the dongle comes up in Xbox mode (3537:1044)
+    ## xpad drives it directly, and an idle virtual pad would be a second, dead controller.
+    fd_pad = None
     logger.info("waiting for %s", args.path_device)
     while True:
         if not os.path.exists(args.path_device):
             time.sleep(args.seconds_poll)
             continue
+        if fd_pad is None:
+            fd_pad = create_virtual_pad()
         try:
-            replay(args.path_device)
+            replay(args.path_device, fd_pad)
         except OSError as e:
             # ENODEV: unplugged mid-read. EACCES/ENOENT: node seen before udev
             # finished applying permissions, or gone again during re-enumeration.
