@@ -41,8 +41,9 @@ o.window({ title = "^sciview$" }, {
 })
 
 -- SUPER+H/J/K/L never cross between tiled and floating windows, so the viewer
--- gets its own keys. It opens from nvim (<leader>dm) and closes when that nvim
--- quits, or on SUPER+W, which unmaps it while the app keeps running.
+-- gets its own key, SUPER+M: show and focus it, or from it hide it. It opens
+-- from nvim (<leader>dm) and closes when that nvim quits, or on SUPER+W, which,
+-- like SUPER+M, unmaps it while the app keeps running.
 -- sciview is global so the app can call it: hyprctl dispatch sciview.reveal
 sciview = {}
 
@@ -71,16 +72,12 @@ function sciview.reveal()
   end
 end
 
--- focus the viewer, or from it the window used before it (the editor),
--- leaving it shown; a closed viewer stays closed: nvim opens it
+-- from the viewer to the window used before it (the editor), leaving it
+-- shown; the app calls it after opening a file in nvim: hyprctl dispatch sciview.swap
 function sciview.swap()
   local viewer = sciview_window()
-  if not viewer then
+  if not viewer or not viewer.active then
     return
-  end
-  if not viewer.active then
-    sciview.reveal()
-    return sciview_focus(viewer)
   end
   local previous
   for _, window in ipairs(hl.get_workspace_windows(viewer.workspace.id)) do
@@ -93,7 +90,22 @@ function sciview.swap()
   end
 end
 
-o.bind("SUPER + ALT + M", "sciview: focus it / back to the editor", sciview.swap)
+-- show and focus the viewer (a hidden one through the app, which maps it);
+-- when it's focused, hide it: a close request, which the app turns into a hide,
+-- and Hyprland gives focus back to the window used before it (the editor)
+function sciview.toggle()
+  local viewer = sciview_window()
+  if not viewer then
+    return hl.exec_cmd("sciview show --focus")
+  end
+  if viewer.active then
+    return hl.dispatch(hl.dsp.window.close({ window = "address:" .. viewer.address }))
+  end
+  sciview.reveal()
+  sciview_focus(viewer)
+end
+
+o.bind("SUPER + M", "sciview: show and focus / hide", sciview.toggle)
 
 -- swayimg-nvim (the image window nvim opens images in, nvim/lua/config/swayimg.lua):
 -- floats where sciview does, without taking focus from the editor, opaque so
