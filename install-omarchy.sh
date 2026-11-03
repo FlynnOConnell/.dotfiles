@@ -55,6 +55,7 @@ FILES=(
   .local/bin/repo-sync
   .local/bin/suspend-when-locked
   .local/bin/sshfs-mount
+  .local/bin/fleet-pull
   .local/bin/gamesir-x360
   .local/bin/reboot-windows
   .config/systemd/user/sshfs@.service

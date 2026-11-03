@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# fleet-pull <host> <path>... [-- <rsync args>]: copy paths from a fleet
+# machine's home into the same place under this home, so a run folder, a
+# topic dir or a dataset lands where every script expects it.
+#
+#   fleet-pull pml-w1 data/glutamate/iglusnfr agent_assets/subcell/20261030_subcell-review
+#   fleet-pull pml-w1 data/glutamate/iglusnfr -- --exclude '*_DOWNSAMPLED-8x.tif'
+#
+# Paths are relative to ~ on both ends. A trailing slash is added so the
+# directory itself is copied, not nested one level deeper. Nothing is deleted
+# locally; partial transfers resume. Logs in with the machine's own key file
+# when it has one, so the pull never waits on the 1Password agent.
+
+set -u
+
+usage() { echo "usage: fleet-pull <host> <path>... [-- <rsync args>]" >&2; exit 2; }
+[[ $# -ge 2 ]] || usage
+host=$1; shift
+paths=()
+while [[ $# -gt 0 && $1 != -- ]]; do paths+=("${1%/}"); shift; done
+[[ ${1:-} == -- ]] && shift
+[[ ${#paths[@]} -gt 0 ]] || usage
+
+ssh_cmd="ssh -o BatchMode=yes -o ConnectTimeout=15"
+[[ -r ~/.ssh/id_ed25519 ]] && ssh_cmd+=" -o IdentityAgent=none -o IdentitiesOnly=yes -i $HOME/.ssh/id_ed25519"
+
+status=0
+for p in "${paths[@]}"; do
+  mkdir -p "$HOME/$p"
+  echo "== $host:$p -> ~/$p"
+  rsync -a --partial --info=progress2 -e "$ssh_cmd" "$@" "$host:$p/" "$HOME/$p/" || status=1
+done
+exit $status
