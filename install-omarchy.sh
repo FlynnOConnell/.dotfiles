@@ -255,6 +255,10 @@ link "$REPO/nvim" "$HOME/.config/nvim"
 # nvim follows the active omarchy theme; untracked, see nvim/.gitignore
 ln -sfn "$HOME/.local/state/omarchy/current/theme/neovim.lua" "$REPO/nvim/lua/plugins/theme.lua"
 
+# /effort rewrites effortLevel in the symlinked settings.json, which kept the repo dirty.
+# To commit a real settings change: git update-index --no-skip-worktree omarchy/.claude/settings.json
+git -C "$REPO" update-index --skip-worktree omarchy/.claude/settings.json
+
 if (( LINK_ONLY )); then
   exit 0
 fi
