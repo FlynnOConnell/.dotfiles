@@ -8,28 +8,30 @@ user-invocable: true
 
 An animation explains. It is manim used as a drawing engine (a Cairo camera, no `Scene`), driven by a `build()` that
 returns nested `AnimationGroup`s, scrubbed to any second, and rendered to an mp4, a gif and one PNG per chapter.
-The reference is the d' animation in imgui_ophys, which the user tuned over nine rounds on 2026-10-28; everything below
-is what those rounds settled. Read it before writing a new one:
+Animations live in `~/repos/imgui_manim`; their hands-on pages live in `~/repos/imgui_ophys`. The two share numpy models:
+`kit.lesson_model(name)` loads imgui_manim's model of that name, otherwise imgui_ophys's, so a model with a page stays in
+imgui_ophys. New animations go in imgui_manim.
 
-- `kit.py` beside this file: the kit (camera, chapters, scrubbing, labels, axes, scale bars, images, grids, `Count`,
-  `Play`, `Recolor`, the render command line, and with `narrate.py` an optional spoken line per chapter through
-  Kokoro). It is the newest copy: imgui_ophys's `animations/kit.py` (and `~/repos/imgui_ophys-dprime-narrated`'s)
-  predate two fixes listed under "Animation rules that bit". Copy it into a new repo's `animations/`, and diff
-  against the repo's own copy before touching an older one.
-- `~/repos/imgui_ophys/animations/dprime.py`: the one to imitate. Its gif is `docs/animations/dprime.gif` and its
+The reference is the d' animation, which the user tuned over nine rounds on 2026-10-28; everything below is what those
+rounds settled. Read it before writing a new one:
+
+- `~/repos/imgui_manim/animations/kit.py`: the kit (camera, chapters, scrubbing, labels, axes, scale bars, images, grids,
+  `Count`, `Play`, `Recolor`, the render command line). It takes its colors from imgui_ophys's `palette.py`, which the
+  pages share. `kit.py` beside this file is the copy for animations outside that repo, such as a journal club cut, and
+  keeps the colors itself. There is no narration: the user dropped it on 2026-11-03 ("no naration ever").
+- `~/repos/imgui_manim/animations/dprime.py`: the one to imitate. Its gif is `docs/animations/dprime.gif` and its
   stills are in `~/agent_assets/imgui_ophys/20261028_lesson-stories_02/artifacts/story/dprime/`.
-- `~/repos/imgui_ophys/animations/{motion,nmf,traces,svd}.py`: four more on the same kit (movies with `Play`,
+- `~/repos/imgui_manim/animations/{motion,nmf,traces,svd}.py`: four more on the same kit (movies with `Play`,
   grids with `Recolor`, equations as chapter titles).
-- `~/repos/imgui_ophys/animations/subcellular.py` (branch `worktree-subcellular`): the d' arc on a membrane
-  voltage model with two zooms at their own scales, three traces in slots, two numbers counting at once, and a
-  closing table of shapes with a snippet per row.
+- `~/repos/imgui_manim/animations/subcellular.py`: the d' arc on a membrane voltage model with two zooms at their own
+  scales, three traces in slots, two numbers counting at once, and a closing table of shapes with a snippet per row.
 - `~/repos/imgui_masknmf_manim/src/imgui_masknmf_manim/canvas.py`: the same machinery inside an imgui window, with
   movie panels that follow a frame slider (the imgui-lesson skill).
 - The text rules live in the deslop skill, section "Titles, captions and labels in figures, pages and explainers".
   This skill adds the manim-specific ones.
 
 The word is "animation" and the directory `animations/` (renamed from "story" / `stories/` on 2026-10-28; imgui_masknmf_manim's
-`canvas.py` still says `Story`, `story()` and `set_story()` where imgui_ophys's kit says `Timeline`, `timeline()` and `seek()`).
+`canvas.py` still says `Story`, `story()` and `set_story()` where the kit says `Timeline`, `timeline()` and `seek()`).
 
 ## The shape of an animation
 
