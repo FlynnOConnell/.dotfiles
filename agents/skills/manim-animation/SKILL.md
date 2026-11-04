@@ -25,12 +25,12 @@ rounds settled. Read it before writing a new one:
   grids with `Recolor`, equations as chapter titles).
 - `~/repos/imgui_manim/animations/subcellular.py`: the d' arc on a membrane voltage model with two zooms at their own
   scales, three traces in slots, two numbers counting at once, and a closing table of shapes with a snippet per row.
-- `~/repos/imgui_masknmf_manim/src/imgui_masknmf_manim/canvas.py`: the same machinery inside an imgui window, with
+- `~/repos/imgui_manim/src/imgui_manim/window/canvas.py`: the same machinery inside an imgui window, with
   movie panels that follow a frame slider (the imgui-lesson skill).
 - The text rules live in the deslop skill, section "Titles, captions and labels in figures, pages and explainers".
   This skill adds the manim-specific ones.
 
-The word is "animation" and the directory `animations/` (renamed from "story" / `stories/` on 2026-10-28; imgui_masknmf_manim's
+The word is "animation" and the directory `animations/` (renamed from "story" / `stories/` on 2026-10-28; the window's
 `canvas.py` still says `Story`, `story()` and `set_story()` where the kit says `Timeline`, `timeline()` and `seek()`).
 
 ## The shape of an animation
@@ -162,8 +162,8 @@ the real windows and animate those:
   place; chapters cross-fade them. Render at `--width 1920`, gif 960: at 1280 the UI text is unreadable.
 - manim text sits beside the window, never on it: the typed command (a `Count` over the string's prefix), a frame
   around the button in use (`scene_rect` from the button's pixel rectangle), counts, measured step timings, file
-  names. The reference is `~/repos/imgui_studio_manim/animations/suite2p_demo.py` with its capture script in
-  `~/agent_assets/imgui_studio_manim/20261029_studio-suite2p-demo/code/capture_windows.py`.
+  names. The reference is `~/repos/imgui_manim/animations/suite2p_demo.py` with its capture script in
+  `~/repos/imgui_manim/scripts/studio/capture_windows.py`.
 
 ## manim outside a Scene
 
@@ -198,10 +198,10 @@ Four traps, all handled in the kit and in `canvas.py`:
   (`palettegen=max_colors=128:stats_mode=full`, `paletteuse=dither=none`: panels are flat blocks and dithering
   costs a third more). README gifs are 720 px at 10 fps, 1.4 to 3.5 MB for 35 to 56 s. For a movie that plays
   inside the animation, step it at 10 Hz and hold the last frame 2 to 3 s before a 0.6 s fade to background so the
-  loop restarts clean (`scripts/overview_gif.py`).
+  loop restarts clean (`scripts/window/overview_gif.py`).
 - Rendering is deterministic (seeds fixed in the model), so the same `build()` gives the stills, the mp4 and the
   gif; a test can seek to a chapter midpoint after random jumps and compare pixels against a fresh one
-  (`imgui_masknmf_manim/tests/test_stories.py`).
+  (`imgui_manim/tests/window/test_stories.py`).
 
 ## Workflow
 

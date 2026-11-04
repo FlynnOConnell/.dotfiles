@@ -20,12 +20,12 @@ a pixel or a block to follow it everywhere. Real data loads beside the simulatio
   it. `README.md` "Adding a page or subsection" and `ARCHITECTURE.md` are current.
 - `~/repos/imgui_manim`: the animations of these pages. They load each page's `model.py` through `kit.lesson_model`, so
   a page's model stays pure numpy and a change to it reaches the animation too.
-- `~/repos/imgui_masknmf_manim`: manim drawn inside the window (a Cairo camera on a worker thread, the window
+- `~/repos/imgui_manim/src/imgui_manim/window`: manim drawn inside the window (a Cairo camera on a worker thread, the window
   shows the latest finished drawing), a timeline that scrubs, a frame slider the movie panels follow, clicks on
   panels that re-pick the pixel. Real movies via `--movie x.tif --fs 30`. `ARCHITECTURE.md` has the threads and
-  the scrubbing notes; `scripts/demo.py` records the window to mp4 with a scripted cursor.
-- `~/repos/imgui_lab4_interface`: the shell, palette and Font Awesome 6 icons the windows share;
-  `~/repos/imgui_vnoiser`: the scale handling and plotting helpers imgui_ophys copied.
+  the scrubbing notes; `scripts/window/demo.py` records the window to mp4 with a scripted cursor.
+- `~/repos/imgui_lab4_interface`: the shell, palette and Font Awesome 6 icons the windows share. imgui_ophys's
+  `config.py` has the scale handling.
 
 ## Settled so far
 
