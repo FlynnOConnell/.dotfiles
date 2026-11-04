@@ -236,6 +236,7 @@ this machine, fabricates what it can, and does nothing else. The exact line to r
 and serves `http://localhost:8787/` (tailnet: `https://pml-w1.tail0ea452.ts.net/`). Nothing has to be
 registered: every `agent_assets/<A>/<YYYYMMDD_slug>/` topic and masknmf run folder appears on its own.
 The index lists topics, newest first; pipeline runs have their own page (`/runs.html`), one fold per dataset.
+Notes from the vault `~/repos/arctic-lake` (one folder note `<name>/<name>.md` per folder, `runhub.toml` beside it) list on `/notes.html`; `runhub check <note folder>` lints one the same way.
 
 Before finishing a topic, run `runhub check <topic dir>` and fix every `FIX` line; end the report with the link it prints.
 It checks these, and the page needs them:
