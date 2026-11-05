@@ -1,0 +1,13 @@
+[Unit]
+Description=Stable virtual mic fed by the Blue Yeti, so apps keep their input when the Yeti drops off USB
+After=pipewire.service wireplumber.service
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/pw-loopback --name yeti-stable-mic "--capture-props=node.name=yeti_stable.in target.object=alsa_input.usb-Generic_Blue_Microphones_LT_2502141512089D0201BD_111000-00.analog-stereo node.dont-fallback=true node.linger=true" "--playback-props=node.name=yeti_stable node.description=Yeti-Stable-Mic media.class=Audio/Source"
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target
