@@ -1,0 +1,334 @@
+#!/usr/bin/env -S uv run --quiet --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["icalendar>=6", "recurring-ical-events>=3"]
+# ///
+"""
+Calendar events for the bar's calendar popup (the fo.clock plugin), read from
+each calendar's secret iCal address: no sign-in and no token to expire.
+
+    calendar-events                  fetch into ~/.cache/calendar-events/events.json
+    calendar-events link [URL]       save a secret iCal address, then fetch
+    calendar-events link --account flynnoconnell@gmail.com
+    calendar-events link ~/Downloads/Zocdoc_Appointment.ics
+
+link takes the address from URL or the clipboard. With neither, it opens the
+account's Google Calendar settings and waits for you to copy "Secret address in
+iCal format" (Settings for my calendars > the calendar > Integrate calendar).
+A downloaded .ics file is copied to ~/.local/share/calendar-events/ and read
+from there.
+
+The addresses live in ~/.config/calendar-events/urls, one per line, outside the
+dotfiles: anyone holding one can read that calendar.
+"""
+
+import argparse
+import base64
+import datetime
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+import urllib.request
+from pathlib import Path
+
+import icalendar
+import recurring_ical_events
+
+FILEPATH_URLS = Path.home() / ".config" / "calendar-events" / "urls"
+FILEPATH_EVENTS = Path.home() / ".cache" / "calendar-events" / "events.json"
+DIR_FILES = Path.home() / ".local" / "share" / "calendar-events"
+DAYS_BEFORE_TODAY = 62
+DAYS_AFTER_TODAY = 186
+SECONDS_CLIPBOARD_WAIT = 600
+
+
+def read_urls() -> list[str]:
+    """
+    Returns the saved secret iCal addresses, empty when none are linked.
+    """
+    if not FILEPATH_URLS.exists():
+        return []
+    return [line.strip() for line in FILEPATH_URLS.read_text().splitlines() if line.strip()]
+
+
+def fetch_calendar(url: str) -> icalendar.Calendar:
+    """
+    Downloads and parses one iCal feed.
+
+    Parameters
+    ----------
+    url : str
+        Secret iCal address.
+
+    Returns
+    -------
+    icalendar.Calendar
+        The parsed feed.
+    """
+    with urllib.request.urlopen(url, timeout=20) as response:
+        return icalendar.Calendar.from_ical(response.read())
+
+
+def to_local_datetime(value: datetime.date) -> datetime.datetime:
+    """
+    Converts an iCal DTSTART/DTEND value to a local, timezone-aware datetime.
+
+    Parameters
+    ----------
+    value : datetime.date
+        A date (all-day), a floating datetime (local time) or an aware datetime.
+
+    Returns
+    -------
+    datetime.datetime
+        The same moment in the machine's timezone.
+    """
+    if not isinstance(value, datetime.datetime):
+        value = datetime.datetime.combine(value, datetime.time())
+    return value.astimezone()
+
+
+def is_declined(event: icalendar.Event, owner: str) -> bool:
+    """
+    Says whether the calendar's owner declined the event.
+
+    Parameters
+    ----------
+    event : icalendar.Event
+        One event occurrence.
+    owner : str
+        The owner's address, lower case; a primary Google calendar is named after it.
+
+    Returns
+    -------
+    bool
+        True when an attendee matching ``owner`` has PARTSTAT=DECLINED.
+    """
+    attendees = event.get("ATTENDEE", [])
+    if not isinstance(attendees, list):
+        attendees = [attendees]
+    for attendee in attendees:
+        if str(attendee).lower().removeprefix("mailto:") == owner:
+            return str(attendee.params.get("PARTSTAT", "")).upper() == "DECLINED"
+    return False
+
+
+def collect_day_entries(calendar: icalendar.Calendar, date_first: datetime.date, date_last: datetime.date) -> dict[str, list[dict]]:
+    """
+    Expands recurrences and files every occurrence under each local day it covers.
+
+    Parameters
+    ----------
+    calendar : icalendar.Calendar
+        A parsed feed.
+    date_first : datetime.date
+        First day to include.
+    date_last : datetime.date
+        Day after the last one to include.
+
+    Returns
+    -------
+    dict[str, list[dict]]
+        Entries per "yyyy-MM-dd" day. A timed event running past midnight has an
+        empty ``start`` on the days after its first and an empty ``end`` on the
+        days before its last.
+    """
+    owner = str(calendar.get("X-WR-CALNAME", "")).lower()
+    entries_byDay: dict[str, list[dict]] = {}
+    for event in recurring_ical_events.of(calendar).between(date_first, date_last):
+        if str(event.get("STATUS", "")).upper() == "CANCELLED" or is_declined(event=event, owner=owner):
+            continue
+        value_start = event["DTSTART"].dt
+        value_end = event["DTEND"].dt if "DTEND" in event else value_start
+        is_allDay = not isinstance(value_start, datetime.datetime)
+        datetime_start = to_local_datetime(value=value_start)
+        datetime_end = max(to_local_datetime(value=value_end), datetime_start)
+        ## NOTE: an all-day DTEND is the day after the last one; a timed event ending at midnight ends the day before.
+        date_lastCovered = (datetime_end - datetime.timedelta(microseconds=1)).date() if datetime_end > datetime_start else datetime_start.date()
+        date = datetime_start.date()
+        while date <= date_lastCovered:
+            if date_first <= date < date_last:
+                entries_byDay.setdefault(date.isoformat(), []).append(
+                    {
+                        "allDay": is_allDay,
+                        "start": "" if is_allDay or date != datetime_start.date() else datetime_start.strftime("%H:%M"),
+                        "end": "" if is_allDay or date != date_lastCovered else datetime_end.strftime("%H:%M"),
+                        "title": str(event.get("SUMMARY", "")).strip() or "(No title)",
+                        "location": str(event.get("LOCATION", "")).strip(),
+                    }
+                )
+            date += datetime.timedelta(days=1)
+    return entries_byDay
+
+
+def write_events(payload: dict) -> None:
+    """
+    Replaces the events file in one step, so the panel never reads half of it.
+
+    Parameters
+    ----------
+    payload : dict
+        What the panel reads: linked, updated, error, calendars, days.
+    """
+    FILEPATH_EVENTS.parent.mkdir(parents=True, exist_ok=True)
+    filepath_tmp = FILEPATH_EVENTS.with_suffix(".tmp")
+    filepath_tmp.write_text(json.dumps(payload))
+    os.replace(filepath_tmp, FILEPATH_EVENTS)
+
+
+def refresh() -> int:
+    """
+    Fetches every linked calendar and writes the events file. A failed fetch keeps
+    the previous days and records the error for the panel.
+
+    Returns
+    -------
+    int
+        Exit status: 0, or 1 when any calendar could not be fetched.
+    """
+    urls = read_urls()
+    date_today = datetime.date.today()
+    date_first = date_today - datetime.timedelta(days=DAYS_BEFORE_TODAY)
+    date_last = date_today + datetime.timedelta(days=DAYS_AFTER_TODAY)
+    entries_byDay: dict[str, list[dict]] = {}
+    names_calendars = []
+    errors = []
+    for url in urls:
+        try:
+            calendar = fetch_calendar(url=url)
+        except (OSError, ValueError) as error:
+            errors.append(str(error))
+            continue
+        names_calendars.append(str(calendar.get("X-WR-CALNAME", "")))
+        for key, entries in collect_day_entries(calendar=calendar, date_first=date_first, date_last=date_last).items():
+            entries_byDay.setdefault(key, []).extend(entries)
+    for entries in entries_byDay.values():
+        entries.sort(key=lambda entry: (not entry["allDay"], entry["start"] or "00:00", entry["title"]))
+
+    payload_previous = json.loads(FILEPATH_EVENTS.read_text()) if FILEPATH_EVENTS.exists() else {}
+    payload = {
+        "linked": len(urls) > 0,
+        "updated": datetime.datetime.now().astimezone().isoformat(timespec="seconds") if not errors else payload_previous.get("updated", ""),
+        "error": "; ".join(errors),
+        "calendars": names_calendars if not errors else payload_previous.get("calendars", []),
+        "days": entries_byDay if not errors else payload_previous.get("days", {}),
+    }
+    write_events(payload=payload)
+    if errors:
+        print("calendar-events: " + payload["error"], file=sys.stderr)
+        return 1
+    return 0
+
+
+def is_ical_url(text: str) -> bool:
+    """
+    Says whether ``text`` looks like an iCal feed address or a saved .ics file's.
+    """
+    return text.startswith(("https://", "file://")) and text.split("?")[0].endswith(".ics") and "\n" not in text
+
+
+def read_clipboard() -> str:
+    """
+    Returns the clipboard's text, empty when it holds none.
+    """
+    result = subprocess.run(["wl-paste", "--no-newline", "--type", "text"], capture_output=True, timeout=5)
+    return result.stdout.decode(errors="replace").strip() if result.returncode == 0 else ""
+
+
+def wait_for_copied_url(account: str) -> str:
+    """
+    Opens the account's Google Calendar settings and waits for an iCal address on the clipboard.
+
+    Parameters
+    ----------
+    account : str
+        Google account, e.g. flynnoconnell@gmail.com; empty opens the signed-in account's settings.
+
+    Returns
+    -------
+    str
+        The copied address.
+
+    Raises
+    ------
+    TimeoutError
+        If nothing is copied within SECONDS_CLIPBOARD_WAIT.
+    """
+    url_settings = "https://calendar.google.com/calendar/u/0/r/settings"
+    if account:
+        id_calendar = base64.b64encode(account.encode()).decode().rstrip("=")
+        url_settings += f"/calendar/{id_calendar}?authuser={account}"
+    subprocess.Popen(["xdg-open", url_settings], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    print("In the browser: Settings for my calendars > your calendar > Integrate calendar,")
+    print('then copy "Secret address in iCal format". Waiting for it on the clipboard...')
+    time_deadline = time.monotonic() + SECONDS_CLIPBOARD_WAIT
+    while time.monotonic() < time_deadline:
+        text = read_clipboard()
+        if is_ical_url(text=text):
+            return text
+        time.sleep(1)
+    raise TimeoutError(f"no iCal address copied within {SECONDS_CLIPBOARD_WAIT} s")
+
+
+def link(url: str, account: str) -> int:
+    """
+    Checks an iCal address, saves it, fetches, and confirms with a notification.
+
+    Parameters
+    ----------
+    url : str
+        The address or a .ics file's path; empty takes it from the clipboard, or waits for one there.
+    account : str
+        Google account whose settings to open while waiting.
+
+    Returns
+    -------
+    int
+        Exit status of the fetch that follows.
+    """
+    clipboard = read_clipboard()
+    if url and Path(url).expanduser().is_file():
+        DIR_FILES.mkdir(parents=True, exist_ok=True)
+        filepath_saved = DIR_FILES / Path(url).name
+        shutil.copyfile(Path(url).expanduser(), filepath_saved)
+        url = filepath_saved.as_uri()
+    if not url:
+        url = clipboard if is_ical_url(text=clipboard) else wait_for_copied_url(account=account)
+    if not is_ical_url(text=url):
+        raise ValueError(f"not an iCal address (https://...ics) or .ics file: {url[:60]}")
+    calendar = fetch_calendar(url=url)
+    name = str(calendar.get("X-WR-CALNAME", "")) or url.rsplit("/", 1)[-1]
+
+    FILEPATH_URLS.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    urls = read_urls()
+    if url not in urls:
+        FILEPATH_URLS.write_text("\n".join(urls + [url]) + "\n")
+    FILEPATH_URLS.chmod(0o600)
+
+    status = refresh()
+    date_today = datetime.date.today()
+    entries_byDay = collect_day_entries(calendar=calendar, date_first=date_today, date_last=date_today + datetime.timedelta(days=30))
+    n_events_upcoming = sum(len(entries) for entries in entries_byDay.values())
+    message = f"{name}: {n_events_upcoming} events in the next 30 days, {len(entries_byDay.get(date_today.isoformat(), []))} today"
+    print("Linked " + message)
+    subprocess.run(["notify-send", "Calendar linked", message], check=False)
+    return status
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Calendar events for the bar's calendar popup.")
+    subparsers = parser.add_subparsers(dest="command")
+    parser_link = subparsers.add_parser("link", help="save a secret iCal address, then fetch")
+    parser_link.add_argument("url", nargs="?", default="")
+    parser_link.add_argument("--account", default="", help="Google account whose settings to open")
+    args = parser.parse_args()
+    if args.command == "link":
+        return link(url=args.url, account=args.account)
+    return refresh()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

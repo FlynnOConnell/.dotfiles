@@ -3,6 +3,7 @@ Version=1.0
 Name=pml_utilities
 Comment=pml_utilities
 Exec=omarchy-launch-webapp "https://github.com/FlynnOConnell/pml_utilities"
+StartupWMClass=chrome-github.com__FlynnOConnell_pml_utilities-Default
 Terminal=false
 Type=Application
 Icon=pml-utilities

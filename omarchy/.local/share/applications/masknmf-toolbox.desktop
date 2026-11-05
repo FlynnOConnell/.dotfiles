@@ -3,6 +3,7 @@ Version=1.0
 Name=masknmf-toolbox
 Comment=masknmf-toolbox
 Exec=omarchy-launch-webapp "https://github.com/apasarkar/masknmf-toolbox"
+StartupWMClass=chrome-github.com__apasarkar_masknmf-toolbox-Default
 Terminal=false
 Type=Application
 Icon=masknmf-toolbox

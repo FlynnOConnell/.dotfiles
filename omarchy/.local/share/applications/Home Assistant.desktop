@@ -3,6 +3,7 @@ Version=1.0
 Name=Home Assistant
 Comment=Home Assistant
 Exec=omarchy-launch-webapp "http://homeassistant.tail0ea452.ts.net"
+StartupWMClass=chrome-homeassistant.tail0ea452.ts.net__-Default
 Terminal=false
 Type=Application
 Icon=home-assistant

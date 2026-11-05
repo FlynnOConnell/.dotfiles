@@ -3,6 +3,7 @@ Version=1.0
 Name=Outlook Calendar
 Comment=Outlook Calendar
 Exec=omarchy-launch-webapp "https://outlook.office.com/calendar/"
+StartupWMClass=chrome-outlook.office.com__calendar_-Default
 Terminal=false
 Type=Application
 Icon=outlook-calendar

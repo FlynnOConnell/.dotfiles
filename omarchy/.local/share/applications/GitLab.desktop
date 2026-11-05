@@ -3,6 +3,7 @@ Version=1.0
 Name=GitLab
 Comment=GitLab
 Exec=omarchy-launch-webapp "https://gitlab.com/dashboard/projects"
+StartupWMClass=chrome-gitlab.com__dashboard_projects-Default
 Terminal=false
 Type=Application
 Icon=gitlab

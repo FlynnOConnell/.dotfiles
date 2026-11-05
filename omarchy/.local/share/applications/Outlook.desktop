@@ -3,6 +3,7 @@ Version=1.0
 Name=Outlook
 Comment=Outlook
 Exec=omarchy-launch-webapp "https://outlook.office.com/mail/"
+StartupWMClass=chrome-outlook.office.com__mail_-Default
 Terminal=false
 Type=Application
 Icon=outlook

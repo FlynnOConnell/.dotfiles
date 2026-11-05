@@ -126,6 +126,11 @@ webapp("SUPER + SHIFT + E", "Outlook Mail", "https://outlook.office.com/mail/")
 webapp("SUPER + SHIFT + C", "Outlook Calendar", "https://outlook.office.com/calendar/")
 o.bind("SUPER + SHIFT + ALT + E", "New Outlook email", { webapp = "https://outlook.office.com/mail/deeplink/compose" })
 
+-- The bar's calendar, with Google Calendar events (the fo.clock plugin), in
+-- place of universal copy.
+hl.unbind("SUPER + C")
+o.bind("SUPER + C", "Calendar", "omarchy-shell shell toggle omarchy.clock")
+
 -- Stream a lab workstation with Moonlight, focusing that host's stream if it's already open.
 o.bind("SUPER + R", "pml-w1 (Moonlight)", "moonlight-stream pml-w1")
 o.bind("SUPER + ALT + R", "pml-w2 (Moonlight)", "moonlight-stream pml-w2")
@@ -240,3 +245,10 @@ end, { non_consuming = true })
 
 -- Herdr agents panel (the fo.herdr bar widget): what every agent is doing, Enter jumps to one.
 o.bind("SUPER + A", "Herdr agents", "omarchy-shell fo.herdr toggle")
+
+-- Dictation keys from before Alt + Space and Right Alt became the defaults.
+-- Remove these lines to give the keys back to applications.
+if o.dictation_installed and o.dictation_installed() then
+  o.bind("SUPER + CTRL + X", "Toggle dictation", "omarchy-dictation toggle")
+  o.bind_hold("F9", "Start dictation (push-to-talk)", "omarchy-dictation start", "Stop dictation (push-to-talk)", "omarchy-dictation stop")
+end
