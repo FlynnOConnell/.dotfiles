@@ -38,6 +38,7 @@ FILES=(
   .config/omarchy/extensions/omarchy-menu.jsonc
   .config/omarchy/plugins/fo.herdr
   .config/omarchy/plugins/fo.stream-frame
+  .config/omarchy/plugins/fo.clock
   .config/omarchy/defaults/agent
   .config/git/config
   .config/herdr/config.toml
@@ -57,6 +58,7 @@ FILES=(
   .local/bin/suspend-when-locked
   .local/bin/sshfs-mount
   .local/bin/fleet-pull
+  .local/bin/calendar-events
   .local/bin/gamesir-x360
   .local/bin/reboot-windows
   .config/systemd/user/sshfs@.service
