@@ -29,6 +29,9 @@
 [user]
 	name = Flynn OConnell
 	email = FlynnOConnell@gmail.com
+[hook "vault-guard"]
+	event = pre-push          # Every push passes the private vault's guard; a missing guard refuses the push
+	command = ~/repos/arctic-lake/scripts/pre-push-guard
 [filter "lfs"]
 	required = true
 	clean = git-lfs clean -- %f
