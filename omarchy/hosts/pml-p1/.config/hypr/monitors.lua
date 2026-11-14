@@ -18,17 +18,27 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = omarchy
 -- round, the 16:10 laptop picture reaches the 16:9 TV with black bars, and the
 -- TV zooms in over them and cuts the edges off. Plugging the TV in or out
 -- reloads this file, so the laptop screen follows.
+-- The Dell U4924DW ultrawide also comes in on a DP-n port; hyprland.lua sets
+-- it up, so its port is left out here.
 local tv_outputs = { HDMI_A_1 = "HDMI-A-1", DP_1 = "DP-1", DP_2 = "DP-2", DP_3 = "DP-3" }
+local ultrawide_port = nil
+for _, monitor in ipairs(hl.get_monitors()) do
+  if monitor.description == "Dell Inc. Dell U4924DW HYK59B4" then
+    ultrawide_port = monitor.name
+  end
+end
 local tv_connected = nil
 for _, monitor in ipairs(hl.get_monitors()) do
   for _, output in pairs(tv_outputs) do
-    if monitor.name == output then
+    if monitor.name == output and output ~= ultrawide_port then
       tv_connected = output
     end
   end
 end
 for _, output in pairs(tv_outputs) do
-  hl.monitor({ output = output, mode = "1920x1080@60", position = "auto", scale = 1 })
+  if output ~= ultrawide_port then
+    hl.monitor({ output = output, mode = "1920x1080@60", position = "auto", scale = 1 })
+  end
 end
 if tv_connected then
   hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = omarchy_monitor_scale, mirror = tv_connected })

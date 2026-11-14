@@ -22,6 +22,59 @@ require("hypr.bindings")
 require("hypr.looknfeel")
 require("hypr.autostart")
 
+-- Dell U4924DW (49", 5120x1440): the same settings on any machine it's plugged
+-- into, found by its EDID description, so the port doesn't matter (DP-1 on
+-- pml-w2, a USB-C DP-n on pml-p1). On it, the scratchpad (SUPER+S, where Slack
+-- lives) tiles in the middle half of the screen instead of across all 49", and
+-- regular workspaces use centered master: the main window in the middle half,
+-- the rest stacked in the side columns.
+-- A workspace filter can't hold the description (it has spaces), so the rules
+-- name the port the monitor is on now, and the config reloads when it moves.
+local ultrawide = "Dell Inc. Dell U4924DW HYK59B4"
+hl.monitor({ output = "desc:" .. ultrawide, mode = "5120x1440@60", position = "auto", scale = 1.25 })
+
+-- Centered master, wherever a workspace uses it: the middle column stays put even
+-- with zero or one side window, and new windows open at the sides (Omarchy's
+-- default puts each new window in the middle). SUPER+Z swaps one into the middle.
+hl.config({
+  master = { mfact = 0.5, slave_count_for_center_master = 0, always_keep_position = true, new_status = "slave" },
+})
+
+local function ultrawide_monitor()
+  for _, monitor in ipairs(hl.get_monitors()) do
+    if monitor.description == ultrawide then
+      return monitor
+    end
+  end
+end
+
+local ultrawide_now = ultrawide_monitor()
+if ultrawide_now then
+  local side = math.floor(ultrawide_now.width / ultrawide_now.scale / 4)
+  hl.workspace_rule({
+    workspace = "n[s:special:scratchpad] m[" .. ultrawide_now.name .. "]",
+    gaps_out = { top = 10, right = side, bottom = 10, left = side },
+  })
+  hl.workspace_rule({
+    workspace = "m[" .. ultrawide_now.name .. "] s[false]",
+    layout = "master",
+    layout_opts = { orientation = "center" },
+  })
+  -- NOTE: this has to load before default.hypr.toggles, which restores the layouts
+  -- saved per workspace by SUPER+ALT+L. Overlapping workspace rules apply in the
+  -- order added, and re-adding a rule for the same workspace merges into the first
+  -- one in place, so a saved layout only beats this rule if it was added after it.
+end
+
+local function reload_if_ultrawide_moved()
+  local monitor = ultrawide_monitor()
+  if (monitor and monitor.name) ~= (ultrawide_now and ultrawide_now.name) then
+    hl.exec_cmd("hyprctl reload")
+  end
+end
+hl.on("monitor.added", reload_if_ultrawide_moved)
+hl.on("monitor.removed", reload_if_ultrawide_moved)
+
 -- Toggle config flags dynamically.
 require("default.hypr.toggles")
 
