@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Grows or shrinks a window's width by a step, the same way in every layout. Hyprland's
+# relative resize moves an edge in the direction of the sign, and which edge depends on
+# the layout: dwindle moves the left edge of any window that isn't leftmost, centered
+# master widens the middle column whichever window is focused. So resize by +step, read
+# the width back, and go the other way if the window changed the wrong way.
+# Usage: window-resize grow|shrink [pixels] [window address, default the focused window]
+
+[[ $1 == grow || $1 == shrink ]] || { echo "usage: window-resize grow|shrink [pixels] [address]" >&2; exit 1; }
+want=1
+[[ $1 == shrink ]] && want=-1
+step=${2:-100}
+address=${3:-$(hyprctl activewindow -j | jq -r '.address')}
+
+width() { hyprctl clients -j | jq --arg address "$address" '.[] | select(.address == $address) | .size[0]'; }
+resize() { hyprctl dispatch "hl.dsp.window.resize({ window = \"address:$address\", x = $1, y = 0, relative = true })" >/dev/null; }
+
+before=$(width)
+resize "$step"
+change=$(($(width) - before))
+if ((change * want < 0)); then
+  resize $((-2 * step))
+elif ((change == 0)); then
+  resize $((-step))
+  change=$(($(width) - before))
+  ((change * want < 0)) && resize "$step"
+fi

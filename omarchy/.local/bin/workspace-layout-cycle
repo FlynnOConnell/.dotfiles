@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Cycles the active workspace's layout: dwindle -> scrolling -> centered master -> present -> dwindle.
+# Omarchy's omarchy-hyprland-workspace-layout-toggle only flips dwindle and scrolling.
+# present is dwindle narrowed to a full-height 16:9 box in the middle of the monitor, the
+# box share-region offers for screen sharing; workspace-width sets that margin, and keeps
+# it on the second line of the file. The layout is saved where Omarchy's toggle saves it,
+# so Omarchy's config restores it on reload.
+
+workspace=$(hyprctl activeworkspace -j | jq -r '.id')
+[[ $workspace =~ ^-?[0-9]+$ ]] || exit 1
+layout_file="$HOME/.local/state/omarchy/workspace-layouts/$workspace.lua"
+
+layout=$(hyprctl activeworkspace -j | jq -r '.tiledLayout')
+grep -qs -- '-- present' "$layout_file" && layout=present
+
+case $layout in
+  dwindle) new_layout=scrolling options='layout = "scrolling"' ;;
+  scrolling) new_layout=master options='layout = "master", layout_opts = { orientation = "center" }' ;;
+  master) new_layout=present options='layout = "dwindle"' ;;
+  *) new_layout=dwindle options='layout = "dwindle"' ;;
+esac
+
+layout_line="hl.workspace_rule({ workspace = \"$workspace\", $options })"
+[[ $new_layout == present ]] && layout_line+=" -- present"
+gaps_line=$(grep -s gaps_out "$layout_file")
+mkdir -p "$(dirname "$layout_file")"
+{
+  echo "$layout_line"
+  [[ -n $gaps_line ]] && echo "$gaps_line"
+} >"$layout_file"
+
+# NOTE: reload rather than hyprctl eval: eval merges into the workspace's existing rule and
+# doesn't re-tile open windows. workspace-width reloads itself.
+if [[ $new_layout == present ]]; then
+  workspace-width narrow 4
+elif [[ $layout == present ]]; then
+  workspace-width widen 4
+else
+  hyprctl reload >/dev/null
+fi
+omarchy-notification-send -g 󱂬 "Workspace layout set to $new_layout"

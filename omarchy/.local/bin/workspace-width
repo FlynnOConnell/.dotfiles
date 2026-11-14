@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Narrows or widens the area the active workspace tiles into, in four steps from the full
+# monitor width to a full-height 16:9 box in the middle (the box share-region offers for
+# screen sharing). The side margin is saved as a second line in the file
+# workspace-layout-cycle writes, so Omarchy's config restores it on reload.
+# Usage: workspace-width narrow|widen [steps]
+
+[[ $1 == narrow || $1 == widen ]] || { echo "usage: workspace-width narrow|widen [steps]" >&2; exit 1; }
+steps=${2:-1}
+[[ $1 == widen ]] && steps=$((-steps))
+
+workspace=$(hyprctl activeworkspace -j | jq -r '.id')
+[[ $workspace =~ ^-?[0-9]+$ ]] || exit 1
+layout_file="$HOME/.local/state/omarchy/workspace-layouts/$workspace.lua"
+
+read -r monitor_width max_margin < <(hyprctl monitors -j | jq -r '.[] | select(.focused)
+  | (.width / .scale) as $width | "\($width | floor) \([0, (($width - .height / .scale * 16 / 9) / 2 | floor)] | max)"')
+
+level=0
+if ((max_margin > 0)); then
+  margin=$(grep -so 'left = [0-9]*' "$layout_file" | grep -o '[0-9]*$')
+  level=$(((${margin:-0} * 4 + max_margin / 2) / max_margin + steps))
+  level=$((level < 0 ? 0 : level > 4 ? 4 : level))
+fi
+margin=$((level * max_margin / 4))
+
+mkdir -p "$(dirname "$layout_file")"
+layout_lines=$(grep -sv gaps_out "$layout_file")
+{
+  [[ -n $layout_lines ]] && echo "$layout_lines"
+  ((level > 0)) && echo "hl.workspace_rule({ workspace = \"$workspace\", gaps_out = { top = 10, right = $margin, bottom = 10, left = $margin } })"
+} >"$layout_file"
+hyprctl reload >/dev/null
+
+width_percent=$(((monitor_width - 2 * margin) * 100 / monitor_width))
+message="Workspace width $width_percent%"
+((level == 4 && max_margin > 0)) && message="Workspace width 16:9 (share box)"
+omarchy-osd -i display -m "$message" -p "$width_percent"

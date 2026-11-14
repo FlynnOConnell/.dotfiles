@@ -55,7 +55,10 @@ FILES=(
   .local/bin/meeting-transcribe
   .local/bin/cheatsheets
   .local/bin/quick-note
+  .local/bin/workspace-layout-cycle
   .local/bin/share-region
+  .local/bin/window-resize
+  .local/bin/workspace-width
   .local/bin/repo-sync
   .local/bin/suspend-when-locked
   .local/bin/sshfs-mount

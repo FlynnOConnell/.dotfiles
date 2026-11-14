@@ -44,23 +44,53 @@ o.bind("SUPER + L", "Focus on right window", hl.dsp.focus({ direction = "r" }))
 o.bind("SUPER + K", "Focus on above window", hl.dsp.focus({ direction = "u" }))
 o.bind("SUPER + J", "Focus on below window", hl.dsp.focus({ direction = "d" }))
 
--- Workspace layout toggle, moved off SUPER+L.
-o.bind("SUPER + SHIFT + L", "Toggle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
--- Dwindle split toggle and the keybindings viewer, moved off SUPER+J and SUPER+K.
-o.bind("SUPER + SHIFT + J", "Toggle window split", hl.dsp.layout("togglesplit"))
-o.bind("SUPER + SHIFT + K", "Keybindings", "omarchy-menu-keybindings")
+-- Swap the focused window with its neighbor (Omarchy has this on SUPER+SHIFT+arrows).
+-- What these keys held before moved to SUPER+ALT below.
+o.bind("SUPER + SHIFT + H", "Swap window to the left", hl.dsp.window.swap({ direction = "l" }))
+o.bind("SUPER + SHIFT + L", "Swap window to the right", hl.dsp.window.swap({ direction = "r" }))
+o.bind("SUPER + SHIFT + K", "Swap window up", hl.dsp.window.swap({ direction = "u" }))
+o.bind("SUPER + SHIFT + J", "Swap window down", hl.dsp.window.swap({ direction = "d" }))
+
+-- Arrows resize instead of focusing (= and - are awkward on the split keyboard).
+-- RIGHT / LEFT grow / shrink the focused window in any layout, repeating while held;
+-- UP / DOWN widen / narrow the whole workspace in four steps down to the 16:9 box the
+-- screen-share picker offers. SHIFT goes 300 px, or all the way. Replaces Omarchy's
+-- focus and swap binds on these keys.
+hl.unbind("SUPER + LEFT")
+hl.unbind("SUPER + RIGHT")
+hl.unbind("SUPER + UP")
+hl.unbind("SUPER + DOWN")
+hl.unbind("SUPER + SHIFT + LEFT")
+hl.unbind("SUPER + SHIFT + RIGHT")
+hl.unbind("SUPER + SHIFT + UP")
+hl.unbind("SUPER + SHIFT + DOWN")
+o.bind("SUPER + RIGHT", "Grow window", "window-resize grow 100", { repeating = true })
+o.bind("SUPER + LEFT", "Shrink window", "window-resize shrink 100", { repeating = true })
+o.bind("SUPER + SHIFT + RIGHT", "Grow window a lot", "window-resize grow 300", { repeating = true })
+o.bind("SUPER + SHIFT + LEFT", "Shrink window a lot", "window-resize shrink 300", { repeating = true })
+o.bind("SUPER + UP", "Widen workspace", "workspace-width widen")
+o.bind("SUPER + DOWN", "Narrow workspace toward the 16:9 share box", "workspace-width narrow")
+o.bind("SUPER + SHIFT + UP", "Workspace at full width", "workspace-width widen 4")
+o.bind("SUPER + SHIFT + DOWN", "Workspace in the 16:9 share box", "workspace-width narrow 4")
+
+-- Workspace layout on SUPER+ALT+L: cycles dwindle, scrolling, centered master and
+-- present, the 16:9 share box (Omarchy's toggle only flips the first two). Dwindle's
+-- split toggle on SUPER+ALT+J; SUPER+Z is master's swap-into-the-middle. The
+-- keybindings viewer is gone: the SUPER+CTRL+K cheatsheets menu lists Omarchy's keys.
+o.bind("SUPER + ALT + L", "Cycle workspace layout", "workspace-layout-cycle")
+o.bind("SUPER + ALT + J", "Toggle window split", hl.dsp.layout("togglesplit"))
+o.bind("SUPER + Z", "Swap window into the middle (centered master)", hl.dsp.layout("swapwithmaster"))
 -- One menu for every cheat sheet (Omarchy, Herdr, Tmux, Neovim, web apps); was: Herdr keybindings.
 hl.unbind("SUPER + CTRL + K")
 o.bind("SUPER + CTRL + K", "Cheatsheets", "cheatsheets")
 
--- Send the current workspace to the left/right monitor (shorter than SUPER+SHIFT+ALT+arrows).
-o.bind("SUPER + ALT + H", "Move workspace to left monitor", hl.dsp.workspace.move({ monitor = "l" }))
-o.bind("SUPER + ALT + L", "Move workspace to right monitor", hl.dsp.workspace.move({ monitor = "r" }))
--- Same on SUPER+SHIFT+arrows (was: swap window left/right).
-hl.unbind("SUPER + SHIFT + LEFT")
-hl.unbind("SUPER + SHIFT + RIGHT")
-o.bind("SUPER + SHIFT + LEFT", "Move workspace to left monitor", hl.dsp.workspace.move({ monitor = "l" }))
-o.bind("SUPER + SHIFT + RIGHT", "Move workspace to right monitor", hl.dsp.workspace.move({ monitor = "r" }))
+-- One monitor only: drop Omarchy's move-workspace-to-monitor and monitor focus keys.
+hl.unbind("SUPER + SHIFT + ALT + LEFT")
+hl.unbind("SUPER + SHIFT + ALT + RIGHT")
+hl.unbind("SUPER + SHIFT + ALT + UP")
+hl.unbind("SUPER + SHIFT + ALT + DOWN")
+hl.unbind("CTRL + ALT + TAB")
+hl.unbind("CTRL + ALT + SHIFT + TAB")
 
 
 -- Screenshot on SUPER+P, same flow as PRINT. Pseudo-tile moves to SUPER+ALT+P.
@@ -110,7 +140,7 @@ local function webapp(keys, description, url)
 end
 
 webapp("SUPER + SHIFT + G", "GitLab", "https://gitlab.com/dashboard/projects")
-webapp("SUPER + SHIFT + H", "Claude", "https://claude.ai")
+webapp("SUPER + ALT + H", "Claude", "https://claude.ai")
 webapp("SUPER + CTRL + G", "pml-w1 results", "https://pml-w1.tail0ea452.ts.net/")
 
 -- PDF reader for papers (opens the last document; press o inside to pick another).
