@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Region command for the screen-share picker's Region button. Pre-draws a full-height
+# 16:9 box in the middle of each monitor, the area the "present" layout of
+# workspace-layout-cycle tiles into: click a box to share it, or drag any region
+# (held to 16:9). slurp prints desktop coordinates; the portal wants them relative
+# to the monitor, which the picker's default slurp command gets wrong off 0,0.
+
+monitors=$(hyprctl monitors -j)
+
+boxes=$(jq -r '.[] | (.width / .scale | round) as $width | (.height / .scale | round) as $height
+  | ([$width, ($height * 16 / 9 | round)] | min) as $box_width
+  | "\(.x + (($width - $box_width) / 2 | floor)),\(.y) \($box_width)x\($height) \(.name)"' <<<"$monitors")
+
+read -r output x y width height < <(slurp -a 16:9 -f '%o %x %y %w %h' <<<"$boxes") || exit 1
+
+jq -r --arg output "$output" --argjson x "$x" --argjson y "$y" --arg size "$width,$height" \
+  '.[] | select(.name == $output) | "\($output)@\($x - .x),\($y - .y),\($size)"' <<<"$monitors"

@@ -40,6 +40,7 @@ FILES=(
   .config/omarchy/plugins/fo.stream-frame
   .config/omarchy/plugins/fo.clock
   .config/omarchy/defaults/agent
+  .config/hyprland-preview-share-picker/config.yaml
   .config/git/config
   .config/herdr/config.toml
   .config/starship.toml
@@ -54,6 +55,7 @@ FILES=(
   .local/bin/meeting-transcribe
   .local/bin/cheatsheets
   .local/bin/quick-note
+  .local/bin/share-region
   .local/bin/repo-sync
   .local/bin/suspend-when-locked
   .local/bin/sshfs-mount
