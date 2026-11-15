@@ -4,7 +4,7 @@
     "pr": ""
   },
   "includeCoAuthoredBy": false,
-  "model": "opus",
+  "model": "claude-fable-5-2",
   "hooks": {
     "SessionStart": [
       {
@@ -39,6 +39,12 @@
       "autoCompactWindow": 400000
     },
     "claude-fable-5-1": {
+      "autoCompactWindow": 400000
+    },
+    "claude-fable-5-2": {
+      "autoCompactWindow": 400000
+    },
+    "claude-opus-5": {
       "autoCompactWindow": 400000
     }
   },
