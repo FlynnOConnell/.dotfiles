@@ -89,7 +89,6 @@ is used.
    ```
 
 📖 **See:**
-- `dots/.config/komorebi/README-WINDOWS.md` - Detailed Windows setup and troubleshooting
 - `legacy/keybinds.md` - old i3/komorebi keybinding reference
 
 ### Keybinding Philosophy
