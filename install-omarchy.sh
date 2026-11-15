@@ -57,6 +57,7 @@ FILES=(
   .local/bin/quick-note
   .local/bin/workspace-layout-cycle
   .local/bin/share-region
+  .local/bin/steam-popups
   .local/bin/screenrecord-toggle
   .local/bin/window-resize
   .local/bin/workspace-width
