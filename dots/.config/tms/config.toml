@@ -5,8 +5,3 @@ depth = 2
 [[search_dirs]]
 path = "~/repos/work"
 depth = 1
-
-# Network drive docs (only appears when mounted)
-[[search_dirs]]
-path = "/mnt/mbospace/foconnell/docs"
-depth = 1

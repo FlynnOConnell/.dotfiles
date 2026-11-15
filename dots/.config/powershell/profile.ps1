@@ -3,21 +3,7 @@
 # === Path ===
 $env:Path = "$env:USERPROFILE\.local\bin;$env:Path"
 
-# === Network drives (RBO-S1) ===
-# Mapping synchronously blocked shell startup for ~3s whenever RBO-S1 was slow or
-# unreachable. Fire it off detached instead: /persistent:yes means it only has to
-# succeed once, and failures (off-network, VPN down) are silently discarded.
-# Off-network the mapping never lands, so retry at most hourly instead of paying a
-# process spawn on every shell.
 $DotCache = "$env:LOCALAPPDATA\dotfiles"
-$YMark = "$DotCache\ymap"
-if (!(Test-Path Y:) -and (!(Test-Path $YMark) -or (Get-Item $YMark).LastWriteTime -lt [datetime]::Now.AddHours(-1))) {
-    if (!(Test-Path $DotCache)) { New-Item -ItemType Directory -Path $DotCache -Force | Out-Null }
-    Set-Content -Path $YMark -Value '' -Force
-    Start-Process -FilePath net.exe -WindowStyle Hidden `
-        -ArgumentList 'use', 'Y:', '\\RBO-S1\mbospace', '/user:foconnell', 'foconnell@RU2$', '/persistent:yes' `
-        -ErrorAction SilentlyContinue
-}
 
 # === PSReadLine ===
 # Get-Module -ListAvailable stats every directory in $env:PSModulePath (one of which is
