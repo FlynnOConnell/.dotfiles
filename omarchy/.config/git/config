@@ -21,6 +21,7 @@
 	ui = auto 			     # Output in columns when possible
 [branch]
 	sort = -committerdate    # Sort branches by most recent commit first
+	autoSetupMerge = simple
 [tag]
 	sort = -version:refname  # Sort version numbers as you would expect
 [rerere]
