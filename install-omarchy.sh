@@ -138,7 +138,12 @@ link() { # link <repo path> <live path>
       echo "skip $dst: is a real directory, move it aside first" >&2
       return
     fi
-    if ! cmp -s "$dst" "$src"; then
+    # A live file still identical to omarchy's shipped copy was never edited
+    # here, so the repo copy replaces it: adopting it would undo a newly
+    # tracked file on every machine that relinks, and leave repo-sync stuck.
+    if [[ -e $src && $dst == "$HOME/.config/"* ]] && cmp -s "$dst" "$OMARCHY/config/${dst#$HOME/.config/}"; then
+      echo "stock $dst: omarchy's default, replaced by ${src#$REPO/}"
+    elif ! cmp -s "$dst" "$src"; then
       echo "adopt $dst -> ${src#$REPO/}"
       mkdir -p "$(dirname "$src")"
       cp -a "$dst" "$src"
