@@ -171,7 +171,7 @@ source in batch jobs, so a job sees the same environment as a login shell.
 
 Sites live in `hpc/sites/<name>.sh` and just set `HPC_*` variables. Add a
 detection line to `_hpc_detect_site` in `hpc/env.sh`, or force one with
-`export HPC_SITE=<name>`. Currently: `biohpc`, `rockefeller`, `generic`.
+`export HPC_SITE=<name>`. Currently: `biohpc`, `generic`.
 
 Per-machine overrides that should not be tracked go in `~/.bashrc.local`.
 Setting `HPC_USER` there is the fix if your personal directory is not

@@ -13,7 +13,6 @@ _hpc_env_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _hpc_detect_site() {
     [ -n "${HPC_SITE:-}" ] && { echo "$HPC_SITE"; return; }
     [ -d /biohpc ] && { echo biohpc; return; }
-    [ -d /lustre/fs8/mbo ] && { echo rockefeller; return; }
     echo generic
 }
 
