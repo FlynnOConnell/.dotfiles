@@ -1,0 +1,78 @@
+/*
+ * VS Code Dark+ token colors on highlight.js classes, for markdown-preview.nvim
+ * (g:mkdp_highlight_css). The block background comes from markdown.css.
+ */
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  color: #d4d4d4;
+  background: none;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #6a9955;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-name,
+.hljs-tag {
+  color: #569cd6;
+}
+
+.hljs-string,
+.hljs-doctag,
+.hljs-addition {
+  color: #ce9178;
+}
+
+.hljs-regexp,
+.hljs-link {
+  color: #d16969;
+}
+
+.hljs-number {
+  color: #b5cea8;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: #dcdcaa;
+}
+
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #4ec9b0;
+}
+
+.hljs-attr,
+.hljs-attribute,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-subst {
+  color: #9cdcfe;
+}
+
+.hljs-meta,
+.hljs-symbol,
+.hljs-bullet {
+  color: #c586c0;
+}
+
+.hljs-deletion {
+  color: #f44747;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}

@@ -1,64 +1,57 @@
--- Higher-contrast markdown rendering. Normal/NormalFloat are transparent
--- (plugin/after/transparency.lua), so the theme's subtle code tint vanished;
--- these groups use solid backgrounds pulled from the active theme instead of
--- hardcoded colors, and are reapplied on every colorscheme change.
-local function md_highlights()
-  local function hl(name)
-    return vim.api.nvim_get_hl(0, { name = name, link = false })
-  end
-  local card = hl("CursorLine").bg or hl("Visual").bg
-  local set = vim.api.nvim_set_hl
-  set(0, "RenderMarkdownCode", { bg = card })
-  set(0, "RenderMarkdownCodeBorder", { fg = hl("Comment").fg, bg = card })
-  set(0, "RenderMarkdownCodeInline", { fg = hl("Constant").fg, bg = card })
-  set(0, "RenderMarkdownTableHead", { fg = hl("Title").fg, bold = true })
-  set(0, "RenderMarkdownTableRow", { fg = hl("Comment").fg })
+-- Markdown is edited as plain text and previewed in a Chrome app window styled
+-- like VS Code's preview (markdown-preview/*.css), live-updating and
+-- scroll-synced. The window lives on Hyprland's special:markdown-preview on
+-- every machine looking at this nvim, over ssh too (config/markdown_preview.lua).
+-- It starts hidden with the first markdown buffer and follows whichever one is
+-- current; SUPER+N switches between editor and preview from either side,
+-- <leader>cp shows it from nvim.
+local dir_css = vim.fn.stdpath("config") .. "/markdown-preview"
+
+local function show_preview()
+  require("config.markdown_preview").show()
 end
 
 return {
+  { "MeanderingProgrammer/render-markdown.nvim", enabled = false },
   {
-    "MeanderingProgrammer/render-markdown.nvim",
-    opts = {
-      heading = {
-        sign = false,
-        icons = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
-        width = "block",
-        left_pad = 1,
-        right_pad = 4,
-      },
-      code = {
-        sign = false,
-        style = "full",
-        width = "block",
-        min_width = 60,
-        left_pad = 2,
-        right_pad = 2,
-        language_pad = 1,
-        border = "thin",
-        inline_pad = 1,
-      },
-      pipe_table = { preset = "round" },
-      bullet = { icons = { "●", "○", "◆", "◇" } },
-      checkbox = {
-        enabled = true,
-        unchecked = { icon = "󰄱 " },
-        checked = { icon = "󰄵 " },
-        custom = {
-          progress = { raw = "[~]", rendered = "󰦖 ", highlight = "RenderMarkdownWarn" },
-        },
-      },
+    "iamcco/markdown-preview.nvim",
+    ft = "markdown",
+    keys = {
+      { "<leader>cp", show_preview, ft = "markdown", desc = "Markdown Preview" },
     },
     init = function()
-      vim.api.nvim_create_autocmd("ColorScheme", { callback = md_highlights })
-    end,
-    config = function(_, opts)
-      require("render-markdown").setup(opts)
-      md_highlights()
-      Snacks.toggle({
-        name = "Render Markdown",
-        get = require("render-markdown").get,
-        set = require("render-markdown").set,
-      }):map("<leader>um")
+      -- NOTE: the plugin's node server calls this by name over RPC, which
+      -- can't reach a Lua function, so it has to be a Vimscript one.
+      vim.cmd([[
+        function! MkdpOpenAppWindow(url) abort
+          call v:lua.require'config.markdown_preview'.open(a:url)
+        endfunction
+      ]])
+      vim.g.mkdp_browserfunc = "MkdpOpenAppWindow"
+      vim.g.mkdp_markdown_css = dir_css .. "/markdown.css"
+      vim.g.mkdp_highlight_css = dir_css .. "/highlight.css"
+      vim.g.mkdp_theme = "dark"
+      vim.g.mkdp_page_title = "${name}"
+      -- one window follows whichever markdown buffer is current, and stays
+      -- open (hidden or not) when the buffer is left
+      vim.g.mkdp_auto_start = 1
+      vim.g.mkdp_auto_close = 0
+      vim.g.mkdp_combine_preview = 1
+      vim.g.mkdp_combine_preview_auto_refresh = 1
+      vim.g.mkdp_preview_options = {
+        mkit = vim.empty_dict(),
+        katex = vim.empty_dict(),
+        uml = vim.empty_dict(),
+        maid = vim.empty_dict(),
+        disable_sync_scroll = 0,
+        sync_scroll_type = "middle",
+        hide_yaml_meta = 1,
+        sequence_diagrams = vim.empty_dict(),
+        flowchart_diagrams = vim.empty_dict(),
+        content_editable = false,
+        disable_filename = 1,
+        toc = vim.empty_dict(),
+      }
     end,
   },
 }

@@ -1,0 +1,210 @@
+/*
+ * VS Code's markdown preview (markdown-language-features/media/markdown.css)
+ * with the Dark Modern theme colors, for markdown-preview.nvim, which serves
+ * this file in place of its GitHub-style markdown.css (g:mkdp_markdown_css).
+ * It loads after the plugin's page.css, so the page rules at the top win.
+ */
+
+main,
+main[data-theme] {
+  background-color: #1f1f1f;
+}
+
+/* NOTE: VS Code lets text run the full width of the pane; this window is
+   wider than an editor pane, so the column is capped to stay readable. */
+#page-ctn {
+  max-width: 980px;
+  color: #cccccc;
+}
+
+.markdown-body {
+  font-family: "Segoe WPC", "Segoe UI", system-ui, "Ubuntu", "Droid Sans", sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+  padding: 16px 26px 48px;
+  word-wrap: break-word;
+  color: #cccccc;
+  background-color: #1f1f1f;
+}
+
+.markdown-body > *:first-child {
+  margin-top: 0;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  line-height: 1.25;
+}
+
+.markdown-body h1 {
+  font-size: 2em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.markdown-body h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.markdown-body h3 {
+  font-size: 1.25em;
+}
+
+.markdown-body h4 {
+  font-size: 1em;
+}
+
+.markdown-body h5 {
+  font-size: 0.875em;
+}
+
+.markdown-body h6 {
+  font-size: 0.85em;
+}
+
+.markdown-body p {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.markdown-body li p {
+  margin-bottom: 0.7em;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin-top: 0;
+  margin-bottom: 0.7em;
+  padding-left: 2em;
+}
+
+.markdown-body ul ul,
+.markdown-body ul ol,
+.markdown-body ol ul,
+.markdown-body ol ol {
+  margin-bottom: 0;
+}
+
+.markdown-body li.task-list-item {
+  list-style-type: none;
+}
+
+.markdown-body li.task-list-item input[type="checkbox"] {
+  margin: 0 0.5em 0.2em -1.4em;
+  vertical-align: middle;
+}
+
+.markdown-body a {
+  color: #4daafc;
+  text-decoration: none;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.markdown-body hr {
+  border: 0;
+  height: 1px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.markdown-body img,
+.markdown-body video {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.markdown-body blockquote {
+  margin: 0 0 16px;
+  padding: 0 16px 0 10px;
+  border-left: 5px solid rgba(0, 122, 204, 0.5);
+  border-radius: 2px;
+  background: rgba(127, 127, 127, 0.1);
+}
+
+.markdown-body blockquote > :first-child {
+  padding-top: 8px;
+}
+
+.markdown-body blockquote > :last-child {
+  margin-bottom: 0;
+  padding-bottom: 8px;
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  margin-bottom: 0.7em;
+}
+
+.markdown-body th {
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.69);
+}
+
+.markdown-body th,
+.markdown-body td {
+  padding: 5px 10px;
+}
+
+.markdown-body table > tbody > tr + tr > td {
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.markdown-body code,
+.markdown-body kbd,
+.markdown-body pre {
+  font-family: "JetBrainsMono Nerd Font", "SF Mono", Monaco, Menlo, Consolas, "Ubuntu Mono", "Liberation Mono",
+    "DejaVu Sans Mono", "Courier New", monospace;
+}
+
+.markdown-body code {
+  font-size: 1em;
+  line-height: 1.357em;
+  padding: 1px 3px;
+  border-radius: 4px;
+  color: #d0d0d0;
+  background-color: #3c3c3c;
+}
+
+.markdown-body pre {
+  margin: 0 0 16px;
+  padding: 16px;
+  border-radius: 3px;
+  overflow: auto;
+  background-color: rgba(10, 10, 10, 0.4);
+}
+
+.markdown-body pre code {
+  display: inline-block;
+  padding: 0;
+  tab-size: 4;
+  white-space: pre;
+  color: #cccccc;
+  background: none;
+}
+
+.markdown-body kbd {
+  font-size: 0.9em;
+  padding: 1px 3px;
+  border-radius: 3px;
+  border: 1px solid rgba(51, 51, 51, 0.6);
+  border-bottom-color: rgba(68, 68, 68, 0.6);
+  box-shadow: inset 0 -1px 0 rgba(68, 68, 68, 0.6);
+  color: #cccccc;
+  background-color: rgba(128, 128, 128, 0.17);
+  vertical-align: middle;
+}
+
+.markdown-body a.anchor {
+  display: none;
+}
