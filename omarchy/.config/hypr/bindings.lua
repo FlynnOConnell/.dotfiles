@@ -99,9 +99,10 @@ hl.unbind("SUPER + P")
 o.bind("SUPER + P", "Screenshot", "omarchy-capture-screenshot")
 o.bind("SUPER + ALT + P", "Pseudo window", hl.dsp.window.pseudo())
 
--- Record the focused monitor, no audio; again to stop (was: SUPER+SHIFT+P Google Photos).
+-- Record the focused monitor, no audio; again to stop and open the folder on the new file
+-- (was: SUPER+SHIFT+P Google Photos).
 hl.unbind("SUPER + SHIFT + P")
-o.bind("SUPER + SHIFT + P", "Screenrecording: start / stop", "omarchy-capture-screenrecording --stop-recording || omarchy-capture-screenrecording --fullscreen")
+o.bind("SUPER + SHIFT + P", "Screenrecording: start / stop", "screenrecord-toggle")
 
 -- Apps I use, on keys Omarchy gave to ones I don't (was: SUPER+SHIFT+M Spotify,
 -- G Signal, A ChatGPT). Slack focuses its window if it's already open; it is

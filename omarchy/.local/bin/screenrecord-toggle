@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Screen recording toggle (SUPER+SHIFT+P): records the focused monitor, no
+# audio. The second press stops it, opens the folder in Nautilus with the new
+# file selected, and rescans runhub so the recording is on the Videos record
+# (~/Videos/runhub.json makes the folder a runhub inbox) without waiting for
+# the two-minute pass.
+
+set -uo pipefail
+
+if recording=$(omarchy-capture-screenrecording --stop-recording); then
+  if [[ -f $recording ]]; then
+    setsid -f uwsm-app -- nautilus --select "$recording" >/dev/null 2>&1
+    command -v runhub >/dev/null && setsid -f runhub scan >/dev/null 2>&1
+  fi
+else
+  omarchy-capture-screenrecording --fullscreen
+fi
