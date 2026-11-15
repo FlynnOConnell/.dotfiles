@@ -52,6 +52,7 @@
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
   "switchModelsOnFlag": true,
+  "agentPushNotifEnabled": true,
   "autoMode": {
     "environment": [
       "### Org-wide",
@@ -80,5 +81,8 @@
       "**Org-specific CLIs**: None configured — herdr, hyprctl, pacman, cryptsetup, yay, setsid seen in this project's transcript are personal desktop/system tools, not org CLIs",
       "routine under ~/agent_assets/ prefix for generated artifacts, per ~/.claude/CLAUDE.md workspace-conventions"
     ]
+  },
+  "remote": {
+    "defaultEnvironmentId": "env_011CUR1MKCUxMHFZGaBScJot"
   }
 }
