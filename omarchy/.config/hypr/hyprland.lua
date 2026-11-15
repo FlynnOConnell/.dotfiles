@@ -158,6 +158,7 @@ function sciview.toggle()
   sciview_focus(viewer)
 end
 
+hl.unbind("SUPER + M")
 o.bind("SUPER + M", "sciview: show and focus / hide", sciview.toggle)
 
 -- swayimg-nvim (the image window nvim opens images in, nvim/lua/config/swayimg.lua):
@@ -202,6 +203,7 @@ function swayimg_nvim.toggle()
   hl.dispatch(hl.dsp.focus({ window = "address:" .. viewer.address }))
 end
 
+hl.unbind("SUPER + I")
 o.bind("SUPER + I", "Images from nvim: show and focus / hide", swayimg_nvim.toggle)
 
 -- games open on workspace 4: CS2 (native) and Proton games (steam_app_<id>)
@@ -378,6 +380,7 @@ popover("SUPER + SHIFT + D", "Discord", "chrome-discord.com__channels_@me-Defaul
 -- Home Assistant over Tailscale, by MagicDNS name: HA rejects logins from a
 -- 100.x IP as an invalid client id, since it doesn't count CGNAT as private.
 popover("SUPER + SHIFT + A", "Home Assistant", "chrome-homeassistant.tail0ea452.ts.net__-Default", o.launch_webapp("http://homeassistant.tail0ea452.ts.net"))
+hl.unbind("SUPER + SHIFT + T")
 popover("SUPER + SHIFT + T", "Tailscale", "chrome-login.tailscale.com__admin_machines-Default", o.launch_webapp("https://login.tailscale.com/admin/machines"))
 -- Quick note (was: SUPER+SHIFT+W Omawrite on an empty document): today's inbox
 -- note in Obsidian (quick-note). Every show re-runs it, so a new day gets its

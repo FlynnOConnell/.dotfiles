@@ -77,6 +77,7 @@ o.bind("SUPER + SHIFT + DOWN", "Workspace in the 16:9 share box", "workspace-wid
 -- present, the 16:9 share box (Omarchy's toggle only flips the first two). Dwindle's
 -- split toggle on SUPER+ALT+J; SUPER+Z is master's swap-into-the-middle. The
 -- keybindings viewer is gone: the SUPER+CTRL+K cheatsheets menu lists Omarchy's keys.
+hl.unbind("SUPER + ALT + L")
 o.bind("SUPER + ALT + L", "Cycle workspace layout", "workspace-layout-cycle")
 o.bind("SUPER + ALT + J", "Toggle window split", hl.dsp.layout("togglesplit"))
 o.bind("SUPER + Z", "Swap window into the middle (centered master)", hl.dsp.layout("swapwithmaster"))
@@ -274,6 +275,7 @@ hl.bind("mouse:272", function()
 end, { non_consuming = true })
 
 -- Herdr agents panel (the fo.herdr bar widget): what every agent is doing, Enter jumps to one.
+hl.unbind("SUPER + A")
 o.bind("SUPER + A", "Herdr agents", "omarchy-shell fo.herdr toggle")
 
 -- Dictation keys from before Alt + Space and Right Alt became the defaults.
