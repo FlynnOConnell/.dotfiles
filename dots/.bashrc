@@ -1,4 +1,4 @@
-# MBO Bash Profile
+# Bash profile
 
 # path
 export PATH="$HOME/.local/bin:$PATH"

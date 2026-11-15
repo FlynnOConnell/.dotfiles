@@ -38,8 +38,6 @@ export PATH="$PATH:$LOCALAPPDATA:$PROGRAMFILES:$PROGRAMFILES86"
 export PATH="$PATH:$PROGRAMFILES"
 export PATH="$PATH:$PROGRAMFILES86"
 export PATH="$PATH:/opt/local/bin"
-export PATH=$PATH:"/mnt/c/Users/RBO/Program Files/MATLAB/R2023b/bin/"
-export PATH=$PATH:"c/Users/RBO/Program Files/MATLAB/R2023b/bin/"
 export PATH=$PATH:"$PROGRAMFILES//MATLAB//R2023b//bin//"
 export PATH=$PATH:"$PROGRAMFILES/komorebi/bin/"
 

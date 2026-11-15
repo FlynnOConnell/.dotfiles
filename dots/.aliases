@@ -8,9 +8,6 @@ alias mysudo='sudo -E env "PATH=$PATH"'
 # - Remote ----
 cdm() { cd /mnt/c/Users/$USER ; }
 
-alias vgpu='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
-alias rdp='remmina ~/.local/share/remmina/rockefellernt_rdp_v-gpu2_129-85-3-29.remmina &'
-
 # - Copy ----
 alias cpw='xsel --clipboard < ~/.password.txt'
 alias cppy='xsel --clipboard < ~/.password_pypi.txt'

@@ -1,4 +1,4 @@
-# MBO PowerShell Profile
+# PowerShell profile
 
 # === Path ===
 $env:Path = "$env:USERPROFILE\.local\bin;$env:Path"
