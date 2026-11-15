@@ -1,3 +1,13 @@
+# Replies: short, no paragraphs
+
+This overrides everything below about reports and writing.
+
+- No paragraphs in a chat reply. Ever. Bullets of one line each, or one table.
+- Default length: 5 lines or fewer. Hard cap: 12 lines, unless I ask for more.
+- First line is the answer. Then only what I need to act on.
+- Detail goes in `REPORT.md`; the reply gives the path or link, and does not repeat it.
+- No caveat lists, no "not compared / not checked" inventories, no method recap. One line for the one caveat that changes what I do.
+
 # Files you make for me
 
 Anything I'll want to open (plots, reports, notes, exported data, scripts I'll run myself) goes in
