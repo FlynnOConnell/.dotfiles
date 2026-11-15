@@ -30,7 +30,7 @@ if moonlight list "$addr" 2>&1 | grep -q "has not been paired"; then
 fi
 
 # The stream takes the focused monitor's pixels and refresh rate, fullscreen, so it
-# lands 1:1.
+# lands 1:1. A host with no monitor (home_hub's headless-display) renders that size.
 read -r width height fps < <(hyprctl monitors -j | jq -r '.[] | select(.focused) | "\(.width) \(.height) \(.refreshRate | round)"')
 
 exec setsid uwsm-app -- moonlight stream "$addr" "$app" \
