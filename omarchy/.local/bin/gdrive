@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# gdrive push|pull|ls <path>... [-- <rclone args>]: copy paths between this
+# home and the Google Drive of masknmf@gmail.com, the account shared with the
+# masknmf developers.
+#
+#   gdrive push data/glutamate/iglusnfr
+#   gdrive pull data/glutamate/iglusnfr -- --exclude '*_DOWNSAMPLED-8x.tif'
+#   gdrive ls data
+#
+# Paths are relative to ~ here and to the Drive root there, so a folder lands
+# in the same place on both ends (as fleet-pull does between machines). A file
+# is copied into the same parent folder. Nothing is deleted on either side;
+# files that already match in size and time are skipped, so a rerun resumes.
+#
+# The remote is the rclone remote "masknmf" (override with GDRIVE_REMOTE),
+# created once per machine with:
+#
+#   rclone config create masknmf drive scope=drive client_id=<id> client_secret=<secret>
+
+set -u
+
+usage() { echo "usage: gdrive push|pull|ls <path>... [-- <rclone args>]" >&2; exit 2; }
+[[ $# -ge 2 ]] || usage
+action=$1; shift
+remote=${GDRIVE_REMOTE:-masknmf}
+paths=()
+while [[ $# -gt 0 && $1 != -- ]]; do paths+=("${1%/}"); shift; done
+[[ ${1:-} == -- ]] && shift
+[[ ${#paths[@]} -gt 0 ]] || usage
+
+status=0
+for p in "${paths[@]}"; do
+  case $action in
+    push)
+      [[ -e $HOME/$p ]] || { echo "gdrive: ~/$p does not exist" >&2; status=1; continue; }
+      src=$HOME/$p; dst=$remote:$p
+      [[ -d $src ]] || dst=$remote:$(dirname "$p")
+      ;;
+    pull)
+      src=$remote:$p; dst=$HOME/$p
+      # NOTE: lsf on a file prints its name; on a folder, its entries (dirs end in /).
+      [[ $(rclone lsf "$src" 2>/dev/null) == "$(basename "$p")" ]] && dst=$HOME/$(dirname "$p")
+      ;;
+    ls)
+      rclone lsf --format sp --separator '  ' "$remote:$p" "$@" || status=1
+      continue
+      ;;
+    *) usage ;;
+  esac
+  echo "== $src -> $dst"
+  rclone copy --progress --transfers 8 --drive-chunk-size 128M "$@" "$src" "$dst" || status=1
+done
+exit $status

@@ -64,6 +64,7 @@ FILES=(
   .local/bin/suspend-when-locked
   .local/bin/sshfs-mount
   .local/bin/fleet-pull
+  .local/bin/gdrive
   .local/bin/calendar-events
   .local/bin/gamesir-x360
   .local/bin/reboot-windows
