@@ -235,8 +235,13 @@ this machine, fabricates what it can, and does nothing else. The exact line to r
 `runhub up` runs a user service on pml-w1 that rescans `~/agent_assets` and `~/data` every two minutes
 and serves `http://localhost:8787/` (tailnet: `https://pml-w1.tail0ea452.ts.net/`). Nothing has to be
 registered: every `agent_assets/<A>/<YYYYMMDD_slug>/` topic and masknmf run folder appears on its own.
-The index lists topics, newest first; pipeline runs have their own page (`/runs.html`), one fold per dataset.
+The index lists the projects as a tree (status, people, next task) and then topics, newest first; pipeline runs have their own page (`/runs.html`), one fold per dataset.
+A project is a folder note under `~/repos/arctic-lake/projects/` (`subcellular/subcellular.md`, subproject `subcellular/ca1-voltage/ca1-voltage.md`) with `category = "project"`, `status`, `people` and `data` in its `runhub.toml`; its page `project-<key>.html` shows the note, then the decks, topics, runs, datasets and documents that name it. `## Now` checkboxes in the note are its tasks.
 Notes from the vault `~/repos/arctic-lake` (one folder note `<name>/<name>.md` per folder, `runhub.toml` beside it) list on `/notes.html`; `runhub check <note folder>` lints one the same way.
+`/literature.html` lists every record of category `literature`, wherever it lives: one folder per paper or talk in `~/repos/literature`
+(`<name>/<name>.md`, `runhub.toml`, `slides.html`), plus the vault's literature notes. A `review` tag files one under Reviews.
+A card shows the note's `# ` title, `authors = "First / Last"` and `type = "article"` or `"review"` from `runhub.toml`, then the line after the title: one short sentence on the goal and one on the key findings, 160 characters together.
+When a paper has both a deck and a note, `reading_note = "<record id>"` in the deck's `runhub.toml` links the note from the deck's card and hides its own card.
 
 Before finishing a topic, run `runhub check <topic dir>` and fix every `FIX` line; end the report with the link it prints.
 It checks these, and the page needs them:
@@ -247,10 +252,13 @@ It checks these, and the page needs them:
       category = "analysis"      # or "development" (code, tooling, pages)
       goal = "Decide whether vnoiser replaces masknmf for Asako's ASAP7 recordings."
       tags = ["asako", "CA1", "voltage"]   # experimenter, brain region, indicator, dataset
+      project = "subcellular/ca1-voltage"  # a folder under arctic-lake/projects/; a list when it serves several
 
-  Tags are free words people will search for. `runhub note <id> --category analysis --goal "..." --tag asako` writes the same file;
+  Tags are free words people will search for. The project files the topic on that project's page; `runhub check` lists the keys.
+  `runhub note <id> --category analysis --goal "..." --tag asako --project subcellular/ca1-voltage` writes the same file;
 - `artifacts/REPORT.md` is the entry point: question, answer, key figures inline with relative image links. Markdown renders as a page;
 - every png, jpg, gif, html, md, pdf and mp4 anywhere under the topic (up to eight levels, zarr stores included) is on its record page `/r/<id>`: `REPORT.md` inline, pages and videos as buttons at the top, images in one gallery with the folder in the caption, click to view full size, arrow keys to step through, a pen to draw on for presenting;
+- a notebook goes in `artifacts/notebooks/` as `YYYYMMDD_<slug>.ipynb`. Its `▶` button on the record page opens it in the hub's JupyterLab (`https://pml-w1.tail0ea452.ts.net/jupyter/`, kernel `~/envs/pml/.venv`), where the user runs, edits and saves it from any tailnet device; `/notebooks.html` lists every notebook and `/r/<id>/<path>.ipynb` shows one with its saved outputs. Save it executed, with figures embedded, so that view shows the result. Paths inside it are absolute or relative to the notebook's own folder, which is the kernel's working directory;
 - a pipeline run a topic uses is listed on the topic's page and marked "used by" on the runs page. Link them by launching through `runhub run ... --topic <topic dir>` (or `export RUNHUB_TOPIC=<topic dir>`), by naming the run folder (`20261027T025609_two-photon-calcium`) in `MEMORIES.md` or `REPORT.md`, or afterwards with `runhub note <run id> --topic <topic dir>`. Runs nobody links stay on the runs page only;
 - `/media.html` is one filterable gallery of every image on the host, newest topic first; `/r/<id>/artifacts/<sub>/` browses a folder with the same gallery.
 
@@ -258,8 +266,13 @@ Archiving: the page's "archive" button (or `runhub archive <id>`) moves an item'
 its scan root and hides it; `runhub restore <id>` or the archived list at the page bottom brings it back.
 Deleting a folder by hand drops its record on the next scan.
 
+Scanned folders: `runhub roots` lists every folder that is scanned with the record count, symlink duplicates skipped and
+time of the last scan (also at `/roots.html`); `runhub roots add <folder>` and `runhub roots rm <folder>` change the list, and the
+server picks the change up on its next pass. `runhub why <folder>` lists the checks that put a run folder on the runs page and
+marks the one it fails. A folder reached through a symlink is indexed only when its target is not indexed by its real path.
+
 Commands: `runhub status`, `runhub scan` (refresh now instead of waiting), `runhub ls <words>` (find the
-id), `runhub share <id>` (print the short link). Curation: `runhub note <id> --category analysis --goal "..." --tag t --untag u --note "..."`.
+id), `runhub share <id>` (print the short link). Curation: `runhub note <id> --category analysis --goal "..." --tag t --untag u --project <key> --note "..."`.
 Filtering the page: `?q=<word>` in the URL, the category links above the table, or click any chip.
 Pipeline launching at pinned versions: `runhub run <name>@<channel> --dir <run> --topic <topic dir> -- <cmd>`; see
 `pipelines/README.md` in the repo.
