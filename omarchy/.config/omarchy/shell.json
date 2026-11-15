@@ -7,7 +7,6 @@
   "bar": {
     "position": "top",
     "transparent": false,
-    "centerAnchor": "omarchy.clock",
     "layout": {
       "left": [
         {
@@ -19,10 +18,15 @@
       ],
       "center": [
         {
-          "id": "omarchy.keyboard-layout"
-        },
-        {
-          "id": "omarchy.indicators"
+          "id": "omarchy.indicators",
+          "items": [
+            "ScreenRecording",
+            "RemoteSession",
+            "Reminder",
+            "NightLight",
+            "Dnd",
+            "StayAwake"
+          ]
         },
         {
           "id": "fo.clock",
@@ -31,7 +35,29 @@
           "verticalFormat": "HH\n—\nmm"
         },
         {
-          "id": "omarchy.elsewhen"
+          "id": "omarchy.elsewhen",
+          "cities": [
+            {
+              "name": "Central",
+              "zone": "US/Central"
+            },
+            {
+              "name": "Sao Paulo",
+              "zone": "America/Sao_Paulo"
+            },
+            {
+              "name": "London",
+              "zone": "Europe/London"
+            },
+            {
+              "name": "Dubai",
+              "zone": "Asia/Dubai"
+            },
+            {
+              "name": "Tokyo",
+              "zone": "Asia/Tokyo"
+            }
+          ]
         },
         {
           "id": "omarchy.weather"
@@ -46,6 +72,9 @@
           "hidden": [
             "1Password_status_icon_1"
           ]
+        },
+        {
+          "id": "omarchy.keyboard-layout"
         },
         {
           "id": "omarchy.tailscale"
@@ -71,7 +100,10 @@
         {
           "id": "omarchy.power"
         }
-      ]
+      ],
+      "centerBegin": [],
+      "centerEnd": [],
+      "tray": []
     }
   },
   "plugins": [
