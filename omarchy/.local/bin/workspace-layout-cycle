@@ -8,7 +8,9 @@
 # so Omarchy's config restores it on reload.
 
 workspace=$(hyprctl activeworkspace -j | jq -r '.id')
-[[ $workspace =~ ^-?[0-9]+$ ]] || exit 1
+# NOTE: named workspaces have negative ids, and Hyprland reads a leading "-" as relative
+# to the current workspace, so a rule for one would land on another. Omarchy skips them too.
+[[ $workspace =~ ^[0-9]+$ ]] || exit 1
 layout_file="$HOME/.local/state/omarchy/workspace-layouts/$workspace.lua"
 
 layout=$(hyprctl activeworkspace -j | jq -r '.tiledLayout')
