@@ -232,7 +232,11 @@ if command -v systemctl >/dev/null; then
   # the lab workstations host the shared herdr session and can't be woken from
   # outside the lab, so only the other machines suspend once locked
   if [[ $HOST == pml-w* ]]; then
-    systemctl --user disable --now suspend-when-locked.service 2>/dev/null || true
+    # NOTE: disable deletes a linked unit file, so only disable it once, or every run
+    # relinks it and deletes it again
+    if systemctl --user is-enabled -q suspend-when-locked.service 2>/dev/null; then
+      systemctl --user disable --now suspend-when-locked.service 2>/dev/null || true
+    fi
   else
     systemctl --user enable --now suspend-when-locked.service 2>/dev/null || true
   fi
