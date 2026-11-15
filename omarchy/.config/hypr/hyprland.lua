@@ -206,6 +206,74 @@ end
 hl.unbind("SUPER + I")
 o.bind("SUPER + I", "Images from nvim: show and focus / hide", swayimg_nvim.toggle)
 
+-- Markdown preview from nvim (nvim/lua/config/markdown_preview.lua): a Chrome
+-- app window on http://localhost:<port>/page/<bufnr>, rendered like VS Code's
+-- preview. It lives on special:markdown-preview as a floating page over the
+-- editor, opaque so the text reads true. nvim opens it on the machine it runs
+-- on and on every machine watching it through a herdr remote client, so
+-- SUPER+N switches between editor and preview wherever the keyboard is.
+-- markdown_preview is global so nvim can call it: hyprctl eval 'markdown_preview.show()'
+o.window({ class = "^chrome-localhost__page_[0-9]+-Default$" }, {
+  workspace = "special:markdown-preview silent",
+  float = true,
+  size = { "(monitor_w*0.6)", "(monitor_h*0.94)" },
+  center = true,
+  tag = "-default-opacity",
+  opacity = "1 1",
+})
+
+markdown_preview = { opened = {} }
+
+local function markdown_preview_workspace()
+  return hl.get_workspace("special:markdown-preview")
+end
+
+local function markdown_preview_showing()
+  local special = markdown_preview_workspace()
+  return special and special.visible
+end
+
+local function markdown_preview_has_windows()
+  local special = markdown_preview_workspace()
+  return special and special.windows > 0
+end
+
+-- nvim calls this for its preview server (port) whenever the preview is asked
+-- for; a server already opened here is left alone while a window is still up.
+-- host "" is this machine. For another host the page comes through an ssh
+-- tunnel on the same port, which closes when that nvim (pid_nvim) exits.
+function markdown_preview.open(host, port, bufnr, pid_nvim)
+  local server = host .. ":" .. port
+  if markdown_preview.opened[server] and markdown_preview_has_windows() then
+    return
+  end
+  markdown_preview.opened[server] = true
+  local launch = "omarchy-launch-webapp http://localhost:" .. port .. "/page/" .. bufnr
+  if host == "" then
+    return hl.exec_cmd(launch)
+  end
+  local forward = port .. ":localhost:" .. port
+  local hold = "'tail --pid=" .. pid_nvim .. " -f /dev/null'"
+  hl.exec_cmd("ssh -f -o BatchMode=yes -o ExitOnForwardFailure=yes -L " .. forward .. " " .. host .. " " .. hold .. " && " .. launch)
+end
+
+-- the silent rule keeps a window that is still starting up from opening the
+-- workspace itself, so nvim opens it here and the window maps into view
+function markdown_preview.show()
+  if not markdown_preview_showing() then
+    hl.dispatch(hl.dsp.workspace.toggle_special("markdown-preview"))
+  end
+end
+
+-- hide a shown preview; show one that is running (nvim starts it)
+function markdown_preview.toggle()
+  if markdown_preview_showing() or markdown_preview_has_windows() then
+    hl.dispatch(hl.dsp.workspace.toggle_special("markdown-preview"))
+  end
+end
+
+o.bind("SUPER + N", "Markdown preview from nvim: show / hide", markdown_preview.toggle)
+
 -- games open on workspace 4: CS2 (native) and Proton games (steam_app_<id>)
 o.window({ class = "^(cs2|steam_app_[0-9]+)$" }, { workspace = "4" })
 
