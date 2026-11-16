@@ -43,6 +43,7 @@ FILES=(
   .config/hyprland-preview-share-picker/config.yaml
   .config/git/config
   .config/herdr/config.toml
+  .config/herdr/plugins/config/herdr-bar/config.json
   .config/starship.toml
   .config/lazygit/config.yml
   .config/swayimg/init.lua
@@ -279,6 +280,12 @@ fi
 for tool in "${MISE_TOOLS[@]}"; do
   grep -qs "^${tool%@*} *=" "$HOME/.config/mise/config.toml" || mise use --global "$tool"
 done
+
+# herdr-bar: the command bar on prefix+k (herdr/config.toml) and the watcher that
+# titles tabs after the agent's task (auto_titles in its config.json)
+if command -v herdr >/dev/null && ! herdr plugin list 2>/dev/null | grep -q herdr-bar; then
+  herdr plugin install -y jeffarese/herdr-bar || echo "herdr-bar didn't install" >&2
+fi
 
 # sciview (~/repos/sciview, cloned by bootstrap-omarchy.sh): the debugger app
 # behind nvim's viewer, SUPER+M (hyprland.lua) and the bar's fo.sciview widget.
