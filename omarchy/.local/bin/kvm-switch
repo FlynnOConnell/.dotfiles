@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Flips the Dell U4924DW between its USB-C input (pml-p1) and its DisplayPort input (pml-w1)
+# over DDC. The monitor's KVM moves the keyboard and mouse with the input, so the same key
+# on either machine hands the desk to the other one.
+
+input_usbc=0x1b
+input_displayport=0x0f
+monitor=(--model "Dell U4924DW")
+
+if ddcutil "${monitor[@]}" getvcp 60 | grep -q "sl=$input_usbc"; then
+  input_new=$input_displayport
+else
+  input_new=$input_usbc
+fi
+ddcutil "${monitor[@]}" setvcp 60 "$input_new"

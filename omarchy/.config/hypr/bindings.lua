@@ -84,6 +84,7 @@ o.bind("SUPER + Z", "Swap window into the middle (centered master)", hl.dsp.layo
 -- One menu for every cheat sheet (Omarchy, Herdr, Tmux, Neovim, web apps); was: Herdr keybindings.
 hl.unbind("SUPER + CTRL + K")
 o.bind("SUPER + CTRL + K", "Cheatsheets", "cheatsheets")
+o.bind("SUPER + CTRL + SHIFT + S", "Switch monitor and KVM to the other computer", "kvm-switch")
 
 -- One monitor only: drop Omarchy's move-workspace-to-monitor and monitor focus keys.
 hl.unbind("SUPER + SHIFT + ALT + LEFT")

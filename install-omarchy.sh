@@ -59,6 +59,7 @@ FILES=(
   .local/bin/workspace-layout-cycle
   .local/bin/share-region
   .local/bin/steam-popups
+  .local/bin/kvm-switch
   .local/bin/screenrecord-toggle
   .local/bin/window-resize
   .local/bin/workspace-width
