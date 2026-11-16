@@ -123,16 +123,20 @@ local function webapp_class(url)
   return "chrome-" .. host .. "__" .. path:gsub("/", "_") .. "-Default"
 end
 
-function fo_webapp_toggle(url) -- global so `hyprctl eval` can drive it
-  local window = hl.get_windows({ class = webapp_class(url) })[1]
+local function window_toggle(class, launch_command)
+  local window = hl.get_windows({ class = class })[1]
   local active = hl.get_active_window()
   if not window then
-    hl.exec_cmd(o.launch_webapp(url))
+    hl.exec_cmd(launch_command)
   elseif active and active.address == window.address then
     hl.dispatch(hl.dsp.window.close({ window = "address:" .. window.address }))
   else
     hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
   end
+end
+
+function fo_webapp_toggle(url) -- global so `hyprctl eval` can drive it
+  window_toggle(webapp_class(url), o.launch_webapp(url))
 end
 
 local function webapp(keys, description, url)
@@ -144,6 +148,33 @@ end
 webapp("SUPER + SHIFT + G", "GitLab", "https://gitlab.com/dashboard/projects")
 webapp("SUPER + ALT + H", "Claude", "https://claude.ai")
 webapp("SUPER + CTRL + G", "pml-w1 results", "https://pml-w1.tail0ea452.ts.net/")
+
+-- GitHub in a full Chrome window (URL bar, tabs), which a --app window cannot
+-- have. Its own data dir makes it a separate Chrome with the window class
+-- "github"; --class is ignored by a Chrome that shares the main profile. The
+-- page keys open a tab in that window, starting it if needed.
+local github_class = "github"
+local github_chrome = "uwsm-app -- google-chrome-stable --user-data-dir="
+  .. os.getenv("HOME")
+  .. "/.config/google-chrome-github --class="
+  .. github_class
+  .. " --no-first-run "
+
+local function github_page(keys, description, url)
+  o.bind(keys, "GitHub: " .. description, function()
+    hl.exec_cmd(github_chrome .. "'" .. url .. "'")
+    local window = hl.get_windows({ class = github_class })[1]
+    if window then
+      hl.dispatch(hl.dsp.focus({ window = "address:" .. window.address }))
+    end
+  end)
+end
+
+o.bind("SUPER + ALT + O", "GitHub: open / close", function()
+  window_toggle(github_class, github_chrome .. "https://github.com/FlynnOConnell")
+end)
+github_page("SUPER + ALT + M", "masknmf-toolbox", "https://github.com/apasarkar/masknmf-toolbox")
+github_page("SUPER + ALT + E", "my repos", "https://github.com/FlynnOConnell?tab=repositories")
 
 -- PDF reader for papers (opens the last document; press o inside to pick another).
 -- Through XWayland: on native Wayland its OpenGL context fails (EGL_BAD_MATCH on
