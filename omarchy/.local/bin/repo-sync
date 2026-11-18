@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Keep this machine's notes and dotfiles in step with GitHub, so every omarchy
-# machine (home, pml-w1, pml-w2, ...) has the same notes and config while it's
+# machine (home, pml-w1, pml-p1, ...) has the same notes and config while it's
 # running. Runs from repo-sync.timer every 5 minutes and from quick-note when
 # its window closes.
 #

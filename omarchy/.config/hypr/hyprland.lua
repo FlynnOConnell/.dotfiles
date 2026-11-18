@@ -23,8 +23,8 @@ require("hypr.looknfeel")
 require("hypr.autostart")
 
 -- Dell U4924DW (49", 5120x1440): the same settings on any machine it's plugged
--- into, found by its EDID description, so the port doesn't matter (DP-1 on
--- pml-w2, a USB-C DP-n on pml-p1). On it, the scratchpad (SUPER+S, where Slack
+-- into, found by its EDID description, so the port doesn't matter (a USB-C
+-- DP-n on pml-p1). On it, the scratchpad (SUPER+S, where Slack
 -- lives) tiles in the middle half of the screen instead of across all 49", and
 -- regular workspaces use centered master: the main window in the middle half,
 -- the rest stacked in the side columns.

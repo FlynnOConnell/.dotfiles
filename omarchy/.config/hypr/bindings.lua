@@ -197,7 +197,6 @@ o.bind("SUPER + C", "Calendar", "omarchy-shell shell toggle omarchy.clock")
 
 -- Stream a lab workstation with Moonlight, focusing that host's stream if it's already open.
 o.bind("SUPER + R", "pml-w1 (Moonlight)", "moonlight-stream pml-w1")
-o.bind("SUPER + ALT + R", "pml-w2 (Moonlight)", "moonlight-stream pml-w2")
 
 -- Quick note (SUPER+SHIFT+W, was: Omawrite on an empty document) is a pop-over in hyprland.lua.
 hl.unbind("SUPER + SHIFT + W")
