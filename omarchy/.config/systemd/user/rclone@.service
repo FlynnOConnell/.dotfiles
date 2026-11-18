@@ -1,0 +1,22 @@
+# Mounts the rclone remote <name> at ~/gdrive-<name>, so Nautilus can drag and
+# drop into it, e.g.
+#   systemctl --user enable --now rclone@masknmf
+# The remote comes from `rclone config create <name> drive scope=drive` (browser
+# login). Full VFS caching lets apps open, seek and write files like local ones;
+# uploads finish in the background from ~/.cache/rclone, capped at 20G.
+
+[Unit]
+Description=rclone mount of %i: at ~/gdrive-%i
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=notify
+ExecStartPre=/usr/bin/mkdir -p %h/gdrive-%i
+ExecStart=/usr/bin/rclone mount %i: %h/gdrive-%i --vfs-cache-mode full --vfs-cache-max-size 20G --dir-cache-time 5m --poll-interval 1m --log-level NOTICE
+ExecStop=-/usr/bin/fusermount3 -uz %h/gdrive-%i
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=default.target

@@ -72,6 +72,7 @@ FILES=(
   .local/bin/gamesir-x360
   .local/bin/reboot-windows
   .config/systemd/user/sshfs@.service
+  .config/systemd/user/rclone@.service
   .config/systemd/user/bt-connect@.service
   .config/systemd/user/slack-attention.service
   .config/systemd/user/suspend-when-locked.service
