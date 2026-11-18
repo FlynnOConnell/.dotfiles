@@ -1,0 +1,18 @@
+#!/bin/sh
+# Usage: gamesir-force-hid /sys/<devpath of the GameSir dongle>
+# Run by 82-gamesir-hid-mode.rules when the GameSir T3 Pro dongle enumerates in
+# Xbox mode (3537:1044). xpad binds that mode, but no input arrives. A fresh
+# enumeration usually fails the Xbox handshake (error -32) and lands on the HID
+# fallback (3537:1045) that gamesir-x360 replays, so this disables and
+# re-enables the dongle's hub port. At most one reset a minute, so a dongle that
+# keeps choosing Xbox mode cannot flap forever.
+dir_device=$1
+filepath_stamp=/run/gamesir-force-hid
+sleep 3
+[ "$(cat "$dir_device/idProduct" 2>/dev/null)" = 1044 ] || exit 0
+[ -n "$(find "$filepath_stamp" -mmin -1 2>/dev/null)" ] && exit 0
+touch "$filepath_stamp"
+dir_port=$(readlink -f "$dir_device/port")
+echo 1 > "$dir_port/disable"
+sleep 1
+echo 0 > "$dir_port/disable"

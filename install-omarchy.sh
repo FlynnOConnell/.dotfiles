@@ -282,6 +282,10 @@ polkit.addRule(function(action, subject) {
 POLKIT
 fi
 
+sudo install -m 755 "$REPO/omarchy/system/gamesir-force-hid" /usr/local/bin/gamesir-force-hid
+sudo install -m 644 "$REPO/omarchy/system/82-gamesir-hid-mode.rules" /etc/udev/rules.d/82-gamesir-hid-mode.rules
+sudo udevadm control --reload
+
 (( ${#PACKAGES[@]} )) && omarchy-pkg-add "${PACKAGES[@]}"
 (( ${#PACKAGES_AUR[@]} )) && omarchy-pkg-aur-add "${PACKAGES_AUR[@]}"
 

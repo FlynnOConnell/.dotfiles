@@ -1,0 +1,2 @@
+# GameSir T3 Pro dongle in Xbox mode (3537:1044) gives no input; push it to the HID fallback (3537:1045).
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="3537", ATTR{idProduct}=="1044", RUN+="/usr/bin/systemd-run --no-block --collect /usr/local/bin/gamesir-force-hid /sys%p"
