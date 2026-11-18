@@ -5,7 +5,13 @@ PartOf=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/pw-loopback --name yeti-stable-mic "--capture-props=node.name=yeti_stable.in target.object=alsa_input.usb-Generic_Blue_Microphones_LT_2502141512089D0201BD_111000-00.analog-stereo node.dont-fallback=true node.linger=true" "--playback-props=node.name=yeti_stable node.description=Yeti-Stable-Mic media.class=Audio/Source"
+# Feeds from the Yeti, or from the C920e webcam mic when the Yeti isn't on USB at
+# start (it has been failing to enumerate with error -71), so a reboot with a dead
+# Yeti still leaves a working mic. Waits up to 10 s for the Yeti's source to appear
+# after login. Replug the Yeti, then restart this unit to move back to it.
+Environment=YETI=alsa_input.usb-Generic_Blue_Microphones_LT_2502141512089D0201BD_111000-00.analog-stereo
+Environment=WEBCAM=alsa_input.usb-046d_Logi_Webcam_C920e_6012766F-02.analog-stereo
+ExecStart=/usr/bin/bash -c 'source=$WEBCAM; for i in $(seq 20); do pactl list sources short | grep -q "$YETI" && { source=$YETI; break; }; sleep 0.5; done; exec /usr/bin/pw-loopback --name yeti-stable-mic "--capture-props=node.name=yeti_stable.in target.object=$source node.dont-fallback=true node.linger=true" "--playback-props=node.name=yeti_stable node.description=Yeti-Stable-Mic media.class=Audio/Source"'
 Restart=always
 RestartSec=2
 
