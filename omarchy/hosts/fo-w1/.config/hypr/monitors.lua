@@ -10,6 +10,9 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = omarchy
 -- AOC defaults to 60 Hz; run it at its full 144 Hz
 hl.monitor({ output = "desc:AOC AG241QG4 0x0000029C", mode = "2560x1440@143.91", position = "auto", scale = 1 })
 
+-- Odyssey G75F's EDID prefers 3440x1440@60, which the 5120x2160 panel upscales (fuzzy)
+hl.monitor({ output = "desc:Samsung Electric Company Odyssey G75F HNTL900421", mode = "5120x2160@179.99", position = "auto", scale = 1.25 })
+
 -- Configure a specific monitor.
 -- hl.monitor({ output = "DP-2", mode = "2560x1440@144", position = "0x0", scale = 1 })
 
