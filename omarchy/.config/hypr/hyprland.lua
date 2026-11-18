@@ -274,8 +274,10 @@ end
 
 o.bind("SUPER + N", "Markdown preview from nvim: show / hide", markdown_preview.toggle)
 
--- games open on workspace 4: CS2 (native) and Proton games (steam_app_<id>)
-o.window({ class = "^(cs2|steam_app_[0-9]+)$" }, { workspace = "4" })
+-- games open on workspace 4: CS2 (native) and Proton games (steam_app_<id>).
+-- Fullscreen games and Chrome (xCloud) hold off the screensaver: controller input doesn't count as activity.
+o.window({ class = "^(cs2|steam_app_[0-9]+)$" }, { workspace = "4", idle_inhibit = "fullscreen" })
+o.window({ class = "^google-chrome$" }, { idle_inhibit = "fullscreen" })
 
 -- No window gets focus just by asking for it (Omarchy's default says yes). The
 -- terminal running herdr/Claude asks whenever a notification goes through it,
