@@ -26,12 +26,8 @@ it leaves blank. A fabricated file is for exercising code paths, never for a res
 
 ## Environments
 
-- `~/envs/<name>/.venv` are uv environments; `~/envs/pml/.venv` runs masknmf.
-- An installed package shadows a checkout: a script run from outside the repo imports site-packages. Check
-  `python -c "import pkg; print(pkg.__file__)"` and set `PYTHONPATH=<checkout>` when it is wrong.
-- Any script left in `artifacts/` gets the environment that ran it exported beside it, in
-  `artifacts/environment/`: `uv pip freeze` as `requirements.txt`, the python version, the GPU driver, and a
-  `README.md` with the commands that recreate it and the checkout and branch it ran against.
+See `environments` for finding and using the `.venv`. On the lab machines it is `~/envs/pml/.venv`. A script left in
+`artifacts/` gets its environment record in `artifacts/environment/`.
 
 ## Runnable scripts
 

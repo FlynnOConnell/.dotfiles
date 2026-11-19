@@ -40,6 +40,7 @@ SKILLS_ALWAYS = (
     "coding-style",
     "workspace-conventions",
     "data-management",
+    "environments",
     "runhub",
     "deslop",
 )

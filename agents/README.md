@@ -55,7 +55,7 @@ Without any `agent` lines, every agent whose config directory exists is used.
 
 At the top of `sync_skills.py`:
 
-- `SKILLS_ALWAYS` — inlined verbatim into the digest rather than indexed. Currently `coding-style`, `workspace-conventions`, `deslop`.
+- `SKILLS_ALWAYS` — inlined verbatim into the digest rather than indexed. Currently `coding-style`, `workspace-conventions`, `data-management`, `environments`, `runhub`, `deslop`.
 - `TARGETS_SKILLS` / `TARGETS_DIGEST` — where each agent looks. Add a row for a new agent.
 
 ## Adding a skill

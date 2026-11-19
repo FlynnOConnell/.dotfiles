@@ -228,23 +228,76 @@ it leaves blank. A fabricated file is for exercising code paths, never for a res
 
 #### Environments
 
-- `~/envs/<name>/.venv` are uv environments; `~/envs/pml/.venv` runs masknmf.
-- An installed package shadows a checkout: a script run from outside the repo imports site-packages. Check
-  `python -c "import pkg; print(pkg.__file__)"` and set `PYTHONPATH=<checkout>` when it is wrong.
-- Any script left in `artifacts/` gets the environment that ran it exported beside it, in
-  `artifacts/environment/`: `uv pip freeze` as `requirements.txt`, the python version, the GPU driver, and a
-  `README.md` with the commands that recreate it and the checkout and branch it ran against.
+See `environments` for finding and using the `.venv`. On the lab machines it is `~/envs/pml/.venv`. A script left in
+`artifacts/` gets its environment record in `artifacts/environment/`.
 
 #### Runnable scripts
 
 A script in `artifacts/` runs from one documented line: it takes paths as arguments with defaults that match
 this machine, fabricates what it can, and does nothing else. The exact line to run it goes in `REPORT.md`.
 
+### Environments
+
+There is already a `.venv` to activate. I work across many repos at once, not inside one `pyproject.toml`, so
+making an environment per repo is never the answer.
+
+#### Finding the environment
+
+- Use the one the project's own instructions name (`CLAUDE.md`, `AGENTS.md`, a README), if any.
+- Otherwise look for an existing `.venv`: `ls -d ~/envs/*/.venv ~/code/*/.venv ~/projects/*/.venv ~/repos/*/.venv`.
+  A shared one under `~/envs/<name>/` comes before a repo's own.
+- Several candidates and nothing to choose by: ask which, once, and keep using it.
+- None found: ask. Do not create one.
+
+#### Rules
+
+- Activate it: `source <env>/.venv/bin/activate`. In a one-liner: `<env>/.venv/bin/python script.py`.
+- Never run `uv sync`, `uv venv`, `uv run` or `python -m venv`. Each of those makes or rewrites an environment.
+- No `PYTHONPATH` to point at a checkout. Install the checkout instead, so the same command works everywhere.
+
+#### Getting code into the environment
+
+With the environment active, in this order:
+
+1. A checkout on this machine: `uv pip install -e <path to repo>`. Editable, so later edits and branch switches
+   need no reinstall.
+2. A branch that is pushed: `uv pip install "git+ssh://git@<host>/<group>/<repo>.git@<branch>"`. Take the URL
+   from `git -C <repo> remote get-url origin`. This is the way onto another machine: push here, install there.
+   It always works.
+3. A missing third-party package: `uv pip install <package>`, after asking.
+
+Afterwards check what is imported: `python -c "import pkg; print(pkg.__file__)"`. An editable install prints the
+checkout path; an install from a remote prints `site-packages`.
+
+A shared environment may be running other work. Before replacing a package in it with another branch, say which
+package and branch, and say it again in the report.
+
+#### Telling the user how to run something
+
+The instructions are three lines, for any machine:
+
+```bash
+source <env>/.venv/bin/activate
+uv pip install "git+ssh://git@<host>/<group>/<repo>.git@<branch>"   # or: uv pip install -e <path to repo>
+python <script> <arguments>
+```
+
+- If the code is not pushed, say so and offer to push, instead of describing a clone, a checkout and a sync.
+- A standalone script travels by `scp` or as a file in the pushed repo; say which.
+- Do not assume the other machine has the repo cloned, the data, or the same paths. Name what has to be copied.
+
+#### Recording the environment
+
+Any script left for the user to run gets the environment that ran it recorded beside it: `uv pip freeze` as
+`requirements.txt`, the python version, the GPU driver, and a `README.md` with the three lines above filled in:
+the environment, each installed checkout with its branch and commit, and the run line.
+
 ### runhub
 
 `runhub up` runs a user service on pml-w1 that rescans `~/agent_assets` and `~/data` every two minutes
 and serves `http://localhost:8787/` (tailnet: `https://pml-w1.tail0ea452.ts.net/`). Nothing has to be
 registered: every `agent_assets/<A>/<YYYYMMDD_slug>/` topic and masknmf run folder appears on its own.
+The site is one web app: lists at `/app/#/runs`, `/app/#/project/<key>`, `/app/#/topics?q=word` (the `.html` addresses below redirect to them), a record at `/r/<id>`, its folders and markdown files under `/r/<id>/`. A report edit shows on reload; a new file shows after the next scan.
 The index lists the projects as a tree (status, people, next task) and then topics, newest first; pipeline runs have their own page (`/runs.html`), one fold per dataset.
 A project is a folder note under `~/repos/arctic-lake/projects/` (`subcellular/subcellular.md`, subproject `subcellular/ca1-voltage/ca1-voltage.md`) with `category = "project"`, `status`, `people` and `data` in its `runhub.toml`; its page `project-<key>.html` shows the note, then the decks, topics, runs, datasets and documents that name it. `## Now` checkboxes in the note are its tasks.
 Notes from the vault `~/repos/arctic-lake` (one folder note `<name>/<name>.md` per folder, `runhub.toml` beside it) list on `/notes.html`; `runhub check <note folder>` lints one the same way.
@@ -266,15 +319,24 @@ It checks these, and the page needs them:
 
   Tags are free words people will search for. The project files the topic on that project's page; `runhub check` lists the keys.
   `runhub note <id> --category analysis --goal "..." --tag asako --project subcellular/ca1-voltage` writes the same file;
-- `artifacts/REPORT.md` is the entry point: question, answer, key figures inline with relative image links. Markdown renders as a page;
-- every png, jpg, gif, html, md, pdf and mp4 anywhere under the topic (up to eight levels, zarr stores included) is on its record page `/r/<id>`: `REPORT.md` inline, pages and videos as buttons at the top, images in one gallery with the folder in the caption, click to view full size, arrow keys to step through, a pen to draw on for presenting;
+- `artifacts/REPORT.md` is the entry point: question, answer, and every figure and movie embedded where it is discussed, with relative links: `![](figures/a.png)`, and `![](movies/a.mp4)` renders as a player. `runhub check` fails on an image or movie under `artifacts/` the report does not embed. Save figures as png (a pdf beside a png of the same name is not shown). Markdown renders as a page;
+- the `#`, `##` and `###` headings of `REPORT.md` are listed in a sidebar on the record page, the current one marked, and a click jumps to it (a `sections` button on a narrow screen); a report with three or more headings gets one, and so does any markdown page or project note. To put several analyses in one place, write one report with a `##` per analysis and `###` under it. A heading's link is `/r/<id>#s-<its words joined by hyphens>`;
+- every png, jpg, gif, html, md, pdf and mp4 anywhere under the topic (up to eight levels, zarr stores included) is on its record page `/r/<id>`: pages as buttons at the top, then one scrolling row of every image and movie, where a click goes to the file's place in the report (a file the report leaves out has a dashed border), then `REPORT.md` inline. A record with no report shows one gallery with the folder in the caption instead. Click an image in the report or gallery to view full size, arrow keys to step through, a pen to draw on for presenting;
 - a notebook goes in `artifacts/notebooks/` as `YYYYMMDD_<slug>.ipynb`. Its `▶` button on the record page opens it in the hub's JupyterLab (`https://pml-w1.tail0ea452.ts.net/jupyter/`, kernel `~/envs/pml/.venv`), where the user runs, edits and saves it from any tailnet device; `/notebooks.html` lists every notebook and `/r/<id>/<path>.ipynb` shows one with its saved outputs. Save it executed, with figures embedded, so that view shows the result. Paths inside it are absolute or relative to the notebook's own folder, which is the kernel's working directory;
 - a pipeline run a topic uses is listed on the topic's page and marked "used by" on the runs page. Link them by launching through `runhub run ... --topic <topic dir>` (or `export RUNHUB_TOPIC=<topic dir>`), by naming the run folder (`20261027T025609_two-photon-calcium`) in `MEMORIES.md` or `REPORT.md`, or afterwards with `runhub note <run id> --topic <topic dir>`. Runs nobody links stay on the runs page only;
+- `/recent.html` lists the 100 most recently modified topics, notes and datasets, newest first, each with the file that changed; chips narrow it to today, yesterday or this week, a kind or a project. An item's time is its newest file's, and `runhub.toml` edits do not move it;
 - `/media.html` is one filterable gallery of every image on the host, newest topic first; `/r/<id>/artifacts/<sub>/` browses a folder with the same gallery.
 
 Archiving: the page's "archive" button (or `runhub archive <id>`) moves an item's folder to `_archive/` beside
 its scan root and hides it; `runhub restore <id>` or the archived list at the page bottom brings it back.
 Deleting a folder by hand drops its record on the next scan.
+
+Viewers: a results file (`.hdf5`) on the recent page, in a record's file list or in a folder listing has one button per viewer
+(`demixing`, `classification`, `masknmf`) and a `browser` link to the Studio; `.tif`, `.mesc`, `.h5` and `.bin` files get `studio`. A button
+opens the file on the host's desktop from the viewer env `~/.cache/runhub/envs/viewers/.venv`, which holds `pml_utilities` and `masknmf`
+installed from a git branch each. `/viewers.html` shows the branch and installed commit, switches a branch and reinstalls;
+`runhub viewers` lists the same, `runhub viewers branch <package> <branch>` switches, `runhub viewers sync` installs the newest commits
+and `runhub view <file> --viewer <name>` opens a file from a terminal. Each launch logs to `~/.local/share/runhub/viewers/`.
 
 Scanned folders: `runhub roots` lists every folder that is scanned with the record count, symlink duplicates skipped and
 time of the last scan (also at `/roots.html`); `runhub roots add <folder>` and `runhub roots rm <folder>` change the list, and the

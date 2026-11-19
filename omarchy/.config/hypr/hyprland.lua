@@ -75,6 +75,25 @@ end
 hl.on("monitor.added", reload_if_ultrawide_moved)
 hl.on("monitor.removed", reload_if_ultrawide_moved)
 
+-- A host with no monitor streams a headless output named sunshine (home_hub's
+-- headless-display). Once a real monitor is on, that output would keep its
+-- workspaces where no screen shows them, so it goes and they move over.
+local function drop_headless_stream_output()
+  local headless, real = false, false
+  for _, monitor in ipairs(hl.get_monitors()) do
+    if monitor.name == "sunshine" then
+      headless = true
+    elseif monitor.name ~= "FALLBACK" then
+      real = true
+    end
+  end
+  if headless and real then
+    hl.exec_cmd("hyprctl output remove sunshine")
+  end
+end
+drop_headless_stream_output()
+hl.on("monitor.added", drop_headless_stream_output)
+
 -- Toggle config flags dynamically.
 require("default.hypr.toggles")
 
