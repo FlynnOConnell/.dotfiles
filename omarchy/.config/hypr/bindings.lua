@@ -106,9 +106,8 @@ hl.unbind("SUPER + SHIFT + P")
 o.bind("SUPER + SHIFT + P", "Screenrecording: start / stop", "screenrecord-toggle")
 
 -- Apps I use, on keys Omarchy gave to ones I don't (was: SUPER+SHIFT+M Spotify,
--- G Signal, A ChatGPT). Slack focuses its window if it's already open; it is
--- usually parked on the scratchpad, which comes up with it. Steam, Discord,
--- Home Assistant and Tailscale (SUPER+SHIFT+S/D/A/T) are pop-overs in hyprland.lua.
+-- G Signal, A ChatGPT). Slack focuses its window if it's already open. Slack,
+-- Discord, Home Assistant and Tailscale (SUPER+SHIFT+S/D/A/T) are pop-overs in hyprland.lua.
 hl.unbind("SUPER + SHIFT + M")
 hl.unbind("SUPER + SHIFT + G")
 hl.unbind("SUPER + SHIFT + A")
