@@ -58,7 +58,6 @@ FILES=(
   .local/bin/quick-note
   .local/bin/workspace-layout-cycle
   .local/bin/share-region
-  .local/bin/steam-popups
   .local/bin/kvm-switch
   .local/bin/screenrecord-toggle
   .local/bin/window-resize
@@ -120,7 +119,7 @@ OMARCHY_APPS=(
   "1password      omarchy-install-service-1password"
   "tailscale      omarchy-install-service-tailscale"        # the tailnet: sshfs@, Home Assistant, Moonlight
   "voxtype-bin    omarchy-voxtype-install"                  # dictation
-  "steam          omarchy-install-gaming-steam"             # SUPER+SHIFT+S (hyprland.lua)
+  "steam          omarchy-install-gaming-steam"             # overlay on SHIFT+TAB in game
   "xpadneo-dkms   omarchy-install-gaming-xbox-controllers"  # last: it can offer to reboot
 )
 

@@ -357,8 +357,7 @@ end)
 -- elsewhere, or got dragged off, is pulled back onto its workspace first.
 -- Web app classes are chrome-<host>_<path with / as _>-Default.
 -- The workspace rule is silent: only the key shows the workspace, so a stray
--- window of the app (a Steam toast whose title isn't set yet when it maps)
--- cannot pop the workspace open and dim the screen.
+-- window of the app cannot pop the workspace open and dim the screen.
 -- hooks.on_show runs on every show of a running app, hooks.on_hide on every hide.
 -- hooks.match adds fields to the window-rule match (e.g. a title exclusion).
 local function popover_toggle(name, class, launch, hooks)
@@ -398,33 +397,16 @@ local function popover(keys, description, class, launch, hooks)
   end)
 end
 
--- Steam (was: SUPER+SHIFT+S Google Maps); games still open on workspace 4.
--- Its notification toasts are excluded here and handled below.
+-- Slack (was: SUPER+SHIFT+S Google Maps).
 hl.unbind("SUPER + SHIFT + S")
-popover("SUPER + SHIFT + S", "Steam", "steam", o.launch("steam"), { match = { title = "^Steam$" } })
+popover("SUPER + SHIFT + S", "Slack", "slack", o.launch("slack"))
 
--- Steam's notification toasts ("friend is online", title
--- notificationtoasts_<n>_desktop) are real X11 windows. The Steam rule above
--- used to drop them on special:steam, which opened that workspace, dimmed the
--- screen (dim_special) and took focus mid-game. Two modes, switched with
--- `steam-popups`:
---   popup (default): the toast pins bottom-right of the current monitor as a
---     quiet floating card; nothing gets focus and no workspace opens.
---   sound: the toast stays hidden on special:steam and a sound plays.
-local steam_toast = { class = "^steam$", title = "^notificationtoasts_" }
-local steam_toast_hidden = hl.window_rule({
-  name = "steam-toast-hidden",
-  match = steam_toast,
-  workspace = "special:steam silent",
-  float = true,
-  no_focus = true,
-  no_initial_focus = true,
-  no_dim = true,
-  no_anim = true,
-})
-local steam_toast_popup = hl.window_rule({
-  name = "steam-toast-popup",
-  match = steam_toast,
+-- Steam runs on Omarchy's defaults (floating, 1100x700); the in-game overlay
+-- (SHIFT+TAB) draws inside the game window, so it needs the game to keep focus.
+-- Steam's message toasts (title notificationtoasts_<n>_desktop) are real X11
+-- windows: pin them bottom-right and never give them focus, so a message
+-- arriving mid-game shows without taking input from the game.
+o.window({ class = "^steam$", title = "^notificationtoasts_" }, {
   float = true,
   pin = true,
   move = "monitor_w-w-16 monitor_h-h-16",
@@ -433,35 +415,6 @@ local steam_toast_popup = hl.window_rule({
   no_dim = true,
   no_anim = true,
 })
--- Steam's menus (right-click, dropdowns, the overlay's "Join Game") are
--- untitled X11 windows, and Steam closes one the instant it loses focus. Over
--- a fullscreen game the game takes focus straight back, so the menu flashes
--- and dies. stay_focused holds focus on the menu until Steam closes it.
-o.window({ class = "^steam$", title = "^$" }, { float = true, stay_focused = true })
-local steam_toast_sound_flag =os.getenv("HOME") .. "/.local/state/omarchy/toggles/steam-toast-sound"
-fo_steam_popups_on = true
-function fo_steam_popups_sync()
-  local flag = io.open(steam_toast_sound_flag, "r")
-  fo_steam_popups_on = flag == nil
-  if flag then flag:close() end
-  steam_toast_hidden:set_enabled(not fo_steam_popups_on)
-  steam_toast_popup:set_enabled(fo_steam_popups_on)
-end
-fo_steam_popups_sync()
-hl.on("window.open", function(window)
-  if not window or window.class ~= "steam" then return end
-  local title = window.title or window.initial_title or ""
-  local log = io.open(os.getenv("HOME") .. "/.local/state/omarchy/steam-windows.log", "a")
-  if log then
-    local size = type(window.size) == "table" and (tostring(window.size[1]) .. "x" .. tostring(window.size[2])) or tostring(window.size)
-    log:write(os.date("%Y-%m-%d %H:%M:%S"), "\ttitle=", title, "\tinitial_title=", tostring(window.initial_title), "\tsize=", size, "\n")
-    log:close()
-  end
-  if fo_steam_popups_on then return end
-  if title:match("^notificationtoasts_") then
-    hl.exec_cmd("pw-play /usr/share/sounds/freedesktop/stereo/message.oga")
-  end
-end)
 
 -- Discord (was: SUPER+SHIFT+D Docker).
 hl.unbind("SUPER + SHIFT + D")
