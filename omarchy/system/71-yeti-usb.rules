@@ -1,0 +1,2 @@
+# The logged-in user may reset the Blue Yeti (046d:0ab7) on USB; yeti-feed does it when the mic opens but sends nothing.
+ACTION!="remove", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="046d", ATTR{idProduct}=="0ab7", TAG+="uaccess"

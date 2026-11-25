@@ -1,0 +1,129 @@
+#!/usr/bin/env python3
+"""
+Keep yeti_stable fed from the Blue Yeti, or from the C920e webcam while the Yeti sends nothing.
+
+A replug can bring the Yeti back under a suffixed node name (".analog-stereo.2"), which the
+target of yeti-stable-mic.service never matches. After a boot the Yeti can also open and
+report RUNNING without delivering a sample. Only the feed stream is moved, so apps recording
+from yeti_stable keep their stream. A stalled Yeti gets a USB reset once its PCM is closed,
+which needs the 71-yeti-usb.rules udev rule.
+"""
+
+import fcntl
+import json
+import os
+import subprocess
+import time
+from pathlib import Path
+
+PREFIX_YETI = "alsa_input.usb-Generic_Blue_Microphones_"
+PREFIX_WEBCAM = "alsa_input.usb-046d_Logi_Webcam_C920e_"
+NAME_FEED = "yeti_stable.in"
+SECONDS_POLL = 1.0
+POLLS_STALLED = 4
+SECONDS_CLOSE = 15
+RESETS_MAX = 2
+USBDEVFS_RESET = 0x5514
+
+
+def list_pulse(kind: str) -> list:
+    """Returns the parsed ``pactl list`` output for one object kind."""
+    stdout = subprocess.run(
+        ["pactl", "-f", "json", "list", kind], check=True, capture_output=True, text=True
+    ).stdout
+    return json.loads(stdout)
+
+
+def find_source(sources: list, prefix: str) -> dict | None:
+    """Returns the first source whose name starts with the prefix."""
+    return next((s for s in sources if s["name"].startswith(prefix)), None)
+
+
+def find_feed(outputs: list) -> dict | None:
+    """Returns the capture stream that feeds yeti_stable."""
+    return next((o for o in outputs if o["properties"].get("node.name") == NAME_FEED), None)
+
+
+def read_hw_ptr(card: str) -> int | None:
+    """Returns the capture position of the card, or None while its PCM is closed."""
+    lines = Path(f"/proc/asound/card{card}/pcm0c/sub0/status").read_text().splitlines()
+    return next((int(li.split(":")[1]) for li in lines if li.startswith("hw_ptr")), None)
+
+
+def read_usb_node(card: str) -> str:
+    """Returns the /dev/bus/usb path of the card, which changes on every replug."""
+    dir_usb = Path(f"/sys/class/sound/card{card}/device").resolve().parent
+    bus, dev = (int((dir_usb / f).read_text()) for f in ("busnum", "devnum"))
+    return f"/dev/bus/usb/{bus:03d}/{dev:03d}"
+
+
+def move_feed(feed: dict, source: dict) -> None:
+    """Moves the feed stream to a source and sets a Yeti to full capture volume."""
+    print(f"feeding yeti_stable from {source['name']}", flush=True)
+    subprocess.run(["pactl", "move-source-output", str(feed["index"]), source["name"]], check=True)
+    if source["name"].startswith(PREFIX_YETI):
+        subprocess.run(["pactl", "set-source-volume", source["name"], "100%"], check=True)
+
+
+def reset_when_closed(card: str, filepath_usb: str) -> bool:
+    """Resets the Yeti on USB and returns whether it did."""
+    if not os.access(filepath_usb, os.W_OK):
+        print(f"no write access to {filepath_usb}, not resetting", flush=True)
+        return False
+    ## NOTE: pipewire dies with SIGBUS when the card goes away under an open PCM
+    for _ in range(SECONDS_CLOSE):
+        if read_hw_ptr(card=card) is None:
+            print(f"resetting {filepath_usb}", flush=True)
+            with open(filepath_usb, "wb") as file_usb:
+                fcntl.ioctl(file_usb, USBDEVFS_RESET, 0)
+            time.sleep(3)
+            return True
+        time.sleep(1)
+    print("Yeti PCM still open, not resetting", flush=True)
+    return False
+
+
+def main() -> None:
+    """Polls the sources and moves the feed stream when it is on the wrong one."""
+    filepath_usb_last, filepath_usb_dead = None, None
+    hw_ptr_last, n_stalled, n_resets = None, 0, 0
+    while True:
+        time.sleep(SECONDS_POLL)
+        sources = list_pulse(kind="sources")
+        feed = find_feed(outputs=list_pulse(kind="source-outputs"))
+        yeti = find_source(sources=sources, prefix=PREFIX_YETI)
+        webcam = find_source(sources=sources, prefix=PREFIX_WEBCAM)
+        if feed is None:
+            continue
+
+        if yeti is not None:
+            card = yeti["properties"]["alsa.card"]
+            filepath_usb = read_usb_node(card=card)
+            if filepath_usb != filepath_usb_last:
+                filepath_usb_last, filepath_usb_dead = filepath_usb, None
+                hw_ptr_last, n_stalled, n_resets = None, 0, 0
+
+            is_live = feed["source"] == yeti["index"] and yeti["state"] == "RUNNING"
+            hw_ptr = read_hw_ptr(card=card) if is_live else None
+            is_frozen = hw_ptr is not None and hw_ptr == hw_ptr_last
+            n_stalled = n_stalled + 1 if is_frozen else 0
+            if hw_ptr and not is_frozen:
+                n_resets = 0
+            hw_ptr_last = hw_ptr
+
+            if n_stalled >= POLLS_STALLED and webcam is not None:
+                print(f"Yeti stalled at sample {hw_ptr}", flush=True)
+                n_stalled, filepath_usb_dead = 0, filepath_usb
+                move_feed(feed=feed, source=webcam)
+                if n_resets < RESETS_MAX and reset_when_closed(card=card, filepath_usb=filepath_usb):
+                    n_resets, filepath_usb_dead = n_resets + 1, None
+                continue
+
+        is_yeti_usable = yeti is not None and filepath_usb != filepath_usb_dead
+        source = yeti if is_yeti_usable else webcam
+        if source is not None and feed["source"] != source["index"]:
+            move_feed(feed=feed, source=source)
+
+
+if __name__ == "__main__":
+    main()

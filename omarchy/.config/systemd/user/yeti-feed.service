@@ -1,0 +1,13 @@
+[Unit]
+Description=Keep yeti_stable fed from the Blue Yeti, or the webcam while the Yeti sends nothing
+After=yeti-stable-mic.service
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/yeti-feed
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target

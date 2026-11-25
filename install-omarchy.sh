@@ -69,6 +69,7 @@ FILES=(
   .local/bin/gdrive
   .local/bin/calendar-events
   .local/bin/gamesir-x360
+  .local/bin/yeti-feed
   .local/bin/reboot-windows
   .config/systemd/user/sshfs@.service
   .config/systemd/user/rclone@.service
@@ -77,6 +78,7 @@ FILES=(
   .config/systemd/user/suspend-when-locked.service
   .config/systemd/user/gamesir-x360.service
   .config/systemd/user/yeti-stable-mic.service
+  .config/systemd/user/yeti-feed.service
   .config/systemd/user/repo-sync.service
   .config/systemd/user/repo-sync.timer
   .config/systemd/user/omarchy-crash-watch.service.d/skip-claude.conf
@@ -245,6 +247,7 @@ if command -v systemctl >/dev/null; then
   fi
   systemctl --user enable --now gamesir-x360.service 2>/dev/null || true
   systemctl --user enable --now yeti-stable-mic.service 2>/dev/null || true
+  systemctl --user enable --now yeti-feed.service 2>/dev/null || true
   systemctl --user enable --now repo-sync.timer 2>/dev/null || true
 fi
 
@@ -283,6 +286,7 @@ fi
 
 sudo install -m 755 "$REPO/omarchy/system/gamesir-force-hid" /usr/local/bin/gamesir-force-hid
 sudo install -m 644 "$REPO/omarchy/system/82-gamesir-hid-mode.rules" /etc/udev/rules.d/82-gamesir-hid-mode.rules
+sudo install -m 644 "$REPO/omarchy/system/71-yeti-usb.rules" /etc/udev/rules.d/71-yeti-usb.rules
 sudo udevadm control --reload
 
 (( ${#PACKAGES[@]} )) && omarchy-pkg-add "${PACKAGES[@]}"
